@@ -47,9 +47,9 @@
 # team-synergy
 
 ## Team Members
-- AfnanRakib (Team Leader)
-- Rajiunnabi
-- feedofmri
+- Afnan Rakib (Team Leader)
+- Rajiun Nabi
+- Md. Rubayet Islam
 
 ## Mentor
 - shahriarRahmanShaon
