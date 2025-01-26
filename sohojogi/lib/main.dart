@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/ui/home/home_page.dart';
+import 'package:sohojogi/ui/login_signup/login_page.dart';
 import 'package:sohojogi/ui/root_page.dart';
 
 void main() {
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.yellow,
       ),
-      home: RootPage(),
+      home: login_page(),
       debugShowCheckedModeBanner: false,
     );
   }
