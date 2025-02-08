@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants.dart';
+import 'package:sohojogi/ui/login_signup/auth_check.dart';
 import 'package:sohojogi/ui/login_signup/signup_page.dart';
 import 'package:sohojogi/ui/root_page.dart';
+
 
 class login_page extends StatefulWidget {
   const login_page({super.key});
@@ -13,6 +16,84 @@ class login_page extends StatefulWidget {
 class _login_pageState extends State<login_page> {
   final emailController=TextEditingController();
   final passController=TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passController.dispose();
+    super.dispose();
+  }
+
+  void passReset() async{
+    try{
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: emailController.text.trim(),);
+      showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            alignment: Alignment.center,
+            title: Text("Password Reset Email Sent", style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18
+            ),
+              textAlign: TextAlign.center,
+            ),
+          );
+        },
+      );
+    }on FirebaseAuthException catch(e){
+      showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            alignment: Alignment.center,
+            title: Text(e.message.toString(), style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18
+            ),
+              textAlign: TextAlign.center,
+            ),
+          );
+        },
+      );
+    }
+  }
+  void loggedin() async{
+    showDialog(
+      context: context,
+      builder: (context){
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+    try{
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passController.text,
+      );
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => auth_check()));
+    }on FirebaseAuthException catch (e){
+      print(e);
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            alignment: Alignment.center,
+            title: Text(e.message.toString(), style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18
+            ),
+              textAlign: TextAlign.center,
+            ),
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +150,8 @@ class _login_pageState extends State<login_page> {
                         minWidth: double.infinity,
                         height: 60,
                         onPressed: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage()));
+                          loggedin();
+                          //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage()));
                         },
                         color: Constants.secondaryColor,
                         elevation: 0,
@@ -88,10 +170,24 @@ class _login_pageState extends State<login_page> {
                     children: <Widget>[
                       GestureDetector(
                         onTap: (){
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => signup_page()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => signup_page()));
                         },
                         child: Text("Create an Account?", style: TextStyle(
                             fontWeight: FontWeight.w600, fontSize: 18
+                        ),),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: (){
+                          passReset();
+                          //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => signup_page()));
+                        },
+                        child: Text("Forgot Your Password?", style: TextStyle(
+                            fontWeight: FontWeight.w400, fontSize: 15
                         ),),
                       ),
                     ],

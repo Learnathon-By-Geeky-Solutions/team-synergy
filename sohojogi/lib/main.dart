@@ -1,9 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:sohojogi/ui/home/home_page.dart';
-import 'package:sohojogi/ui/login_signup/login_page.dart';
-import 'package:sohojogi/ui/root_page.dart';
+import 'package:sohojogi/ui/login_signup/auth_check.dart';
 
-void main() {
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -17,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.yellow,
       ),
-      home: login_page(),
+      home: auth_check(),
       debugShowCheckedModeBanner: false,
     );
   }

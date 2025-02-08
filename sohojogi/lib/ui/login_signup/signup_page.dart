@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants.dart';
-import 'package:sohojogi/ui/root_page.dart';
 import 'package:sohojogi/ui/login_signup/login_page.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sohojogi/ui/login_signup/startup_page.dart';
 
 class signup_page extends StatefulWidget {
   const signup_page({super.key});
@@ -17,6 +19,80 @@ class _signup_pageState extends State<signup_page> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
+
+  late User currentUser;
+
+  Future addUserDetails(String email,String name, String UID) async{
+    await FirebaseFirestore.instance.collection('users').add(
+        {
+          'email':email,
+          'name':name,
+          'uid':UID,
+        }
+    );
+  }
+
+  Future<void> signUp() async {
+    if(passwordController.text==confirmPasswordController.text) {
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+        currentUser = FirebaseAuth.instance.currentUser!;
+        print(currentUser.uid);
+        addUserDetails(emailController.text, nameController.text,currentUser.uid);
+        showDialog(
+          context: context,
+          builder: (context){
+            return AlertDialog(
+              alignment: Alignment.center,
+              title: Text("Account Created", style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18
+              ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          },
+        );
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> startup_page()),);
+      } on FirebaseAuthException catch (e) {
+        showDialog(
+          context: context,
+          builder: (context){
+            return AlertDialog(
+              alignment: Alignment.center,
+              title: Text(e.message.toString(), style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18
+              ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          },
+        );
+      }
+    }
+    else{
+      showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            alignment: Alignment.center,
+            title: Text("Confirmation Password didn't matched", style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18
+            ),
+              textAlign: TextAlign.center,
+            ),
+          );
+        },
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -68,20 +144,7 @@ class _signup_pageState extends State<signup_page> {
                     minWidth: double.infinity,
                     height: 60,
                     onPressed: (){
-                      showDialog(
-                        context: context,
-                        builder: (context){
-                          return AlertDialog(
-                            alignment: Alignment.center,
-                            title: Text("Account Created", style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18
-                            ),
-                              textAlign: TextAlign.center,
-                            ),
-                          );
-                        },
-                      );
+                      signUp();
                     },
                     color: Constants.secondaryColor,
                     elevation: 0,
@@ -101,7 +164,7 @@ class _signup_pageState extends State<signup_page> {
                     Text("Already have an account?"),
                     GestureDetector(
                       onTap: (){
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> login_page()),);
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> login_page()),);
                       },
                       child: Text(" Log In", style: TextStyle(
                           fontWeight: FontWeight.w600, fontSize: 18
