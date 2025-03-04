@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="assets/logo.png" alt="logo" width="200" height="auto" />
+  <img src="resources/logo.png" alt="logo" width="200" height="auto" />
   <h1>SOHOJOGI</h1>
   
   <p>
