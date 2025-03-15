@@ -55,20 +55,15 @@
 - shahriarRahmanShaon
 
 ## Project Description
-Add your project description here.
-
-## Getting Started
-1. Clone the repository
-2. Install dependencies
-3. Start development
-
-## Development Guidelines
-1. Create feature branches
-2. Make small, focused commits
-3. Write descriptive commit messages
-4. Create pull requests for review
+“SOHOJOGIˮ is a one-stop service provider platform for daily household tasks.
+It connects users with skilled professionals like plumbers, electricians, mechanics, and appliance repair experts, making it easy to find and hire reliable help.
 
 ## Resources
+- [Dev Log](resources/DevLog.md)
+- [Project Wireframe](https://github.com/Learnathon-By-Geeky-Solutions/team-synergy/blob/resources-setup/resources/Wireframe%200.pdf)
+- [Ui/Ux](https://www.figma.com/proto/WzVr7zvjiAiGrVoSkEglZE/Sohojogi-App-UI?node-id=125-186&starting-point-node-id=125%3A186&t=BygQA84Hiw98dmrB-1)
+<!--
 - [Project Documentation](docs/)
 - [Development Setup](docs/setup.md)
 - [Contributing Guidelines](CONTRIBUTING.md)
+-->
