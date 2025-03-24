@@ -26,7 +26,7 @@ class SplashScreen extends StatelessWidget {
           ),
         ),
       ),
-      nextScreen: HomeScreen(),
+      nextScreen: const HomeScreen(),
       splashIconSize: 400,
       // Set the background color based on the brightness
       backgroundColor: isDarkMode ? darkColor : lightColor,

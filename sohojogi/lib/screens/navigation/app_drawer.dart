@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
-import '../../base/theme/theme_data.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
