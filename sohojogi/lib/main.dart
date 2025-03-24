@@ -20,23 +20,23 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.light,
         primaryColor: primaryColor,
         hintColor: secondaryColor,
-        scaffoldBackgroundColor: lightColor,
+        scaffoldBackgroundColor: Colors.white, // Set background to white
 
         // Configure color scheme for light mode
         colorScheme: ColorScheme.light(
           primary: primaryColor,
           secondary: secondaryColor,
-          surface: lightColor,
+          surface: Colors.white, // Set surface to white
           // Ensure text is legible on light surfaces
           onPrimary: Colors.white,
           onSecondary: Colors.white,
-          onSurface: Colors.black,
+          onSurface: Colors.black, // Set elements to black
         ),
 
         // AppBar theme to maintain consistency
         appBarTheme: AppBarTheme(
           backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
+          foregroundColor: Colors.black,
         ),
 
         // Text theme configuration
