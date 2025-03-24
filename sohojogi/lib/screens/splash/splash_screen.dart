@@ -1,6 +1,7 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/authentication/views/signin_view.dart';
 
 import '../home/views/home_list_view.dart';
@@ -25,10 +26,10 @@ class SplashScreen extends StatelessWidget {
           ),
         ),
       ),
-      nextScreen: SignInView(),
+      nextScreen: HomeScreen(),
       splashIconSize: 400,
       // Set the background color based on the brightness
-      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      backgroundColor: isDarkMode ? darkColor : lightColor,
       duration: 2000,
     );
   }
