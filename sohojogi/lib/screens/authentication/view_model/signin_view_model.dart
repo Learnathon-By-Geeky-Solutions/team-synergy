@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SignUpViewModel extends ChangeNotifier {
-  final TextEditingController nameController = TextEditingController();
+class SignInViewModel extends ChangeNotifier {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   bool _obscurePassword = true;
   bool get obscurePassword => _obscurePassword;
-
-  bool _termsAccepted = false;
-  bool get termsAccepted => _termsAccepted;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -23,12 +19,7 @@ class SignUpViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setTermsAccepted(bool value) {
-    _termsAccepted = value;
-    notifyListeners();
-  }
-
-  Future<bool> signup() async {
+  Future<bool> signIn() async {
     if (!_validateInputs()) {
       return false;
     }
@@ -38,31 +29,28 @@ class SignUpViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      var user = {
-        'phone_number': phoneController.text,
-        'name': nameController.text,
-        'password': passwordController.text
-      };
+      // add authentication logic here
+      final response = await Supabase.instance.client
+          .from('user')
+          .select()
+          .eq('phone_number', phoneController.text)
+          .eq('password', passwordController.text)
+          .single();
 
-      await Supabase.instance.client.from('user').insert(user);
       _isLoading = false;
       notifyListeners();
+
+      // If we get here: authentication was successful
       return true;
     } catch (e) {
       _isLoading = false;
-      _errorMessage = 'Registration failed';
+      _errorMessage = 'Authentication failed';
       notifyListeners();
       return false;
     }
   }
 
   bool _validateInputs() {
-    if (nameController.text.isEmpty) {
-      _errorMessage = 'Please enter your name';
-      notifyListeners();
-      return false;
-    }
-
     if (phoneController.text.isEmpty) {
       _errorMessage = 'Please enter your phone number';
       notifyListeners();
@@ -70,13 +58,7 @@ class SignUpViewModel extends ChangeNotifier {
     }
 
     if (passwordController.text.isEmpty) {
-      _errorMessage = 'Please enter a password';
-      notifyListeners();
-      return false;
-    }
-
-    if (!_termsAccepted) {
-      _errorMessage = 'Please accept the terms of service';
+      _errorMessage = 'Please enter your password';
       notifyListeners();
       return false;
     }
@@ -86,7 +68,6 @@ class SignUpViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    nameController.dispose();
     phoneController.dispose();
     passwordController.dispose();
     super.dispose();
