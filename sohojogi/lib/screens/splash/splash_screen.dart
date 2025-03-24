@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sohojogi/screens/authentication/views/signin_view.dart';
 
-import '../home/views/home_list_view.dart';
-
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Detect the current brightness (light or dark mode)
-    final brightness = MediaQuery.of(context).platformBrightness;
-    final isDarkMode = brightness == Brightness.dark;
+
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     return AnimatedSplashScreen(
       splash: Center(
@@ -25,10 +23,9 @@ class SplashScreen extends StatelessWidget {
           ),
         ),
       ),
-      nextScreen: SignInView(),
+      nextScreen: const SignInView(),
       splashIconSize: 400,
-      // Set the background color based on the brightness
-      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      backgroundColor: backgroundColor,
       duration: 2000,
     );
   }

@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sohojogi/screens/authentication/view_model/signin_view_model.dart';
 import 'package:sohojogi/screens/authentication/views/signup_view.dart';
+import 'package:sohojogi/screens/authentication/widgets/signin_input.dart';
+import 'package:sohojogi/screens/home/views/home_list_view.dart';
 
 class SignInView extends StatelessWidget {
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final ValueNotifier<bool> obscurePassword = ValueNotifier<bool>(true);
-
-  SignInView({Key? key}) : super(key: key);
+  const SignInView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => SignInViewModel(),
+      child: const SignInViewContent(),
+    );
+  }
+}
+
+class SignInViewContent extends StatelessWidget {
+  const SignInViewContent({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = Provider.of<SignInViewModel>(context);
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -19,110 +34,77 @@ class SignInView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 80),
-              const Text(
+              Text(
                 'Sign In',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFFFC700),
+                style: theme.textTheme.headlineLarge?.copyWith(
+                  color: theme.primaryColor,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Welcome to SOHOJOGI\nPlease sign in to continue',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
+                style: theme.textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
-              Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5F7FA),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: TextField(
-                  controller: phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    hintText: 'Phone Number',
-                    hintStyle: TextStyle(color: Colors.grey),
-                    border: InputBorder.none,
-                  ),
-                ),
+              buildTextField(
+                controller: viewModel.phoneController,
+                hintText: 'Phone Number',
+                keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 16),
-              ValueListenableBuilder<bool>(
-                valueListenable: obscurePassword,
-                builder: (_, obscure, __) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5F7FA),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: passwordController,
-                            obscureText: obscure,
-                            decoration: const InputDecoration(
-                              hintText: 'Password',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                            color: Colors.grey,
-                          ),
-                          onPressed: () => obscurePassword.value = !obscure,
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+              buildPasswordField(viewModel),
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
                     // Navigate to forgot password
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => ForgotPasswordView()),
-                    // );
                   },
-                  child: const Text(
+                  child: Text(
                     'Forget Password?',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                    style: theme.textTheme.bodyMedium
                   ),
                 ),
               ),
               const SizedBox(height: 16),
+              if (viewModel.errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(
+                    viewModel.errorMessage!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.red,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ElevatedButton(
-                onPressed: () {
-                  // Handle sign in logic
+                onPressed: viewModel.isLoading
+                    ? null
+                    : () async {
+                  final success = await viewModel.signIn();
+                  if (success && context.mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFC700),
+                  backgroundColor: theme.primaryColor,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
+                child: viewModel.isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(
                   'Log In',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                  style: theme.textTheme.labelLarge?.copyWith(
                     color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -130,22 +112,21 @@ class SignInView extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'Don\'t have account?',
-                    style: TextStyle(color: Colors.black87),
+                    style: theme.textTheme.bodyMedium,
                   ),
                   TextButton(
                     onPressed: () {
-                      // Navigate to sign up
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SignUpView()),
+                        MaterialPageRoute(builder: (context) => const SignUpView()),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       'Sign Up',
-                      style: TextStyle(
-                        color: Color(0xFFFFC700),
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.primaryColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
