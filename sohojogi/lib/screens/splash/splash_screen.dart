@@ -9,17 +9,25 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Detect the current brightness (light or dark mode)
+    final brightness = MediaQuery.of(context).platformBrightness;
+    final isDarkMode = brightness == Brightness.dark;
+
     return AnimatedSplashScreen(
       splash: Center(
         child: SizedBox(
           width: 125,
           height: 125,
-          child: LottieBuilder.asset('assets/lottie/splash.json'),
+          // Load different assets based on the brightness
+          child: LottieBuilder.asset(
+            isDarkMode ? 'assets/lottie/splash_dark.json' : 'assets/lottie/splash.json',
+          ),
         ),
       ),
       nextScreen: const HomeScreen(),
       splashIconSize: 400,
-      backgroundColor: Colors.white,
+      // Set the background color based on the brightness
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
       duration: 2000,
     );
   }
