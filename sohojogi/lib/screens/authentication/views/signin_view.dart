@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sohojogi/screens/authentication/view_model/signin_view_model.dart';
+import 'package:sohojogi/screens/authentication/views/forgot_password_view.dart';
 import 'package:sohojogi/screens/authentication/views/signup_view.dart';
 import 'package:sohojogi/screens/authentication/widgets/signin_input.dart';
 import 'package:sohojogi/screens/home/views/home_list_view.dart';
@@ -59,11 +60,14 @@ class SignInViewContent extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
-                    // Navigate to forgot password
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ForgotPasswordView()),
+                    );
                   },
                   child: Text(
-                    'Forget Password?',
-                    style: theme.textTheme.bodyMedium
+                      'Forget Password?',
+                      style: theme.textTheme.bodyMedium
                   ),
                 ),
               ),
@@ -113,7 +117,7 @@ class SignInViewContent extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Don\'t have account?',
+                    'Don\'t have an account?',
                     style: theme.textTheme.bodyMedium,
                   ),
                   TextButton(
