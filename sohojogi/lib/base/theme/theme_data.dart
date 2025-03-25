@@ -13,15 +13,15 @@ ThemeData darkTheme = ThemeData(
     secondary: secondaryColor,
     surface: Colors.white,
     // Ensure text is legible on dark surfaces
-    onPrimary: Colors.white,
-    onSecondary: Colors.white,
-    onSurface: Colors.white,
+    onPrimary: lightColor,
+    onSecondary: lightColor,
+    onSurface: lightColor,
   ),
 
   // AppBar theme for dark mode
   appBarTheme: AppBarTheme(
     backgroundColor: darkColor,
-    foregroundColor: Colors.white,
+    foregroundColor: lightColor,
   ),
 
   // Text theme configuration remains consistent
@@ -48,23 +48,23 @@ ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: primaryColor,
   hintColor: secondaryColor,
-  scaffoldBackgroundColor: Colors.white, // Set background to white
+  scaffoldBackgroundColor: lightColor, // Set background to white
 
   // Configure color scheme for light mode
   colorScheme: ColorScheme.light(
     primary: primaryColor,
     secondary: secondaryColor,
-    surface: Colors.white, // Set surface to white
+    surface: lightColor, // Set surface to white
     // Ensure text is legible on light surfaces
-    onPrimary: Colors.white,
-    onSecondary: Colors.white,
-    onSurface: Colors.black, // Set elements to black
+    onPrimary: lightColor,
+    onSecondary: lightColor,
+    onSurface: darkColor, // Set elements to black
   ),
 
   // AppBar theme to maintain consistency
   appBarTheme: AppBarTheme(
-    backgroundColor: primaryColor,
-    foregroundColor: Colors.black,
+    backgroundColor: lightColor,
+    foregroundColor: darkColor,
   ),
 
   // Text theme configuration
