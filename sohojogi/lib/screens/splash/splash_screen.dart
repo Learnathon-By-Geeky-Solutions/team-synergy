@@ -4,16 +4,14 @@ import 'package:lottie/lottie.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/authentication/views/signin_view.dart';
 
-import '../home/views/home_list_view.dart';
-
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Detect the current brightness (light or dark mode)
-    final brightness = MediaQuery.of(context).platformBrightness;
-    final isDarkMode = brightness == Brightness.dark;
+
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     return AnimatedSplashScreen(
       splash: Center(

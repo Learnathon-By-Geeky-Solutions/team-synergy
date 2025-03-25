@@ -3,15 +3,15 @@ import 'package:sohojogi/constants/colors.dart';
 
 ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
-  primaryColor: darkColor,
+  primaryColor: primaryColor,
   hintColor: secondaryColor,
   scaffoldBackgroundColor: grayColor,
 
   // Configure color scheme for dark mode
   colorScheme: ColorScheme.dark(
-    primary: darkColor,
+    primary: primaryColor,
     secondary: secondaryColor,
-    surface: grayColor,
+    surface: Colors.white,
     // Ensure text is legible on dark surfaces
     onPrimary: lightColor,
     onSecondary: lightColor,
