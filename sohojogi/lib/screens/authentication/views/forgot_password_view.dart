@@ -4,7 +4,7 @@ import 'package:sohojogi/screens/authentication/views/otp_verification_view.dart
 import 'package:provider/provider.dart';
 
 class ForgotPasswordView extends StatelessWidget {
-  const ForgotPasswordView({Key? key}) : super(key: key);
+  const ForgotPasswordView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class ForgotPasswordView extends StatelessWidget {
 }
 
 class _ForgotPasswordViewContent extends StatelessWidget {
-  const _ForgotPasswordViewContent({Key? key}) : super(key: key);
+  const _ForgotPasswordViewContent({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +60,7 @@ class _ForgotPasswordViewContent extends StatelessWidget {
                   controller: viewModel.phoneController,
                   keyboardType: TextInputType.phone,
                   style: const TextStyle(color: Colors.black),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Phone Number',
                     hintStyle: const TextStyle(color: Colors.grey),
                     border: InputBorder.none,

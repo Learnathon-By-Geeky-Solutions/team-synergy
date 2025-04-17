@@ -1,9 +1,9 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
-  final SupabaseClient _supabase;
-  AuthService({SupabaseClient? supabase})
-    : _supabase = supabase ?? Supabase.instance.client;
+  // final SupabaseClient _supabase;
+  // AuthService({SupabaseClient? supabase})
+  //   : _supabase = supabase ?? Supabase.instance.client;
 
 
   Future<bool> sendOTP(String phoneNumber) async {
