@@ -29,7 +29,7 @@ class SignInViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // add authentication logic here
+      // Check if the user exists in the database
       final response = await Supabase.instance.client
           .from('user')
           .select()
@@ -39,8 +39,6 @@ class SignInViewModel extends ChangeNotifier {
 
       _isLoading = false;
       notifyListeners();
-
-      // If we get here: authentication was successful
       return true;
     } catch (e) {
       _isLoading = false;
