@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
-import 'package:sohojogi/screens/authentication/view_model/signup_view_model.dart';
 
 Widget buildTextField({
   required TextEditingController controller,
@@ -26,7 +25,11 @@ Widget buildTextField({
   );
 }
 
-Widget buildPasswordField(SignUpViewModel viewModel) {
+Widget buildPasswordField({
+  required TextEditingController controller,
+  required bool obscurePassword,
+  required VoidCallback toggleVisibility,
+}) {
   return Container(
     decoration: BoxDecoration(
       color: const Color(0xFFF5F7FA),
@@ -36,8 +39,8 @@ Widget buildPasswordField(SignUpViewModel viewModel) {
       children: [
         Expanded(
           child: TextField(
-            controller: viewModel.passwordController,
-            obscureText: viewModel.obscurePassword,
+            controller: controller,
+            obscureText: obscurePassword,
             style: const TextStyle(color: Colors.black),
             decoration: const InputDecoration(
               hintText: 'Password',
@@ -49,26 +52,30 @@ Widget buildPasswordField(SignUpViewModel viewModel) {
         ),
         IconButton(
           icon: Icon(
-            viewModel.obscurePassword
+            obscurePassword
                 ? Icons.visibility_off_outlined
                 : Icons.visibility_outlined,
             color: grayColor,
           ),
-          onPressed: viewModel.togglePasswordVisibility,
+          onPressed: toggleVisibility,
         ),
       ],
     ),
   );
 }
 
-Widget buildTermsAcceptance(SignUpViewModel viewModel, ThemeData theme) {
+Widget buildTermsAcceptance({
+  required bool termsAccepted,
+  required Function(bool) setTermsAccepted,
+  required ThemeData theme,
+}) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Checkbox(
-        value: viewModel.termsAccepted,
+        value: termsAccepted,
         activeColor: theme.primaryColor,
-        onChanged: (value) => viewModel.setTermsAccepted(value ?? false),
+        onChanged: (value) => setTermsAccepted(value ?? false),
       ),
       Expanded(
         child: Padding(
@@ -120,5 +127,82 @@ Widget buildTermsAcceptance(SignUpViewModel viewModel, ThemeData theme) {
         ),
       ),
     ],
+  );
+}
+
+Widget buildAuthButton({
+  required bool isLoading,
+  required VoidCallback onPressed,
+  required String text,
+  required ThemeData theme,
+}) {
+  return ElevatedButton(
+    onPressed: isLoading ? null : onPressed,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: theme.primaryColor,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    ),
+    child: isLoading
+        ? const CircularProgressIndicator(color: Colors.white)
+        : Text(
+      text,
+      style: theme.textTheme.labelLarge?.copyWith(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+}
+
+// Common heading for auth screens
+Widget buildAuthHeader({
+  required String title,
+  required String subtitle,
+  required ThemeData theme,
+}) {
+  return Column(
+    children: [
+      Text(
+        title,
+        style: theme.textTheme.headlineLarge?.copyWith(
+          color: theme.primaryColor,
+        ),
+        textAlign: TextAlign.center,
+      ),
+      const SizedBox(height: 8),
+      Text(
+        subtitle,
+        style: theme.textTheme.bodyMedium,
+        textAlign: TextAlign.center,
+      ),
+    ],
+  );
+}
+
+// Progress indicator for multi-step flows
+Widget buildProgressIndicator({
+  required int currentStep,
+  required int totalSteps,
+  required ThemeData theme,
+}) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: List.generate(totalSteps, (index) {
+      return Row(
+        children: [
+          Container(
+            height: 4,
+            width: 20,
+            color: index == currentStep - 1
+                ? theme.primaryColor
+                : Colors.grey.shade300,
+          ),
+          if (index < totalSteps - 1) const SizedBox(width: 4),
+        ],
+      );
+    }),
   );
 }

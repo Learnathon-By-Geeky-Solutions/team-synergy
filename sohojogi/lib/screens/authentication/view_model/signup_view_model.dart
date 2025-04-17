@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sohojogi/screens/authentication/view_model/base_auth_view_model.dart';
 
-class SignUpViewModel extends ChangeNotifier {
+class SignUpViewModel extends BaseAuthViewModel {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -11,12 +12,6 @@ class SignUpViewModel extends ChangeNotifier {
 
   bool _termsAccepted = false;
   bool get termsAccepted => _termsAccepted;
-
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
 
   void togglePasswordVisibility() {
     _obscurePassword = !_obscurePassword;
@@ -33,9 +28,8 @@ class SignUpViewModel extends ChangeNotifier {
       return false;
     }
 
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    setLoading(true);
+    setErrorMessage(null);
 
     try {
       var user = {
@@ -45,39 +39,30 @@ class SignUpViewModel extends ChangeNotifier {
       };
 
       await Supabase.instance.client.from('user').insert(user);
-      _isLoading = false;
-      notifyListeners();
+      setLoading(false);
       return true;
     } catch (e) {
-      _isLoading = false;
-      _errorMessage = 'Registration failed';
-      notifyListeners();
+      setLoading(false);
+      setErrorMessage('Registration failed');
       return false;
     }
   }
 
   bool _validateInputs() {
-    if (nameController.text.isEmpty) {
-      _errorMessage = 'Please enter your name';
-      notifyListeners();
+    if (!validateField(nameController.text, 'name')) {
       return false;
     }
 
-    if (phoneController.text.isEmpty) {
-      _errorMessage = 'Please enter your phone number';
-      notifyListeners();
+    if (!validateField(phoneController.text, 'phone number')) {
       return false;
     }
 
-    if (passwordController.text.isEmpty) {
-      _errorMessage = 'Please enter a password';
-      notifyListeners();
+    if (!validateField(passwordController.text, 'password')) {
       return false;
     }
 
     if (!_termsAccepted) {
-      _errorMessage = 'Please accept the terms of service';
-      notifyListeners();
+      setErrorMessage('Please accept the terms of service');
       return false;
     }
 

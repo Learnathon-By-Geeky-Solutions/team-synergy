@@ -1,59 +1,46 @@
-import 'package:flutter/material.dart';
 import 'package:sohojogi/base/services/auth_service.dart';
+import 'package:sohojogi/screens/authentication/view_model/base_auth_view_model.dart';
 
-class OTPVerificationViewModel extends ChangeNotifier {
+class OTPVerificationViewModel extends BaseAuthViewModel {
   final AuthService _authService = AuthService();
 
-  String phoneNumber = ''; // Will be set from previous screen
+  String phoneNumber = '';
   String otpCode = '';
-
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
 
   Future<bool> verifyOTP() async {
     if (otpCode.isEmpty || otpCode.length < 6) {
-      _errorMessage = 'Please enter a valid OTP';
-      notifyListeners();
+      setErrorMessage('Please enter a valid OTP');
       return false;
     }
 
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    setLoading(true);
+    setErrorMessage(null);
 
     try {
       final success = await _authService.verifyOTP(
         phoneNumber: phoneNumber,
         otp: otpCode,
       );
-      _isLoading = false;
-      notifyListeners();
+      setLoading(false);
       return success;
     } catch (e) {
-      _isLoading = false;
-      _errorMessage = 'Invalid OTP';
-      notifyListeners();
+      setLoading(false);
+      setErrorMessage('Invalid OTP');
       return false;
     }
   }
 
   Future<void> resendOTP() async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    setLoading(true);
+    setErrorMessage(null);
 
     try {
       await _authService.sendOTP(phoneNumber);
-      _isLoading = false;
-      _errorMessage = 'OTP resent successfully';
-      notifyListeners();
+      setLoading(false);
+      setErrorMessage('OTP resent successfully');
     } catch (e) {
-      _isLoading = false;
-      _errorMessage = 'Failed to resend OTP';
-      notifyListeners();
+      setLoading(false);
+      setErrorMessage('Failed to resend OTP');
     }
   }
 }
