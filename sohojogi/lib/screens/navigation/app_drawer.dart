@@ -61,30 +61,30 @@ class AppDrawer extends StatelessWidget {
                 ],
               ),
             ),
-            _buildTitleSection(context, 'Account', [
-              _buildMenuItem(context, 'Business Profile'),
-              _buildMenuItem(context, 'Payment Methods'),
-              _buildMenuItem(context, 'Saved Address'),
-              _buildMenuItem(context, 'Bookmark'),
-              _buildMenuItem(context, 'Membership'),
+            _buildSection(context, 'Account', [
+              'Business Profile',
+              'Payment Methods',
+              'Saved Address',
+              'Bookmark',
+              'Membership',
             ], isDarkMode),
             Divider(color: isDarkMode ? lightColor : lightGrayColor),
-            _buildTitleSection(context, 'Offers', [
-              _buildMenuItem(context, 'Offers & Promos'),
-              _buildMenuItem(context, 'Refer & Discount'),
+            _buildSection(context, 'Offers', [
+              'Offers & Promos',
+              'Refer & Discount',
             ], isDarkMode),
             Divider(color: isDarkMode ? lightColor : lightGrayColor),
-            _buildTitleSection(context, 'Settings', [
-              _buildMenuItem(context, 'Theme'),
-              _buildMenuItem(context, 'Language'),
-              _buildMenuItem(context, 'Account Security'),
-              _buildMenuItem(context, 'Terms & Privacy'),
-              _buildMenuItem(context, 'Permissions'),
+            _buildSection(context, 'Settings', [
+              'Theme',
+              'Language',
+              'Account Security',
+              'Terms & Privacy',
+              'Permissions',
             ], isDarkMode),
             Divider(color: isDarkMode ? lightColor : lightGrayColor),
-            _buildTitleSection(context, 'More', [
-              _buildMenuItem(context, 'Help Center'),
-              _buildMenuItem(context, 'Log Out'),
+            _buildSection(context, 'More', [
+              'Help Center',
+              'Log Out',
             ], isDarkMode),
           ],
         ),
@@ -92,7 +92,7 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildTitleSection(BuildContext context, String title, List<Widget> items, bool isDarkMode) {
+  Widget _buildSection(BuildContext context, String title, List<String> items, bool isDarkMode) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -105,17 +105,13 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
         ),
-        ...items,
+        ...items.map((item) => ListTile(
+          title: Text(item, style: Theme.of(context).textTheme.bodyMedium),
+          onTap: () {
+            // Handle menu item tap
+          },
+        )),
       ],
-    );
-  }
-
-  Widget _buildMenuItem(BuildContext context, String title) {
-    return ListTile(
-      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
-      onTap: () {
-        // Handle menu item tap
-      },
     );
   }
 }
