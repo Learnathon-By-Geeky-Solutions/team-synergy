@@ -7,7 +7,7 @@ import 'package:sohojogi/screens/authentication/widgets/signin_input.dart';
 import 'package:sohojogi/screens/home/views/home_list_view.dart';
 
 class SignInView extends StatelessWidget {
-  const SignInView({Key? key}) : super(key: key);
+  const SignInView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class SignInView extends StatelessWidget {
 }
 
 class SignInViewContent extends StatelessWidget {
-  const SignInViewContent({Key? key}) : super(key: key);
+  const SignInViewContent({super.key});
 
   @override
   Widget build(BuildContext context) {

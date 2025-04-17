@@ -4,7 +4,7 @@ import 'package:sohojogi/screens/authentication/view_model/reset_password_view_m
 import 'package:sohojogi/screens/authentication/views/success_view.dart';
 
 class ResetPasswordView extends StatelessWidget {
-  const ResetPasswordView({Key? key}) : super(key: key);
+  const ResetPasswordView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class ResetPasswordView extends StatelessWidget {
 }
 
 class _ResetPasswordViewContent extends StatelessWidget {
-  const _ResetPasswordViewContent({Key? key}) : super(key: key);
+  const _ResetPasswordViewContent({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -5,7 +5,7 @@ import 'package:sohojogi/screens/authentication/view_model/otp_verification_view
 import 'package:sohojogi/screens/authentication/views/reset_password_view.dart';
 
 class OTPVerificationView extends StatelessWidget {
-  const OTPVerificationView({Key? key}) : super(key: key);
+  const OTPVerificationView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class OTPVerificationView extends StatelessWidget {
 }
 
 class _OTPVerificationViewContent extends StatelessWidget {
-  const _OTPVerificationViewContent({Key? key}) : super(key: key);
+  const _OTPVerificationViewContent({super.key});
 
   @override
   Widget build(BuildContext context) {

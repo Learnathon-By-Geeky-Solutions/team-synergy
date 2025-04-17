@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/base/theme/theme_data.dart';
 import 'package:sohojogi/constants/keys.dart';
-import 'package:sohojogi/screens/authentication/views/forgot_password_view.dart';
 import 'package:sohojogi/screens/splash/splash_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

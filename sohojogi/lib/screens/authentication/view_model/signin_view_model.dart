@@ -30,7 +30,7 @@ class SignInViewModel extends ChangeNotifier {
 
     try {
       // Check if the user exists in the database
-      final response = await Supabase.instance.client
+      await Supabase.instance.client
           .from('user')
           .select()
           .eq('phone_number', phoneController.text)
