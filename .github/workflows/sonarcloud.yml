@@ -33,13 +33,15 @@ jobs:
           cd sohojogi
           flutter pub get
 
-      # - name: Run tests with coverage
-      #   run: |
-      #     cd sohojogi
-      #     flutter test --coverage
+      - name: Run tests with coverage
+        run: |
+          cd sohojogi
+          flutter test --coverage
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: sohojogi
           args: >
@@ -50,6 +52,6 @@ jobs:
             -Dsonar.verbose=true
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.sources=lib
+            -Dsonar.tests=test
+            -Dsonar.test.inclusions=test/**/*_test.dart
             -Dsonar.exclusions=**/*.g.dart,**/*.freezed.dart,**/generated/**,**/__generated__/**,**/mocks.dart,**/*.css
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

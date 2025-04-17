@@ -28,7 +28,7 @@ class AppNavBarState extends State<AppNavBar> {
   Widget build(BuildContext context) {
     final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
-    Color _getUnselectedColor() {
+    Color getUnselectedColor() {
       return isDarkMode ? lightColor : primaryColor;
     }
 
@@ -40,7 +40,7 @@ class AppNavBarState extends State<AppNavBar> {
             Icon(
               _selectedIndex == index ? _selectedIconData[index] : _iconData[index],
               size: 30,
-              color: _selectedIndex == index ? lightColor : _getUnselectedColor(),
+              color: _selectedIndex == index ? lightColor : getUnselectedColor(),
             ),
           ],
         );
