@@ -6,10 +6,10 @@ class AppNavBar extends StatefulWidget {
   const AppNavBar({super.key});
 
   @override
-  _AppNavBarState createState() => _AppNavBarState();
+  AppNavBarState createState() => AppNavBarState();
 }
 
-class _AppNavBarState extends State<AppNavBar> {
+class AppNavBarState extends State<AppNavBar> {
   int _selectedIndex = 1; // Set the default selected index to 1 (Home)
 
   final List<IconData> _iconData = [
