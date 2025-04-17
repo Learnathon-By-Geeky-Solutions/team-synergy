@@ -30,9 +30,11 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+        working-directory: sohojogi
 
       - name: Run tests with coverage
         run: flutter test --coverage
+        working-directory: sohojogi
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
@@ -50,5 +52,4 @@ jobs:
             -Dsonar.tests=test
             -Dsonar.test.inclusions=test/features/**/*_test.dart
             -Dsonar.exclusions=**/*.g.dart,**/*.freezed.dart,**/generated/**,**/__generated__/**,**/mocks.dart,**/*.css
-        
-      
+        working-directory: sohojogi
