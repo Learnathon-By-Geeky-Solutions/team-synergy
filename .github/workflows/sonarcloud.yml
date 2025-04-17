@@ -29,21 +29,24 @@ jobs:
           cache: true
 
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          cd sohojogi
+          flutter pub get
 
       - name: Run tests with coverage
         run: |
+          cd sohojogi
           flutter test --coverage
-          genhtml coverage/lcov.info -o coverage/html # Optional: Generate HTML report for local debugging
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
+          projectBaseDir: sohojogi
           args: >
             -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.projectKey=Learnathon-By-Geeky-Solutions_ode-to-code
+            -Dsonar.projectKey=Learnathon-By-Geeky-Solutions_team-synergy
             -Dsonar.organization=learnathon-by-geeky-solutions
             -Dsonar.java.version=17
             -Dsonar.verbose=true
