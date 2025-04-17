@@ -30,12 +30,12 @@
   </a>
 </p>
 <br>
-<p>
+
   [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=Learnathon-By-Geeky-Solutions_team-synergy&metric=alert_status&style=for-the-badge)](https://sonarcloud.io/dashboard?id=Learnathon-By-Geeky-Solutions_team-synergy)
   [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Learnathon-By-Geeky-Solutions_team-synergy&metric=vulnerabilities)](https://sonarcloud.io/component_measures/domain/Vulnerability?id=Learnathon-By-Geeky-Solutions_team-synergy)
   [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Learnathon-By-Geeky-Solutions_team-synergy&metric=bugs)](https://sonarcloud.io/component_measures/domain/Bugs?id=LLearnathon-By-Geeky-Solutions_team-synergy)
   [![Security](https://sonarcloud.io/api/project_badges/measure?project=Learnathon-By-Geeky-Solutions_team-synergy&metric=security_rating)](https://sonarcloud.io/component_measures/domain/Security?id=LLearnathon-By-Geeky-Solutions_team-synergy)
-</p>
+
    
 <h4>
     <a href="https://github.com/Learnathon-By-Geeky-Solutions/team-synergy">Documentation</a>
