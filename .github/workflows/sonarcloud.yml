@@ -40,9 +40,8 @@ jobs:
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
+          projectBaseDir: sohojogi
           args: >
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.projectKey=Learnathon-By-Geeky-Solutions_team-synergy
@@ -54,5 +53,5 @@ jobs:
             -Dsonar.tests=test
             -Dsonar.test.inclusions=test/features/**/*_test.dart
             -Dsonar.exclusions=**/*.g.dart,**/*.freezed.dart,**/generated/**,**/__generated__/**,**/mocks.dart,**/*.css
-        run: |
-          cd sohojogi
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
