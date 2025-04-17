@@ -1,23 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/base/services/auth_service.dart';
+import 'package:sohojogi/screens/authentication/view_model/base_auth_view_model.dart';
 
-class ResetPasswordViewModel extends ChangeNotifier {
+class ResetPasswordViewModel extends BaseAuthViewModel {
   final AuthService _authService = AuthService();
 
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
-
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
 
   bool _obscureNewPassword = true;
   bool get obscureNewPassword => _obscureNewPassword;
 
   bool _obscureConfirmPassword = true;
   bool get obscureConfirmPassword => _obscureConfirmPassword;
-
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
 
   void toggleNewPasswordVisibility() {
     _obscureNewPassword = !_obscureNewPassword;
@@ -31,39 +26,33 @@ class ResetPasswordViewModel extends ChangeNotifier {
 
   Future<bool> resetPassword() async {
     if (newPasswordController.text.isEmpty) {
-      _errorMessage = 'Please enter a new password';
-      notifyListeners();
+      setErrorMessage('Please enter a new password');
       return false;
     }
 
     if (newPasswordController.text.length < 8) {
-      _errorMessage = 'Password must be at least 8 characters long';
-      notifyListeners();
+      setErrorMessage('Password must be at least 8 characters long');
       return false;
     }
 
     if (newPasswordController.text != confirmPasswordController.text) {
-      _errorMessage = 'Passwords do not match';
-      notifyListeners();
+      setErrorMessage('Passwords do not match');
       return false;
     }
 
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    setLoading(true);
+    setErrorMessage(null);
 
     try {
       final success = await _authService.resetPassword(
         phoneNumber: '',
         newPassword: newPasswordController.text,
       );
-      _isLoading = false;
-      notifyListeners();
+      setLoading(false);
       return success;
     } catch (e) {
-      _isLoading = false;
-      _errorMessage = 'Failed to reset password';
-      notifyListeners();
+      setLoading(false);
+      setErrorMessage('Failed to reset password');
       return false;
     }
   }

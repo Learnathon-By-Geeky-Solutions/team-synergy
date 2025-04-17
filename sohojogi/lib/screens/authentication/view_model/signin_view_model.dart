@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sohojogi/screens/authentication/view_model/base_auth_view_model.dart';
 
-class SignInViewModel extends ChangeNotifier {
+class SignInViewModel extends BaseAuthViewModel {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   bool _obscurePassword = true;
   bool get obscurePassword => _obscurePassword;
-
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
 
   void togglePasswordVisibility() {
     _obscurePassword = !_obscurePassword;
@@ -24,12 +19,11 @@ class SignInViewModel extends ChangeNotifier {
       return false;
     }
 
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    setLoading(true);
+    setErrorMessage(null);
 
     try {
-      // Check if the user exists in the database
+      // Check if user exists in the database
       await Supabase.instance.client
           .from('user')
           .select()
@@ -37,27 +31,21 @@ class SignInViewModel extends ChangeNotifier {
           .eq('password', passwordController.text)
           .single();
 
-      _isLoading = false;
-      notifyListeners();
+      setLoading(false);
       return true;
     } catch (e) {
-      _isLoading = false;
-      _errorMessage = 'Authentication failed';
-      notifyListeners();
+      setLoading(false);
+      setErrorMessage('Authentication failed');
       return false;
     }
   }
 
   bool _validateInputs() {
-    if (phoneController.text.isEmpty) {
-      _errorMessage = 'Please enter your phone number';
-      notifyListeners();
+    if (!validateField(phoneController.text, 'phone number')) {
       return false;
     }
 
-    if (passwordController.text.isEmpty) {
-      _errorMessage = 'Please enter your password';
-      notifyListeners();
+    if (!validateField(passwordController.text, 'password')) {
       return false;
     }
 
