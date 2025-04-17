@@ -53,9 +53,8 @@ class ResetPasswordViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // You'll need to pass the phone number from previous screens
       final success = await _authService.resetPassword(
-        phoneNumber: '', // Pass the phone number here
+        phoneNumber: '',
         newPassword: newPasswordController.text,
       );
       _isLoading = false;
