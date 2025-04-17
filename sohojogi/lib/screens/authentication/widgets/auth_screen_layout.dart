@@ -12,7 +12,7 @@ class AuthScreenLayout extends StatelessWidget {
   final VoidCallback? onBackPressed;
 
   const AuthScreenLayout({
-    Key? key,
+    super.key,
     required this.title,
     required this.subtitle,
     required this.children,
@@ -21,7 +21,7 @@ class AuthScreenLayout extends StatelessWidget {
     this.totalSteps,
     this.showBackButton = false,
     this.onBackPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
