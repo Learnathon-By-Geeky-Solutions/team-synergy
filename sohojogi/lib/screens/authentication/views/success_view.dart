@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sohojogi/screens/authentication/views/signin_view.dart';
 
 class SuccessView extends StatelessWidget {
-  const SuccessView({Key? key}) : super(key: key);
+  const SuccessView({super.key});
 
   @override
   Widget build(BuildContext context) {

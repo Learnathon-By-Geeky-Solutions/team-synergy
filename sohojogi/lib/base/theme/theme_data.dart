@@ -8,7 +8,7 @@ ThemeData darkTheme = ThemeData(
   scaffoldBackgroundColor: grayColor,
 
   // Configure color scheme for dark mode
-  colorScheme: ColorScheme.dark(
+  colorScheme: const ColorScheme.dark(
     primary: primaryColor,
     secondary: secondaryColor,
     surface: Colors.white,
@@ -19,7 +19,7 @@ ThemeData darkTheme = ThemeData(
   ),
 
   // AppBar theme for dark mode
-  appBarTheme: AppBarTheme(
+  appBarTheme: const AppBarTheme(
     backgroundColor: darkColor,
     foregroundColor: lightColor,
   ),
@@ -51,7 +51,7 @@ ThemeData lightTheme = ThemeData(
   scaffoldBackgroundColor: lightColor, // Set background to white
 
   // Configure color scheme for light mode
-  colorScheme: ColorScheme.light(
+  colorScheme: const ColorScheme.light(
     primary: primaryColor,
     secondary: secondaryColor,
     surface: lightColor, // Set surface to white
@@ -62,7 +62,7 @@ ThemeData lightTheme = ThemeData(
   ),
 
   // AppBar theme to maintain consistency
-  appBarTheme: AppBarTheme(
+  appBarTheme: const AppBarTheme(
     backgroundColor: lightColor,
     foregroundColor: darkColor,
   ),
