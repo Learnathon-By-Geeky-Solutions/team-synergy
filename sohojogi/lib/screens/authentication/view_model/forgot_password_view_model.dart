@@ -1,37 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/base/services/auth_service.dart';
+import 'package:sohojogi/screens/authentication/view_model/base_auth_view_model.dart';
 
-class ForgotPasswordViewModel extends ChangeNotifier {
+class ForgotPasswordViewModel extends BaseAuthViewModel {
   final AuthService _authService = AuthService();
-
   final TextEditingController phoneController = TextEditingController();
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
-
   Future<bool> sendOTP() async {
-    if (phoneController.text.isEmpty) {
-      _errorMessage = 'Please enter your phone number';
-      notifyListeners();
+    if (!validateField(phoneController.text, 'phone number')) {
       return false;
     }
 
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    setLoading(true);
+    setErrorMessage(null);
 
     try {
       final success = await _authService.sendOTP(phoneController.text);
-      _isLoading = false;
-      notifyListeners();
+      setLoading(false);
       return success;
     } catch (e) {
-      _isLoading = false;
-      _errorMessage = 'Failed to send OTP';
-      notifyListeners();
+      setLoading(false);
+      setErrorMessage('Failed to send OTP');
       return false;
     }
   }
