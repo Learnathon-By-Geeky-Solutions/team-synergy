@@ -9,13 +9,13 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      appBar: const AppAppBar(),
-      body: const Center(
+      appBar: AppAppBar(),
+      body:  Center(
         child: Text('Home Screen'),
       ),
       backgroundColor: Colors.grey,
-      bottomNavigationBar: const AppNavBar(),
-      endDrawer: const AppDrawer(),
+      bottomNavigationBar:  AppNavBar(),
+      endDrawer:  AppDrawer(),
     );
   }
 }
