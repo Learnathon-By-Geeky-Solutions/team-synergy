@@ -26,7 +26,7 @@
     <img src="https://img.shields.io/github/issues/Learnathon-By-Geeky-Solutions/team-synergy" alt="open issues" />
   </a>
   <a href="https://github.com/Learnathon-By-Geeky-Solutions/team-synergy/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/Learnathon-By-Geeky-Solutions/team-synergy.svg" alt="license" />
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="license" />
   </a>
 </p>
    
