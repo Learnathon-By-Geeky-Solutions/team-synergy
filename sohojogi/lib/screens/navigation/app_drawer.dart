@@ -20,7 +20,7 @@ class AppDrawer extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 30,
                     backgroundImage: AssetImage('assets/images/user_image.png'), // Replace with actual user image
                   ),

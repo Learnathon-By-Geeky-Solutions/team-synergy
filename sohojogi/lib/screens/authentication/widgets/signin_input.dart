@@ -16,7 +16,7 @@ Widget buildTextField({
     child: TextField(
       controller: controller,
       keyboardType: keyboardType,
-      style: TextStyle(color: Colors.black),
+      style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: const TextStyle(color: grayColor),
@@ -38,7 +38,7 @@ Widget buildPasswordField(SignInViewModel viewModel) {
           child: TextField(
             controller: viewModel.passwordController,
             obscureText: viewModel.obscurePassword,
-            style: TextStyle(color: Colors.black),
+            style: const TextStyle(color: Colors.black),
             decoration: const InputDecoration(
               hintText: 'Password',
               hintStyle: TextStyle(color: grayColor),
