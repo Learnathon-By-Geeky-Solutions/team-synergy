@@ -28,6 +28,10 @@ class AppNavBarState extends State<AppNavBar> {
   Widget build(BuildContext context) {
     final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
+    Color _getUnselectedColor() {
+      return isDarkMode ? lightColor : primaryColor;
+    }
+
     return CurvedNavigationBar(
       items: List<Widget>.generate(_iconData.length, (index) {
         return Column(
@@ -36,9 +40,7 @@ class AppNavBarState extends State<AppNavBar> {
             Icon(
               _selectedIndex == index ? _selectedIconData[index] : _iconData[index],
               size: 30,
-              color: _selectedIndex == index
-                  ? lightColor
-                  : (isDarkMode ? lightColor : primaryColor),
+              color: _selectedIndex == index ? lightColor : _getUnselectedColor(),
             ),
           ],
         );

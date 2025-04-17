@@ -62,9 +62,9 @@ class _ForgotPasswordViewContent extends StatelessWidget {
                   style: const TextStyle(color: Colors.black),
                   decoration: const InputDecoration(
                     hintText: 'Phone Number',
-                    hintStyle: const TextStyle(color: Colors.grey),
+                    hintStyle: TextStyle(color: Colors.grey),
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   ),
                 ),
               ),

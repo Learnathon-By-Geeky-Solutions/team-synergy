@@ -16,7 +16,7 @@ Widget buildTextField({
     child: TextField(
       controller: controller,
       keyboardType: keyboardType,
-      style: TextStyle(color: Colors.black),
+      style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: const TextStyle(color: grayColor),
@@ -38,7 +38,7 @@ Widget buildPasswordField(SignUpViewModel viewModel) {
           child: TextField(
             controller: viewModel.passwordController,
             obscureText: viewModel.obscurePassword,
-            style: TextStyle(color: Colors.black),
+            style: const TextStyle(color: Colors.black),
             decoration: const InputDecoration(
               hintText: 'Password',
               hintStyle: TextStyle(color: grayColor),
@@ -83,16 +83,16 @@ Widget buildTermsAcceptance(SignUpViewModel viewModel, ThemeData theme) {
                 onPressed: () {
                   // Navigate to terms of service
                 },
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
                 child: Text(
                   'Terms of Service',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.primaryColor,
                   ),
-                ),
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
               ),
               Text(
@@ -103,16 +103,16 @@ Widget buildTermsAcceptance(SignUpViewModel viewModel, ThemeData theme) {
                 onPressed: () {
                   // Navigate to privacy policy
                 },
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
                 child: Text(
                   'Privacy Policy',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.primaryColor,
                   ),
-                ),
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
               ),
             ],
