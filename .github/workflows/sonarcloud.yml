@@ -50,8 +50,6 @@ jobs:
             -Dsonar.verbose=true
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.sources=lib
-            -Dsonar.tests=test
-            -Dsonar.test.inclusions=test/features/**/*_test.dart
             -Dsonar.exclusions=**/*.g.dart,**/*.freezed.dart,**/generated/**,**/__generated__/**,**/mocks.dart,**/*.css
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
