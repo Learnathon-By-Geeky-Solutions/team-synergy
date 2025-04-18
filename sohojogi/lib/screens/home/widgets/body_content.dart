@@ -14,6 +14,7 @@ class HomeBodyContent extends StatefulWidget {
 class _HomeBodyContentState extends State<HomeBodyContent> {
   final PageController _bannerController = PageController();
   int _currentBannerPage = 0;
+  String _currentLocation = 'Mirpur 10, Dhaka';
 
   final List<Map<String, dynamic>> _banners = [
     {'title': 'CASHON Insurance', 'color': primaryColor},
@@ -34,6 +35,51 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
     {'name': 'Cooking', 'icon': Icons.restaurant},
     {'name': 'Delivery', 'icon': Icons.delivery_dining},
     {'name': 'Tutoring', 'icon': Icons.school},
+  ];
+
+  final List<Map<String, dynamic>> _topProviders = [
+    {
+      'name': 'John Doe',
+      'service': 'Plumbing',
+      'rating': 4.9,
+      'reviews': 253,
+      'image': 'https://randomuser.me/api/portraits/men/32.jpg'
+    },
+    {
+      'name': 'Sarah Smith',
+      'service': 'Cleaning',
+      'rating': 4.8,
+      'reviews': 187,
+      'image': 'https://randomuser.me/api/portraits/women/44.jpg'
+    },
+    {
+      'name': 'David Wilson',
+      'service': 'Electrician',
+      'rating': 4.7,
+      'reviews': 129,
+      'image': 'https://randomuser.me/api/portraits/men/56.jpg'
+    },
+    {
+      'name': 'Emma Johnson',
+      'service': 'Tutoring',
+      'rating': 4.9,
+      'reviews': 201,
+      'image': 'https://randomuser.me/api/portraits/women/33.jpg'
+    },
+    {
+      'name': 'Michael Brown',
+      'service': 'Carpenter',
+      'rating': 4.6,
+      'reviews': 142,
+      'image': 'https://randomuser.me/api/portraits/men/78.jpg'
+    },
+    {
+      'name': 'Lisa Garcia',
+      'service': 'Gardening',
+      'rating': 4.7,
+      'reviews': 118,
+      'image': 'https://randomuser.me/api/portraits/women/65.jpg'
+    },
   ];
 
   @override
@@ -64,6 +110,7 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
@@ -74,8 +121,6 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Location Bar
-
-          // Update the location bar in body_content.dart
           InkWell(
             onTap: () async {
               final selectedLocation = await Navigator.push(
@@ -85,14 +130,11 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
 
               if (selectedLocation != null && mounted) {
                 setState(() {
-                  // In a real app, you would store this in shared preferences or state management
-                  // For now, we'll just show a snackbar to confirm the location was set
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Location set to: $selectedLocation')),
-                  );
+                  _currentLocation = selectedLocation;
                 });
               }
             },
+
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               color: isDarkMode ? darkColor : lightColor,
@@ -102,8 +144,8 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Mirpur 14, Dhaka, 1206',
-                      style: Theme.of(context).textTheme.titleMedium,
+                      _currentLocation,  // Use the state variable instead of hardcoded text
+
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -113,7 +155,6 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
             ),
           ),
 
-          // Search Bar
           // Search Bar
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -146,6 +187,7 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                       MaterialPageRoute(
                         builder: (context) => ServiceSearchedListView(
                           searchQuery: query,
+                          currentLocation: _currentLocation, // Added the missing parameter
                         ),
                       ),
                     );
@@ -155,17 +197,22 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
             ),
           ),
 
+          // Added extra spacing between search bar and services section
+          const SizedBox(height: 16),
+
           // Services Section with Horizontally Scrollable Grid (2 rows)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Services',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: isDarkMode ? lightColor : darkColor,
+                // Centered Services title
+                Center(
+                  child: Text(
+                    'Services',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? lightColor : darkColor,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -225,9 +272,12 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
             ),
           ),
 
+          // Additional spacing between services and banner
+          const SizedBox(height: 32),
+
           // Banner Carousel
           Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 8.0),
+            padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 8.0),
             child: SizedBox(
               height: 120,
               child: PageView.builder(
@@ -306,26 +356,137 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
               );
             }),
           ),
-          const SizedBox(height: 16),
+
+          // Space before top rated providers section
+          const SizedBox(height: 32),
+
+          // Top Rated Service Providers Section
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              children: [
+                // Section title
+                Center(
+                  child: Text(
+                    'Top Providers',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? lightColor : darkColor,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Grid of top providers (2 columns, vertical scroll)
+                GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.75,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: _topProviders.length,
+                  itemBuilder: (context, index) {
+                    final provider = _topProviders[index];
+                    return Card(
+                      elevation: 2,
+                      color: isDarkMode ? darkColor : lightColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Viewing ${provider['name']}\'s profile')),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 16),
+                            // Profile image
+                            CircleAvatar(
+                              radius: 40,
+                              backgroundImage: NetworkImage(provider['image']),
+                              backgroundColor: Colors.grey.shade200,
+                            ),
+                            const SizedBox(height: 12),
+                            // Name
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                provider['name'],
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDarkMode ? lightColor : darkColor,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            // Service
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: primaryColor.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                provider['service'],
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: primaryColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            // Rating
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.star, size: 16, color: Colors.amber),
+                                const SizedBox(width: 4),
+                                Text(
+                                  "${provider['rating']}",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: isDarkMode ? lightColor : darkColor,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  "(${provider['reviews']})",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: isDarkMode ? lightGrayColor : grayColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
         ],
       ),
     );
   }
 }
 
-// Placeholder screens for navigation
-class LocationScreen extends StatelessWidget {
-  const LocationScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Select Location')),
-      body: const Center(child: Text('Location selection screen')),
-    );
-  }
-}
-
+// Only keep the ServiceDetailPage and remove the conflicting LocationScreen class
 class ServiceDetailPage extends StatelessWidget {
   final String service;
 

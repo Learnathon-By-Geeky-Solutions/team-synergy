@@ -5,13 +5,16 @@ import 'package:sohojogi/screens/navigation/app_navbar.dart';
 import 'package:sohojogi/screens/service_searched/widgets/search_header_widget.dart';
 import 'package:sohojogi/screens/service_searched/widgets/service_provider_card_widget.dart';
 import 'package:sohojogi/screens/service_searched/models/service_provider_model.dart';
+import 'package:sohojogi/screens/location/views/location_list_view.dart';
 
 class ServiceSearchedListView extends StatefulWidget {
   final String searchQuery;
+  final String currentLocation;
 
   const ServiceSearchedListView({
     super.key,
-    this.searchQuery = 'Demo Service'
+    required this.searchQuery,
+    required this.currentLocation,
   });
 
   @override
@@ -22,11 +25,21 @@ class _ServiceSearchedListViewState extends State<ServiceSearchedListView> {
   final List<ServiceProviderModel> _serviceProviders = [];
   bool _isLoading = true;
   bool _hasMoreData = true;
+  late String _currentLocation;
+  late TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
+    _currentLocation = widget.currentLocation;
+    _searchController = TextEditingController(text: widget.searchQuery);
     _loadInitialData();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadInitialData() async {
@@ -73,17 +86,37 @@ class _ServiceSearchedListViewState extends State<ServiceSearchedListView> {
       5,
           (index) => ServiceProviderModel(
         id: 'id_${index + _serviceProviders.length}',
-        name: 'John Doe ${index + _serviceProviders.length}',
-        profileImage: 'https://randomuser.me/api/portraits/men/${(index + _serviceProviders.length) % 100}.jpg',
-        location: 'Austin, TX',
+        name: 'Provider ${index + _serviceProviders.length + 1}',
+        profileImage: 'https://randomuser.me/api/portraits/${index % 2 == 0 ? 'men' : 'women'}/${20 + index + _serviceProviders.length}.jpg',
+        location: _currentLocation, // Use the current location
         serviceCategory: widget.searchQuery,
-        rating: 4.3 + (index * 0.1) % 0.7,
-        reviewCount: 243 + index * 12,
-        email: 'johndoe${index + _serviceProviders.length}@example.com',
-        phoneNumber: '+1 123 456 ${7890 + index}',
-        gender: index % 3 == 0 ? Gender.female : Gender.male,
+        rating: 3.5 + (index % 3) * 0.5,
+        reviewCount: 50 + (index * 30),
+        email: 'provider${index + _serviceProviders.length + 1}@example.com',
+        phoneNumber: '+880 1${700000000 + (index + _serviceProviders.length) * 11111}',
+        gender: index % 2 == 0 ? Gender.male : Gender.female,
       ),
     );
+  }
+
+  void _performNewSearch(String query) {
+    if (query.isNotEmpty) {
+      setState(() {
+        _serviceProviders.clear();
+        _isLoading = true;
+        _hasMoreData = true;
+      });
+
+      // Simulate network request with delay
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted) {
+          setState(() {
+            _serviceProviders.addAll(_getDummyServiceProviders());
+            _isLoading = false;
+          });
+        }
+      });
+    }
   }
 
   @override
@@ -95,15 +128,154 @@ class _ServiceSearchedListViewState extends State<ServiceSearchedListView> {
       body: SafeArea(
         child: Column(
           children: [
-            // Search header with back button, logo, location and search bar
-            SearchHeaderWidget(
-              searchQuery: widget.searchQuery,
-              onFilterTap: () {
-                _showFilterBottomSheet(context);
-              },
-              onBackTap: () {
-                Navigator.pop(context);
-              },
+            // Header with back button, search bar and filter button
+            Container(
+              color: isDarkMode ? darkColor : lightColor,
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  // Top row with back button, search bar, and filter
+                  Row(
+                    children: [
+                      // Back button
+                      InkWell(
+                        onTap: () => Navigator.pop(context),
+                        borderRadius: BorderRadius.circular(50),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                          ),
+                          child: Icon(
+                            Icons.arrow_back,
+                            size: 20,
+                            color: isDarkMode ? lightColor : darkColor,
+                          ),
+                        ),
+                      ),
+
+                      // Search bar
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Container(
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: TextField(
+                              controller: _searchController,
+                              style: TextStyle(
+                                color: isDarkMode ? lightColor : darkColor,
+                                fontSize: 14,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'Search services...',
+                                hintStyle: TextStyle(
+                                  color: isDarkMode ? lightGrayColor : grayColor,
+                                  fontSize: 14,
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.search,
+                                  color: isDarkMode ? lightGrayColor : grayColor,
+                                  size: 18,
+                                ),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                              ),
+                              onSubmitted: (query) {
+                                if (query.isNotEmpty) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ServiceSearchedListView(
+                                        searchQuery: query,
+                                        currentLocation: _currentLocation,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // Filter button
+                      InkWell(
+                        onTap: () => _showFilterBottomSheet(context),
+                        borderRadius: BorderRadius.circular(50),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                          ),
+                          child: Icon(
+                            Icons.filter_list,
+                            size: 20,
+                            color: isDarkMode ? lightColor : darkColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Location bar
+                  InkWell(
+                    onTap: () async {
+                      final selectedLocation = await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LocationScreen()),
+                      );
+
+                      if (selectedLocation != null && mounted) {
+                        setState(() {
+                          _currentLocation = selectedLocation;
+                          // Reload data with new location
+                          _serviceProviders.clear();
+                          _isLoading = true;
+                          _hasMoreData = true;
+                        });
+                        _loadInitialData();
+                      }
+                    },
+                    child: Row(
+                      children: [
+                        const Icon(Icons.location_on, size: 16, color: Colors.redAccent),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            _currentLocation,
+                            style: Theme.of(context).textTheme.bodySmall,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const Icon(Icons.keyboard_arrow_down, size: 16),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Search query display
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Showing results for "${_searchController.text}"',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? lightColor : darkColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
 
             // Search results list
@@ -132,23 +304,23 @@ class _ServiceSearchedListViewState extends State<ServiceSearchedListView> {
             Icon(
               Icons.search_off,
               size: 64,
-              color: isDarkMode ? lightGrayColor : grayColor,
+              color: isDarkMode ? lightGrayColor : Colors.grey,
             ),
             const SizedBox(height: 16),
             Text(
               'No service providers found',
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.bold,
                 color: isDarkMode ? lightColor : darkColor,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Try with a different search term',
+              'Try a different search or location',
               style: TextStyle(
                 fontSize: 14,
-                color: isDarkMode ? lightGrayColor : grayColor,
+                color: isDarkMode ? lightGrayColor : Colors.grey,
               ),
             ),
           ],
@@ -158,56 +330,40 @@ class _ServiceSearchedListViewState extends State<ServiceSearchedListView> {
 
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification scrollInfo) {
-        if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent && _hasMoreData) {
+        if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent && !_isLoading && _hasMoreData) {
           _loadMoreData();
-          return true;
         }
-        return false;
+        return true;
       },
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
         itemCount: _serviceProviders.length + (_hasMoreData ? 1 : 0),
+        padding: const EdgeInsets.all(16),
         itemBuilder: (context, index) {
           if (index == _serviceProviders.length) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: CircularProgressIndicator(),
-              ),
-            );
+            return _isLoading
+                ? const Center(child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: CircularProgressIndicator(),
+            ))
+                : const SizedBox.shrink();
           }
 
+          final provider = _serviceProviders[index];
           return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.only(bottom: 16.0),
             child: ServiceProviderCardWidget(
-              serviceProvider: _serviceProviders[index],
+              serviceProvider: provider,
               onCardTap: () {
                 // Navigate to service provider detail page
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Viewing ${_serviceProviders[index].name}\'s profile'),
-                    duration: const Duration(seconds: 1),
-                  ),
-                );
               },
               onCallTap: () {
-                // Launch phone call
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Calling ${_serviceProviders[index].phoneNumber}'),
-                  ),
-                );
+                // Handle call action
               },
               onMailTap: () {
-                // Launch email
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Emailing ${_serviceProviders[index].email}'),
-                  ),
-                );
+                // Handle mail action
               },
               onMenuTap: () {
-                _showOptionsMenu(context, _serviceProviders[index]);
+                _showOptionsMenu(context, provider);
               },
             ),
           );
@@ -222,23 +378,25 @@ class _ServiceSearchedListViewState extends State<ServiceSearchedListView> {
       isScrollControlled: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) {
         return DraggableScrollableSheet(
-          initialChildSize: 0.7,
+          initialChildSize: 0.9,
           minChildSize: 0.5,
-          maxChildSize: 0.9,
+          maxChildSize: 0.95,
           expand: false,
           builder: (context, scrollController) {
             return _FilterBottomSheet(
               scrollController: scrollController,
-              onApplyFilters: (Map<String, dynamic> filters) {
-                // Apply filters to the search results
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Filters applied')),
-                );
+              onApplyFilters: (filters) {
+                Navigator.pop(context);
+                // Apply filters logic
+                setState(() {
+                  _serviceProviders.clear();
+                  _isLoading = true;
+                });
+                _loadInitialData();
               },
             );
           },
@@ -254,56 +412,53 @@ class _ServiceSearchedListViewState extends State<ServiceSearchedListView> {
       context: context,
       backgroundColor: isDarkMode ? darkColor : lightColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.bookmark_border),
-                  title: const Text('Save to bookmarks'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('${provider.name} saved to bookmarks')),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.share),
-                  title: const Text('Share profile'),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.report_outlined),
-                  title: const Text('Report this profile'),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.block),
-                  title: const Text('Block'),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 8),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: isDarkMode ? lightGrayColor : Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
+            ListTile(
+              leading: const Icon(Icons.bookmark_border, color: primaryColor),
+              title: const Text('Save to Bookmarks'),
+              onTap: () {
+                Navigator.pop(context);
+                // Bookmark logic
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.share, color: primaryColor),
+              title: const Text('Share Provider'),
+              onTap: () {
+                Navigator.pop(context);
+                // Share logic
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.report_outlined, color: Colors.red.shade600),
+              title: Text('Report Provider', style: TextStyle(color: Colors.red.shade600)),
+              onTap: () {
+                Navigator.pop(context);
+                // Report logic
+              },
+            ),
+          ],
         );
       },
     );
   }
 }
 
-// Internal Filter Bottom Sheet widget
+// Add this class definition at the end of your file, after the _ServiceSearchedListViewState class
 class _FilterBottomSheet extends StatefulWidget {
   final ScrollController scrollController;
   final Function(Map<String, dynamic>) onApplyFilters;
@@ -352,20 +507,11 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
           children: [
             Text(
               'Filter',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _minRating = 0.0;
-                  _selectedCategories = [];
-                  _sortBy = 'Rating';
-                  _maxDistance = 10.0;
-                });
-              },
-              child: const Text('Reset'),
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => Navigator.pop(context),
             ),
           ],
         ),
@@ -400,10 +546,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
               alignment: Alignment.center,
               child: Text(
                 _minRating.toStringAsFixed(1),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: isDarkMode ? lightColor : darkColor,
-                ),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -423,8 +566,6 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             return FilterChip(
               label: Text(category),
               selected: isSelected,
-              selectedColor: primaryColor.withOpacity(0.2),
-              checkmarkColor: primaryColor,
               onSelected: (selected) {
                 setState(() {
                   if (selected) {
@@ -434,6 +575,8 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                   }
                 });
               },
+              selectedColor: primaryColor.withOpacity(0.2),
+              checkmarkColor: primaryColor,
             );
           }).toList(),
         ),
@@ -451,7 +594,6 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             return ChoiceChip(
               label: Text(option),
               selected: _sortBy == option,
-              selectedColor: primaryColor.withOpacity(0.2),
               onSelected: (selected) {
                 if (selected) {
                   setState(() {
@@ -459,11 +601,12 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                   });
                 }
               },
+              selectedColor: primaryColor.withOpacity(0.2),
             );
           }).toList(),
         ),
 
-        // Distance
+        // Maximum Distance
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -473,11 +616,8 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Text(
-              '${_maxDistance.toStringAsFixed(1)} km',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: isDarkMode ? lightColor : darkColor,
-              ),
+              '${_maxDistance.toInt()} km',
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -485,8 +625,9 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
         Slider(
           value: _maxDistance,
           min: 1,
-          max: 50,
-          divisions: 49,
+          max: 20,
+          divisions: 19,
+          label: '${_maxDistance.toStringAsFixed(1)} km',
           activeColor: primaryColor,
           onChanged: (value) {
             setState(() {
@@ -499,24 +640,47 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
         const SizedBox(height: 24),
         ElevatedButton(
           onPressed: () {
-            widget.onApplyFilters({
+            final filters = {
               'minRating': _minRating,
               'categories': _selectedCategories,
               'sortBy': _sortBy,
               'maxDistance': _maxDistance,
-            });
+            };
+            widget.onApplyFilters(filters);
+            Navigator.pop(context);
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryColor,
             foregroundColor: lightColor,
-            padding: const EdgeInsets.symmetric(vertical: 15),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: const Text('Apply Filters'),
+          child: const Text(
+            'Apply Filters',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextButton(
+          onPressed: () {
+            setState(() {
+              _minRating = 0.0;
+              _selectedCategories = [];
+              _sortBy = 'Rating';
+              _maxDistance = 10.0;
+            });
+          },
+          child: const Text('Reset All'),
         ),
       ],
     );
   }
 }
+
+// Internal Filter Bottom Sheet widget remains unchanged
+
