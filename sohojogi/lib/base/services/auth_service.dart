@@ -1,4 +1,3 @@
-
 class AuthService {
   // final SupabaseClient _supabase;
   // AuthService({SupabaseClient? supabase})
