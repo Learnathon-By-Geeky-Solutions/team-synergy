@@ -201,7 +201,7 @@ class _InboxListViewState extends State<InboxListView> {
           );
         },
       ),
-      bottomNavigationBar: const AppNavBar(),
+      bottomNavigationBar: const AppNavBar(currentIndex: 2),
     );
   }
 }

@@ -16,7 +16,7 @@ class HomeScreen extends StatelessWidget {
         child: HomeBodyContent(),
       ),
       backgroundColor: Colors.grey[100],
-      bottomNavigationBar: const AppNavBar(),
+        bottomNavigationBar: const AppNavBar(currentIndex: 1),
       endDrawer: const AppDrawer(),
     );
   }
