@@ -1,4 +1,3 @@
-// lib/screens/chat/models/chat_message.dart
 enum MessageStatus { sent, delivered, read }
 
 class ChatMessage {

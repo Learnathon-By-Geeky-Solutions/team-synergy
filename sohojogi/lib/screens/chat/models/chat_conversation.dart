@@ -1,4 +1,3 @@
-// lib/screens/chat/models/chat_conversation.dart
 class ChatConversation {
   final String id;
   final String userName;
