@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/business_profile/views/business_profile_list_view.dart';
+import 'package:sohojogi/screens/profile/view_model/profile_view_model.dart';
+import 'package:sohojogi/screens/profile/views/profile_edit_view.dart';
 import '../business_profile/view_model/worker_registration_view_model.dart';
 import 'package:sohojogi/screens/business_profile/views/worker_benefits_view.dart';
 
@@ -12,85 +14,144 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
-    return Drawer(
-      child: Container(
-        color: isDarkMode ? darkColor : lightColor,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Colors.transparent,
+    // Create a local provider if none is found above
+    return ChangeNotifierProvider(
+      create: (_) => ProfileViewModel(),
+      child: Consumer<ProfileViewModel>(
+          builder: (context, profileViewModel, _) {
+            return Drawer(
+              child: Container(
+                color: isDarkMode ? darkColor : lightColor,
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: <Widget>[
+                    DrawerHeader(
+                      decoration: const BoxDecoration(
+                        color: Colors.transparent,
+                      ),
+                      child: InkWell(
+                        onTap: () => _navigateToProfile(context),
+                        child: Row(
+                          children: [
+                            _buildProfileAvatar(profileViewModel, isDarkMode),
+                            const SizedBox(width: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  profileViewModel.profileData.fullName.isEmpty
+                                      ? 'Set up profile'
+                                      : profileViewModel.profileData.fullName,
+                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: isDarkMode ? lightColor : darkColor,
+                                  ),
+                                ),
+                                Text(
+                                  '135 Credits',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: isDarkMode ? lightColor : lightGrayColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.star, color: isDarkMode ? lightColor : lightGrayColor),
+                                Text(
+                                  'Expire in 21 days',
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: isDarkMode ? lightColor : lightGrayColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    _buildSection(context, 'Account', [
+                      'Profile',
+                      'Business Profile',
+                      'Payment Methods',
+                      'Saved Address',
+                      'Bookmark',
+                      'Membership',
+                    ], isDarkMode),
+                    Divider(color: isDarkMode ? lightColor : lightGrayColor),
+                    _buildSection(context, 'Offers', [
+                      'Offers & Promos',
+                      'Refer & Discount',
+                    ], isDarkMode),
+                    Divider(color: isDarkMode ? lightColor : lightGrayColor),
+                    _buildSection(context, 'Settings', [
+                      'Theme',
+                      'Language',
+                      'Account Security',
+                      'Terms & Privacy',
+                      'Permissions',
+                    ], isDarkMode),
+                    Divider(color: isDarkMode ? lightColor : lightGrayColor),
+                    _buildSection(context, 'More', [
+                      'Help Center',
+                      'Log Out',
+                    ], isDarkMode),
+                  ],
+                ),
               ),
-              child: Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 30,
-                    backgroundImage: AssetImage('assets/images/user_image.png'),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'John Doe',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isDarkMode ? lightColor : darkColor,
-                        ),
-                      ),
-                      Text(
-                        '135 Credits',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: isDarkMode ? lightColor : lightGrayColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.star, color: isDarkMode ? lightColor : lightGrayColor),
-                      Text(
-                        'Expire in 21 days',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: isDarkMode ? lightColor : lightGrayColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            _buildSection(context, 'Account', [
-              'Business Profile',
-              'Payment Methods',
-              'Saved Address',
-              'Bookmark',
-              'Membership',
-            ], isDarkMode),
-            Divider(color: isDarkMode ? lightColor : lightGrayColor),
-            _buildSection(context, 'Offers', [
-              'Offers & Promos',
-              'Refer & Discount',
-            ], isDarkMode),
-            Divider(color: isDarkMode ? lightColor : lightGrayColor),
-            _buildSection(context, 'Settings', [
-              'Theme',
-              'Language',
-              'Account Security',
-              'Terms & Privacy',
-              'Permissions',
-            ], isDarkMode),
-            Divider(color: isDarkMode ? lightColor : lightGrayColor),
-            _buildSection(context, 'More', [
-              'Help Center',
-              'Log Out',
-            ], isDarkMode),
-          ],
+            );
+          }
+      ),
+    );
+  }
+
+  Widget _buildProfileAvatar(ProfileViewModel viewModel, bool isDarkMode) {
+    // If user has set a new profile image
+    if (viewModel.newProfileImage != null) {
+      return CircleAvatar(
+        radius: 30,
+        backgroundImage: FileImage(viewModel.newProfileImage!),
+      );
+    }
+    // If user has an existing profile photo URL
+    else if (viewModel.profileData.profilePhotoUrl != null &&
+        viewModel.profileData.profilePhotoUrl!.isNotEmpty) {
+      return CircleAvatar(
+        radius: 30,
+        backgroundImage: NetworkImage(viewModel.profileData.profilePhotoUrl!),
+      );
+    }
+    // Default placeholder avatar
+    else {
+      return CircleAvatar(
+        radius: 30,
+        backgroundColor: isDarkMode ? lightGrayColor : grayColor.withOpacity(0.3),
+        child: Icon(
+          Icons.person,
+          size: 30,
+          color: isDarkMode ? darkColor : lightColor,
+        ),
+      );
+    }
+  }
+
+  void _navigateToProfile(BuildContext context) {
+    // Close the drawer first
+    Navigator.pop(context);
+
+    // Navigate to profile edit page
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChangeNotifierProvider(
+          create: (_) => ProfileViewModel(),
+          child: ProfileEditView(
+            onBackPressed: () => Navigator.pop(context),
+          ),
         ),
       ),
     );
@@ -125,6 +186,20 @@ class AppDrawer extends StatelessWidget {
 
     // Handle navigation based on item
     switch (item) {
+      case 'Profile':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChangeNotifierProvider(
+              create: (_) => ProfileViewModel(),
+              child: ProfileEditView(
+                onBackPressed: () => Navigator.pop(context),
+              ),
+            ),
+          ),
+        );
+        break;
+
       case 'Business Profile':
         Navigator.push(
           context,
