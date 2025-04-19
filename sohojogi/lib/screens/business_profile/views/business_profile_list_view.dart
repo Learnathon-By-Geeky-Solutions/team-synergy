@@ -1,5 +1,3 @@
-// lib/screens/business_profile/views/business_profile_list_view.dart
-// Make sure the view is always used with a provider
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';

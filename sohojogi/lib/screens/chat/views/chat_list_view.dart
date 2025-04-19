@@ -1,10 +1,8 @@
-// lib/screens/chat/views/chat_list_view.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/chat/models/chat_message.dart';
 import 'package:sohojogi/screens/chat/view_model/chat_view_model.dart';
-
 import '../models/chat_conversation.dart';
 
 class ChatListView extends StatefulWidget {

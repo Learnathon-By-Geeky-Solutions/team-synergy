@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/service_searched/views/service_searched_list_view.dart';
-import 'package:sohojogi/screens/location/views/location_list_view.dart';
-
-import '../../worker_profile/views/worker_profile_screen.dart';
+import 'package:sohojogi/screens/worker_profile/views/worker_profile_screen.dart';
+import '../view_model/home_view_model.dart';
+import '../views/service_detail_page.dart';
+import '../widgets/location_bar.dart';
 
 class HomeBodyContent extends StatefulWidget {
   const HomeBodyContent({super.key});
@@ -15,90 +17,23 @@ class HomeBodyContent extends StatefulWidget {
 
 class _HomeBodyContentState extends State<HomeBodyContent> {
   final PageController _bannerController = PageController();
-  int _currentBannerPage = 0;
-  String _currentLocation = 'Mirpur 10, Dhaka';
-
-  final List<Map<String, dynamic>> _banners = [
-    {'title': 'CASHON Insurance', 'color': primaryColor},
-    {'title': 'Family Coverage Plan', 'color': secondaryColor},
-    {'title': 'Premium Protection', 'color': Color(0xFF4CAF50)},
-  ];
-
-  final List<Map<String, dynamic>> _services = [
-    {'name': 'Cleaning', 'icon': Icons.cleaning_services},
-    {'name': 'Repairing', 'icon': Icons.build},
-    {'name': 'Electrician', 'icon': Icons.electrical_services},
-    {'name': 'Carpenter', 'icon': Icons.handyman},
-    {'name': 'Plumbing', 'icon': Icons.plumbing},
-    {'name': 'Painting', 'icon': Icons.format_paint},
-    {'name': 'Gardening', 'icon': Icons.grass},
-    {'name': 'Moving', 'icon': Icons.local_shipping},
-    {'name': 'Laundry', 'icon': Icons.local_laundry_service},
-    {'name': 'Cooking', 'icon': Icons.restaurant},
-    {'name': 'Delivery', 'icon': Icons.delivery_dining},
-    {'name': 'Tutoring', 'icon': Icons.school},
-  ];
-
-  final List<Map<String, dynamic>> _topProviders = [
-    {
-      'name': 'John Doe',
-      'service': 'Plumbing',
-      'rating': 4.9,
-      'reviews': 253,
-      'image': 'https://randomuser.me/api/portraits/men/32.jpg'
-    },
-    {
-      'name': 'Sarah Smith',
-      'service': 'Cleaning',
-      'rating': 4.8,
-      'reviews': 187,
-      'image': 'https://randomuser.me/api/portraits/women/44.jpg'
-    },
-    {
-      'name': 'David Wilson',
-      'service': 'Electrician',
-      'rating': 4.7,
-      'reviews': 129,
-      'image': 'https://randomuser.me/api/portraits/men/56.jpg'
-    },
-    {
-      'name': 'Emma Johnson',
-      'service': 'Tutoring',
-      'rating': 4.9,
-      'reviews': 201,
-      'image': 'https://randomuser.me/api/portraits/women/33.jpg'
-    },
-    {
-      'name': 'Michael Brown',
-      'service': 'Carpenter',
-      'rating': 4.6,
-      'reviews': 142,
-      'image': 'https://randomuser.me/api/portraits/men/78.jpg'
-    },
-    {
-      'name': 'Lisa Garcia',
-      'service': 'Gardening',
-      'rating': 4.7,
-      'reviews': 118,
-      'image': 'https://randomuser.me/api/portraits/women/65.jpg'
-    },
-  ];
+  Timer? _autoScrollTimer;
 
   @override
   void initState() {
     super.initState();
 
     // Auto-scroll banner
-    Timer.periodic(const Duration(seconds: 3), (Timer timer) {
+    _autoScrollTimer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
+      final viewModel = Provider.of<HomeViewModel>(context, listen: false);
       if (_bannerController.hasClients) {
-        if (_currentBannerPage < _banners.length - 1) {
-          _currentBannerPage++;
-        } else {
-          _currentBannerPage = 0;
-        }
+        int nextPage = viewModel.currentBannerPage < viewModel.banners.length - 1
+            ? viewModel.currentBannerPage + 1
+            : 0;
 
+        viewModel.setCurrentBannerPage(nextPage);
         _bannerController.animateToPage(
-          _currentBannerPage,
+          nextPage,
           duration: const Duration(milliseconds: 350),
           curve: Curves.easeIn,
         );
@@ -109,12 +44,13 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
   @override
   void dispose() {
     _bannerController.dispose();
+    _autoScrollTimer?.cancel();
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final viewModel = Provider.of<HomeViewModel>(context);
     final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Container(
@@ -123,38 +59,9 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Location Bar
-          InkWell(
-            onTap: () async {
-              final selectedLocation = await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LocationScreen()),
-              );
-
-              if (selectedLocation != null && mounted) {
-                setState(() {
-                  _currentLocation = selectedLocation;
-                });
-              }
-            },
-
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              color: isDarkMode ? darkColor : lightColor,
-              child: Row(
-                children: [
-                  const Icon(Icons.location_on, color: Colors.redAccent),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      _currentLocation,  // Use the state variable instead of hardcoded text
-
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const Icon(Icons.keyboard_arrow_down, size: 20),
-                ],
-              ),
-            ),
+          LocationBar(
+            currentLocation: viewModel.currentLocation,
+            onLocationChanged: viewModel.updateLocation,
           ),
 
           // Search Bar
@@ -189,7 +96,7 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                       MaterialPageRoute(
                         builder: (context) => ServiceSearchedListView(
                           searchQuery: query,
-                          currentLocation: _currentLocation, // Added the missing parameter
+                          currentLocation: viewModel.currentLocation,
                         ),
                       ),
                     );
@@ -199,15 +106,13 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
             ),
           ),
 
-          // Added extra spacing between search bar and services section
           const SizedBox(height: 16),
 
-          // Services Section with Horizontally Scrollable Grid (2 rows)
+          // Services Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
               children: [
-                // Centered Services title
                 Center(
                   child: Text(
                     'Services',
@@ -219,24 +124,25 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
-                  height: 220, // Fixed height for 2 rows
+                  height: 220,
                   child: GridView.builder(
                     scrollDirection: Axis.horizontal,
                     physics: const BouncingScrollPhysics(),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, // 2 rows
-                      childAspectRatio: 0.9, // Adjusted for horizontal layout
-                      crossAxisSpacing: 16, // Spacing between rows
-                      mainAxisSpacing: 16, // Spacing between columns
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.9,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
                     ),
-                    itemCount: _services.length,
+                    itemCount: viewModel.services.length,
                     itemBuilder: (context, index) {
+                      final service = viewModel.services[index];
                       return InkWell(
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ServiceDetailPage(service: _services[index]['name']),
+                              builder: (context) => ServiceDetailPage(service: service.name),
                             ),
                           );
                         },
@@ -250,13 +156,13 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                _services[index]['icon'],
+                                service.icon,
                                 size: 40,
                                 color: primaryColor,
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                _services[index]['name'],
+                                service.name,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
@@ -274,7 +180,6 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
             ),
           ),
 
-          // Additional spacing between services and banner
           const SizedBox(height: 32),
 
           // Banner Carousel
@@ -284,18 +189,16 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
               height: 120,
               child: PageView.builder(
                 controller: _bannerController,
-                itemCount: _banners.length,
+                itemCount: viewModel.banners.length,
                 onPageChanged: (index) {
-                  setState(() {
-                    _currentBannerPage = index;
-                  });
+                  viewModel.setCurrentBannerPage(index);
                 },
                 itemBuilder: (context, index) {
+                  final banner = viewModel.banners[index];
                   return GestureDetector(
                     onTap: () {
-                      // Handle banner tap
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Tapped on ${_banners[index]['title']}')),
+                        SnackBar(content: Text('Tapped on ${banner.title}')),
                       );
                     },
                     child: Container(
@@ -304,8 +207,8 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                         borderRadius: BorderRadius.circular(12),
                         gradient: LinearGradient(
                           colors: [
-                            _banners[index]['color'],
-                            _banners[index]['color'].withOpacity(0.7),
+                            banner.color,
+                            banner.color.withOpacity(0.7),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -324,7 +227,7 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                           ),
                           Center(
                             child: Text(
-                              _banners[index]['title'],
+                              banner.title,
                               style: const TextStyle(
                                 color: lightColor,
                                 fontSize: 22,
@@ -344,14 +247,14 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
           // Pagination Dots
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(_banners.length, (index) {
+            children: List.generate(viewModel.banners.length, (index) {
               return Container(
                 width: 8,
                 height: 8,
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: _currentBannerPage == index
+                  color: viewModel.currentBannerPage == index
                       ? primaryColor
                       : (isDarkMode ? lightGrayColor : Colors.grey[300]),
                 ),
@@ -359,7 +262,6 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
             }),
           ),
 
-          // Space before top rated providers section
           const SizedBox(height: 32),
 
           // Top Rated Service Providers Section
@@ -367,7 +269,6 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
               children: [
-                // Section title
                 Center(
                   child: Text(
                     'Top Providers',
@@ -379,7 +280,6 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                 ),
                 const SizedBox(height: 16),
 
-                // Grid of top providers (2 columns, vertical scroll)
                 GridView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
@@ -389,9 +289,9 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
                   ),
-                  itemCount: _topProviders.length,
+                  itemCount: viewModel.topProviders.length,
                   itemBuilder: (context, index) {
-                    final provider = _topProviders[index];
+                    final provider = viewModel.topProviders[index];
                     return Card(
                       elevation: 2,
                       color: isDarkMode ? darkColor : lightColor,
@@ -399,34 +299,31 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => WorkerProfileScreen(
-                                    workerId: provider['id'],
-                                  ),
-                                ),
-                              );
-                            },
-                        // This is your existing worker card widget
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WorkerProfileScreen(
+                                workerId: provider.id,
+                              ),
+                            ),
+                          );
+                        },
                         borderRadius: BorderRadius.circular(12),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             const SizedBox(height: 16),
-                            // Profile image
                             CircleAvatar(
                               radius: 40,
-                              backgroundImage: NetworkImage(provider['image']),
+                              backgroundImage: NetworkImage(provider.image),
                               backgroundColor: Colors.grey.shade200,
                             ),
                             const SizedBox(height: 12),
-                            // Name
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Text(
-                                provider['name'],
+                                provider.name,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -438,7 +335,6 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            // Service
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
@@ -446,7 +342,7 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
-                                provider['service'],
+                                provider.service,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: primaryColor,
@@ -455,14 +351,13 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            // Rating
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.star, size: 16, color: Colors.amber),
+                                const Icon(Icons.star, size: 16, color: primaryColor),
                                 const SizedBox(width: 4),
                                 Text(
-                                  "${provider['rating']}",
+                                  "${provider.rating}",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: isDarkMode ? lightColor : darkColor,
@@ -470,7 +365,7 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  "(${provider['reviews']})",
+                                  "(${provider.reviews})",
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: isDarkMode ? lightGrayColor : grayColor,
@@ -490,21 +385,6 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
           const SizedBox(height: 24),
         ],
       ),
-    );
-  }
-}
-
-// Only keep the ServiceDetailPage and remove the conflicting LocationScreen class
-class ServiceDetailPage extends StatelessWidget {
-  final String service;
-
-  const ServiceDetailPage({super.key, required this.service});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(service)),
-      body: Center(child: Text('$service service details')),
     );
   }
 }
