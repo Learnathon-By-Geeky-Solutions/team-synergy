@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/notification/models/notification_model.dart';
+import '../../../utils/notification_utils.dart';
 import '../../utils/date_time_utils.dart';
 
 class NotificationCardWidget extends StatelessWidget {

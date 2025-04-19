@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sohojogi/screens/notification/view_model/notification_view_model.dart';
 import 'package:sohojogi/screens/order/view_model/order_view_model.dart';
 import 'package:sohojogi/screens/splash/splash_screen.dart';
 import 'package:sohojogi/base/theme/theme_data.dart';
-import 'package:sohojogi/constants/keys.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
   runApp(
