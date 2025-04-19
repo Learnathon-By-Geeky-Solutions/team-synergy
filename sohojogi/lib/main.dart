@@ -4,7 +4,6 @@ import 'package:sohojogi/constants/keys.dart';
 import 'package:sohojogi/screens/splash/splash_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(url: supabaseUrl, anonKey: supabaseKey);
@@ -17,6 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
       // Disable the debug banner
       debugShowCheckedModeBanner: false,
 
@@ -31,5 +31,6 @@ class MyApp extends StatelessWidget {
 
       home: const SplashScreen(),
     );
+
   }
 }
