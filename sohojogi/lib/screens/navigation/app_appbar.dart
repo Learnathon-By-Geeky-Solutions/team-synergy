@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../notification/views/notification_list_view.dart';
+
 
 class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
   const AppAppBar({super.key});
@@ -11,7 +13,12 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           icon: const Icon(Icons.notifications),
           onPressed: () {
-            // Handle notifications
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NotificationListView(),
+              ),
+            );
           },
         ),
         IconButton(
