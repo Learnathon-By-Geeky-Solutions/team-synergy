@@ -3,7 +3,6 @@ import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/notification/models/notification_model.dart';
 import '../../utils/date_time_utils.dart';
 
-
 class NotificationCardWidget extends StatelessWidget {
   final NotificationModel notification;
   final VoidCallback onTap;
@@ -40,13 +39,13 @@ class NotificationCardWidget extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: _getIconBackgroundColor(notification.type).withOpacity(0.1),
+                  color: NotificationUtils.getIconBackgroundColor(notification.type).withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Icon(
-                    _getIconData(notification.type),
-                    color: _getIconBackgroundColor(notification.type),
+                    NotificationUtils.getIconData(notification.type),
+                    color: NotificationUtils.getIconBackgroundColor(notification.type),
                     size: 20,
                   ),
                 ),
@@ -76,7 +75,7 @@ class NotificationCardWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _formatTimeAgo(notification.timestamp),
+                      NotificationUtils.formatTimeAgo(notification.timestamp),
                       style: TextStyle(
                         fontSize: 12,
                         color: isDarkMode ? lightGrayColor : grayColor,
