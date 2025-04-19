@@ -1,4 +1,5 @@
-// lib/screens/business_profile/views/worker_registration_view.dart
+// lib/screens/business_profile/views/business_profile_list_view.dart
+// Make sure the view is always used with a provider
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';
@@ -8,7 +9,7 @@ import '../widgets/country_selection_modal.dart';
 import '../widgets/registration_success_modal.dart';
 import 'worker_benefits_view.dart';
 
-class BusinessProfileListView extends StatefulWidget {
+class BusinessProfileListView extends StatelessWidget {
   final VoidCallback onBackPressed;
 
   const BusinessProfileListView({
@@ -17,26 +18,84 @@ class BusinessProfileListView extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<BusinessProfileListView> createState() => _BusinessProfileListViewState();
+  Widget build(BuildContext context) {
+    // Access the view model to verify it exists
+    final viewModel = Provider.of<WorkerRegistrationViewModel>(context);
+    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
+    return Scaffold(
+      backgroundColor: isDarkMode ? darkColor : const Color(0xFFFFF8EC),
+      appBar: AppBar(
+        backgroundColor: isDarkMode ? darkColor : const Color(0xFFFFF8EC),
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDarkMode ? lightColor : darkColor,
+          ),
+          onPressed: onBackPressed,
+        ),
+        title: Text(
+          'Become A Worker',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: isDarkMode ? lightColor : darkColor,
+          ),
+        ),
+      ),
+      body: _buildRegistrationForm(context, viewModel, isDarkMode),
+    );
+  }
+
+  Widget _buildRegistrationForm(BuildContext context, WorkerRegistrationViewModel viewModel, bool isDarkMode) {
+    return RegistrationFormWidget(
+      viewModel: viewModel,
+      isDarkMode: isDarkMode,
+      onBackPressed: onBackPressed,
+    );
+  }
 }
 
-class _BusinessProfileListViewState extends State<BusinessProfileListView> {
+// Extract the form implementation to a separate stateful widget
+class RegistrationFormWidget extends StatefulWidget {
+  final WorkerRegistrationViewModel viewModel;
+  final bool isDarkMode;
+  final VoidCallback onBackPressed;
+
+  const RegistrationFormWidget({
+    Key? key,
+    required this.viewModel,
+    required this.isDarkMode,
+    required this.onBackPressed,
+  }) : super(key: key);
+
+  @override
+  State<RegistrationFormWidget> createState() => _RegistrationFormWidgetState();
+}
+
+class _RegistrationFormWidgetState extends State<RegistrationFormWidget> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _yearsController = TextEditingController();
 
+  // Error message fields
+  String? _nameError;
+  String? _phoneError;
+  String? _emailError;
+  String? _yearsError;
+  String? _workTypeError;
+  String? _countryError;
+
   @override
   void initState() {
     super.initState();
-    final viewModel = Provider.of<WorkerRegistrationViewModel>(context, listen: false);
-
     // Pre-fill form if there's existing data
-    _nameController.text = viewModel.registrationData.fullName;
-    _phoneController.text = viewModel.registrationData.phoneNumber;
-    _emailController.text = viewModel.registrationData.email;
-    if (viewModel.registrationData.yearsOfExperience > 0) {
-      _yearsController.text = viewModel.registrationData.yearsOfExperience.toString();
+    _nameController.text = widget.viewModel.registrationData.fullName;
+    _phoneController.text = widget.viewModel.registrationData.phoneNumber;
+    _emailController.text = widget.viewModel.registrationData.email;
+    if (widget.viewModel.registrationData.yearsOfExperience > 0) {
+      _yearsController.text = widget.viewModel.registrationData.yearsOfExperience.toString();
     }
   }
 
@@ -49,30 +108,130 @@ class _BusinessProfileListViewState extends State<BusinessProfileListView> {
     super.dispose();
   }
 
-  void _showWorkTypeSelectionModal() {
-    final viewModel = context.read<WorkerRegistrationViewModel>();
+  // Validation methods
+  bool _validateName(String name) {
+    if (name.trim().isEmpty) {
+      setState(() => _nameError = 'Please enter your full name');
+      return false;
+    }
+    if (name.trim().length < 3) {
+      setState(() => _nameError = 'Name must be at least 3 characters');
+      return false;
+    }
+    setState(() => _nameError = null);
+    return true;
+  }
 
-    // No need to check if workTypes is empty since it's pre-initialized in the ViewModel
+  bool _validatePhoneNumber(String phone) {
+    // Basic phone validation (can be made more complex for specific formats)
+    final phoneRegex = RegExp(r'^\+?[0-9]{10,15}$');
+    if (!phoneRegex.hasMatch(phone)) {
+      setState(() => _phoneError = 'Please enter a valid phone number');
+      return false;
+    }
+    setState(() => _phoneError = null);
+    return true;
+  }
+
+  bool _validateEmail(String email) {
+    // Email validation using regex
+    final emailRegex = RegExp(
+        r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+');
+    if (!emailRegex.hasMatch(email)) {
+      setState(() => _emailError = 'Please enter a valid email address');
+      return false;
+    }
+    setState(() => _emailError = null);
+    return true;
+  }
+
+  bool _validateYearsOfExperience(String years) {
+    if (years.isEmpty) {
+      setState(() => _yearsError = 'Please enter years of experience');
+      return false;
+    }
+
+    final yearsValue = int.tryParse(years);
+    if (yearsValue == null || yearsValue <= 0) {
+      setState(() => _yearsError = 'Experience must be a positive number');
+      return false;
+    }
+
+    if (yearsValue > 50) {
+      setState(() => _yearsError = 'Please enter a reasonable value');
+      return false;
+    }
+
+    setState(() => _yearsError = null);
+    return true;
+  }
+
+  bool _validateWorkType() {
+    if (widget.viewModel.registrationData.selectedWorkTypes.isEmpty) {
+      setState(() => _workTypeError = 'Please select at least one work type');
+      return false;
+    }
+    setState(() => _workTypeError = null);
+    return true;
+  }
+
+  bool _validateCountry() {
+    if (widget.viewModel.registrationData.experienceCountry.isEmpty) {
+      setState(() => _countryError = 'Please select a country');
+      return false;
+    }
+    setState(() => _countryError = null);
+    return true;
+  }
+
+  bool _validateForm() {
+    // Validate all fields
+    final isNameValid = _validateName(_nameController.text);
+    final isPhoneValid = _validatePhoneNumber(_phoneController.text);
+    final isEmailValid = _validateEmail(_emailController.text);
+    final isYearsValid = _validateYearsOfExperience(_yearsController.text);
+    final isWorkTypeValid = _validateWorkType();
+    final isCountryValid = _validateCountry();
+
+    // Return true only if all validations pass
+    return isNameValid && isPhoneValid && isEmailValid &&
+        isYearsValid && isWorkTypeValid && isCountryValid;
+  }
+
+  void _showWorkTypeSelectionModal() {
+    final viewModel = Provider.of<WorkerRegistrationViewModel>(context, listen: false);
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => WorkTypeSelectionModal(
-        workTypes: viewModel.workTypes,
-        onToggleWorkType: viewModel.toggleWorkType,
+      builder: (BuildContext modalContext) => ChangeNotifierProvider.value(
+        value: viewModel,
+        child: Builder(
+          builder: (innerContext) => WorkTypeSelectionModal(
+            workTypes: Provider.of<WorkerRegistrationViewModel>(innerContext, listen: true).workTypes,
+            onToggleWorkType: viewModel.toggleWorkType,
+          ),
+        ),
       ),
     );
   }
 
   void _showCountrySelectionModal() {
+    final viewModel = Provider.of<WorkerRegistrationViewModel>(context, listen: false);
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => CountrySelectionModal(
-        countries: context.read<WorkerRegistrationViewModel>().countries,
-        onToggleCountry: context.read<WorkerRegistrationViewModel>().toggleCountry,
+      builder: (BuildContext modalContext) => ChangeNotifierProvider.value(
+        value: viewModel,
+        child: Builder(
+          builder: (innerContext) => CountrySelectionModal(
+            countries: Provider.of<WorkerRegistrationViewModel>(innerContext, listen: true).countries,
+            onToggleCountry: viewModel.toggleCountry,
+          ),
+        ),
       ),
     );
   }
@@ -83,25 +242,34 @@ class _BusinessProfileListViewState extends State<BusinessProfileListView> {
       barrierDismissible: false,
       builder: (context) => RegistrationSuccessModal(
         onOkPressed: () {
+          // Close the success modal
           Navigator.of(context).pop();
+
+          // Reset the form
           context.read<WorkerRegistrationViewModel>().resetForm();
+
+          // Navigate back to home screen
+          Navigator.of(context).pop(); // This pops the BusinessProfileListView screen itself
         },
       ),
     );
   }
 
   void _submitForm() async {
-    final viewModel = context.read<WorkerRegistrationViewModel>();
-
-    // Update view model with form values
-    viewModel.updateFullName(_nameController.text);
-    viewModel.updatePhoneNumber(_phoneController.text);
-    viewModel.updateEmail(_emailController.text);
-    if (_yearsController.text.isNotEmpty) {
-      viewModel.updateYearsOfExperience(int.tryParse(_yearsController.text) ?? 0);
+    // Validate the form first
+    if (!_validateForm()) {
+      return; // Stop if validation fails
     }
 
-    final success = await viewModel.submitRegistration();
+    // Update view model with form values
+    widget.viewModel.updateFullName(_nameController.text);
+    widget.viewModel.updatePhoneNumber(_phoneController.text);
+    widget.viewModel.updateEmail(_emailController.text);
+    if (_yearsController.text.isNotEmpty) {
+      widget.viewModel.updateYearsOfExperience(int.tryParse(_yearsController.text) ?? 0);
+    }
+
+    final success = await widget.viewModel.submitRegistration();
     if (success && mounted) {
       _showSuccessModal();
     }
@@ -117,183 +285,173 @@ class _BusinessProfileListViewState extends State<BusinessProfileListView> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
-    final viewModel = context.watch<WorkerRegistrationViewModel>();
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Form title and description
+            Text(
+              'Worker Registration',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: widget.isDarkMode ? lightColor : darkColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Fill in your details to register as a skilled worker.',
+              style: TextStyle(
+                fontSize: 14,
+                color: widget.isDarkMode ? lightGrayColor : grayColor,
+              ),
+            ),
+            const SizedBox(height: 24),
 
-    return Scaffold(
-      backgroundColor: isDarkMode ? darkColor : const Color(0xFFFFF8EC),
-      appBar: AppBar(
-        backgroundColor: isDarkMode ? darkColor : const Color(0xFFFFF8EC),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: isDarkMode ? lightColor : darkColor,
-          ),
-          onPressed: widget.onBackPressed,
-        ),
-        title: Text(
-          'Become A Worker',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: isDarkMode ? lightColor : darkColor,
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Form title and description
-              Text(
-                'Worker Registration',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: isDarkMode ? lightColor : darkColor,
+            // Full Name
+            _buildLabeledField('Full Name'),
+            _buildTextField(
+              controller: _nameController,
+              hintText: 'Enter your full name',
+              onChanged: (value) {
+                widget.viewModel.updateFullName(value);
+                _validateName(value);
+              },
+              errorText: _nameError,
+            ),
+            const SizedBox(height: 16),
+
+            // Phone Number
+            _buildLabeledField('Phone Number'),
+            _buildTextField(
+              controller: _phoneController,
+              hintText: 'Enter your phone number',
+              keyboardType: TextInputType.phone,
+              onChanged: (value) {
+                widget.viewModel.updatePhoneNumber(value);
+                _validatePhoneNumber(value);
+              },
+              errorText: _phoneError,
+            ),
+            const SizedBox(height: 16),
+
+            // Email Address
+            _buildLabeledField('Email Address'),
+            _buildTextField(
+              controller: _emailController,
+              hintText: 'Enter your email address',
+              keyboardType: TextInputType.emailAddress,
+              onChanged: (value) {
+                widget.viewModel.updateEmail(value);
+                _validateEmail(value);
+              },
+              errorText: _emailError,
+            ),
+            const SizedBox(height: 16),
+
+            // Work Type
+            _buildLabeledField('Work Type'),
+            _buildSelectionField(
+              text: widget.viewModel.getSelectedWorkTypesText(),
+              onTap: _showWorkTypeSelectionModal,
+              errorText: _workTypeError,
+            ),
+            const SizedBox(height: 16),
+
+            // Years of Experience
+            _buildLabeledField('Years of Experience'),
+            _buildTextField(
+              controller: _yearsController,
+              hintText: 'Enter years of experience',
+              keyboardType: TextInputType.number,
+              onChanged: (value) {
+                widget.viewModel.updateYearsOfExperience(int.tryParse(value) ?? 0);
+                _validateYearsOfExperience(value);
+              },
+              errorText: _yearsError,
+            ),
+            const SizedBox(height: 16),
+
+            // Experience Country
+            _buildLabeledField('Experience Country'),
+            _buildSelectionField(
+              text: widget.viewModel.getSelectedCountryText(),
+              onTap: _showCountrySelectionModal,
+              errorText: _countryError,
+            ),
+            const SizedBox(height: 32),
+
+            // Error message
+            if (widget.viewModel.errorMessage != null)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Fill in your details to register as a skilled worker.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: isDarkMode ? lightGrayColor : grayColor,
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Full Name
-              _buildLabeledField('Full Name'),
-              _buildTextField(
-                controller: _nameController,
-                hintText: 'Enter your full name',
-                onChanged: viewModel.updateFullName,
-              ),
-              const SizedBox(height: 16),
-
-              // Phone Number
-              _buildLabeledField('Phone Number'),
-              _buildTextField(
-                controller: _phoneController,
-                hintText: 'Enter your phone number',
-                keyboardType: TextInputType.phone,
-                onChanged: viewModel.updatePhoneNumber,
-              ),
-              const SizedBox(height: 16),
-
-              // Email Address
-              _buildLabeledField('Email Address'),
-              _buildTextField(
-                controller: _emailController,
-                hintText: 'Enter your email address',
-                keyboardType: TextInputType.emailAddress,
-                onChanged: viewModel.updateEmail,
-              ),
-              const SizedBox(height: 16),
-
-              // Work Type
-              _buildLabeledField('Work Type'),
-              _buildSelectionField(
-                text: viewModel.getSelectedWorkTypesText(),
-                onTap: _showWorkTypeSelectionModal,
-              ),
-              const SizedBox(height: 16),
-
-              // Years of Experience
-              _buildLabeledField('Years of Experience'),
-              _buildTextField(
-                controller: _yearsController,
-                hintText: 'Enter years of experience',
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  viewModel.updateYearsOfExperience(int.tryParse(value) ?? 0);
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Experience Country
-              _buildLabeledField('Experience Country'),
-              _buildSelectionField(
-                text: viewModel.getSelectedCountryText(),
-                onTap: _showCountrySelectionModal,
-              ),
-              const SizedBox(height: 32),
-
-              // Error message
-              if (viewModel.errorMessage != null)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    viewModel.errorMessage!,
-                    style: const TextStyle(
-                      color: Colors.red,
-                    ),
-                  ),
-                ),
-              if (viewModel.errorMessage != null)
-                const SizedBox(height: 20),
-
-              // Submit button
-              ElevatedButton(
-                onPressed: viewModel.isLoading ? null : _submitForm,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: darkColor,
-                  foregroundColor: Colors.amber,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  disabledBackgroundColor: Colors.grey,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: viewModel.isLoading
-                    ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                )
-                    : const Text(
-                  'Submit',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                child: Text(
+                  widget.viewModel.errorMessage!,
+                  style: const TextStyle(
+                    color: Colors.red,
                   ),
                 ),
               ),
+            if (widget.viewModel.errorMessage != null)
               const SizedBox(height: 20),
 
-              // Learn about benefits
-              Center(
-                child: TextButton(
-                  onPressed: _navigateToBenefits,
-                  child: Text(
-                    'Learn about worker benefits',
-                    style: TextStyle(
-                      color: primaryColor,
-                      decoration: TextDecoration.underline,
-                    ),
+            // Submit button
+            ElevatedButton(
+              onPressed: widget.viewModel.isLoading ? null : _submitForm,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: darkColor,
+                foregroundColor: Colors.amber,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                disabledBackgroundColor: Colors.grey,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: widget.viewModel.isLoading
+                  ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+                  : const Text(
+                'Submit',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Learn about benefits
+            Center(
+              child: TextButton(
+                onPressed: _navigateToBenefits,
+                child: Text(
+                  'Learn about worker benefits',
+                  style: TextStyle(
+                    color: primaryColor,
+                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildLabeledField(String label) {
-    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Text(
@@ -301,7 +459,7 @@ class _BusinessProfileListViewState extends State<BusinessProfileListView> {
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          color: isDarkMode ? lightColor : darkColor,
+          color: widget.isDarkMode ? lightColor : darkColor,
         ),
       ),
     );
@@ -312,70 +470,104 @@ class _BusinessProfileListViewState extends State<BusinessProfileListView> {
     required String hintText,
     required Function(String) onChanged,
     TextInputType keyboardType = TextInputType.text,
+    String? errorText,
   }) {
-    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isDarkMode ? grayColor.withOpacity(0.3) : grayColor.withOpacity(0.3),
-        ),
-      ),
-      child: TextField(
-        controller: controller,
-        onChanged: onChanged,
-        keyboardType: keyboardType,
-        style: TextStyle(
-          color: isDarkMode ? lightColor : darkColor,
-        ),
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          hintText: hintText,
-          hintStyle: TextStyle(
-            color: isDarkMode ? lightGrayColor : grayColor,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: errorText != null
+                  ? Colors.red
+                  : (widget.isDarkMode ? grayColor.withOpacity(0.3) : grayColor.withOpacity(0.3)),
+            ),
           ),
-          border: InputBorder.none,
+          child: TextField(
+            controller: controller,
+            onChanged: onChanged,
+            keyboardType: keyboardType,
+            style: TextStyle(
+              color: widget.isDarkMode ? lightColor : darkColor,
+            ),
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              hintText: hintText,
+              hintStyle: TextStyle(
+                color: widget.isDarkMode ? lightGrayColor : grayColor,
+              ),
+              border: InputBorder.none,
+            ),
+          ),
         ),
-      ),
+        if (errorText != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+            child: Text(
+              errorText,
+              style: const TextStyle(
+                color: Colors.red,
+                fontSize: 12,
+              ),
+            ),
+          ),
+      ],
     );
   }
 
   Widget _buildSelectionField({
     required String text,
     required VoidCallback onTap,
+    String? errorText,
   }) {
-    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
-
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isDarkMode ? grayColor.withOpacity(0.3) : grayColor.withOpacity(0.3),
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                text,
-                style: TextStyle(
-                  color: text.contains('e.g.') || text == 'Select Country'
-                      ? (isDarkMode ? lightGrayColor : grayColor)
-                      : (isDarkMode ? lightColor : darkColor),
-                ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: errorText != null
+                    ? Colors.red
+                    : (widget.isDarkMode ? grayColor.withOpacity(0.3) : grayColor.withOpacity(0.3)),
               ),
             ),
-            Icon(
-              Icons.keyboard_arrow_down,
-              color: isDarkMode ? lightGrayColor : grayColor,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    text,
+                    style: TextStyle(
+                      color: text.contains('e.g.') || text == 'Select Country'
+                          ? (widget.isDarkMode ? lightGrayColor : grayColor)
+                          : (widget.isDarkMode ? lightColor : darkColor),
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.keyboard_arrow_down,
+                  color: widget.isDarkMode ? lightGrayColor : grayColor,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+        if (errorText != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+            child: Text(
+              errorText,
+              style: const TextStyle(
+                color: Colors.red,
+                fontSize: 12,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
