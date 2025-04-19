@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/notification/models/notification_model.dart';
+import '../../utils/date_time_utils.dart';
+
 
 class NotificationCardWidget extends StatelessWidget {
   final NotificationModel notification;
@@ -101,17 +103,11 @@ class NotificationCardWidget extends StatelessWidget {
     );
   }
 
-  String _formatTimeAgo(DateTime timestamp) {
-    final Duration difference = DateTime.now().difference(timestamp);
-    if (difference.inDays > 0) {
-      return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours} ${difference.inHours == 1 ? 'hr' : 'hrs'} ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} min ago';
-    } else {
-      return 'Just now';
-    }
+  // format time ago
+
+  String _formatTimeAgo(DateTime dateTime) {
+    // Don't cast the Duration to DateTime - just pass the original dateTime
+    return formatTimeAgo(dateTime);
   }
 
   IconData _getIconData(NotificationType type) {

@@ -31,12 +31,6 @@ class AppNavBarState extends State<AppNavBar> {
     Icons.chat,
   ];
 
-  final List<String> _routeNames = [
-    '/orders',
-    '/home',
-    '/inbox',
-  ];
-
   @override
   void initState() {
     super.initState();
