@@ -213,7 +213,7 @@ class _OrderListViewState extends State<OrderListView> with SingleTickerProvider
           _buildOrderList(_historyOrders, 'No order history', isDarkMode),
         ],
       ),
-      bottomNavigationBar: const AppNavBar(),
+        bottomNavigationBar: const AppNavBar(currentIndex: 0),
     );
   }
 
