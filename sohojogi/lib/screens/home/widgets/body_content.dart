@@ -4,6 +4,8 @@ import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/service_searched/views/service_searched_list_view.dart';
 import 'package:sohojogi/screens/location/views/location_list_view.dart';
 
+import '../../worker_profile/views/worker_profile_screen.dart';
+
 class HomeBodyContent extends StatefulWidget {
   const HomeBodyContent({super.key});
 
@@ -397,11 +399,17 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: InkWell(
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Viewing ${provider['name']}\'s profile')),
-                          );
-                        },
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => WorkerProfileScreen(
+                                    workerId: provider['id'],
+                                  ),
+                                ),
+                              );
+                            },
+                        // This is your existing worker card widget
                         borderRadius: BorderRadius.circular(12),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,

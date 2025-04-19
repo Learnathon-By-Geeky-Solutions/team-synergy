@@ -1,4 +1,5 @@
 // lib/screens/service_searched/models/service_provider_model.dart
+
 enum Gender { male, female, other }
 
 class ServiceProviderModel {
