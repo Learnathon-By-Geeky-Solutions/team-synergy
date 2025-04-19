@@ -1,4 +1,3 @@
-// lib/screens/order/models/order_model.dart
 import 'package:flutter/material.dart';
 
 import '../../../constants/colors.dart';

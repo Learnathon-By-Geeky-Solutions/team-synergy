@@ -5,7 +5,6 @@ import 'package:sohojogi/screens/business_profile/views/business_profile_list_vi
 import 'package:sohojogi/screens/profile/view_model/profile_view_model.dart';
 import 'package:sohojogi/screens/profile/views/profile_edit_view.dart';
 import '../business_profile/view_model/worker_registration_view_model.dart';
-import 'package:sohojogi/screens/business_profile/views/worker_benefits_view.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/notification/models/notification_model.dart';
-import 'package:sohojogi/utils/notification_utils.dart';
+import '../../utils/date_time_utils.dart';
 
 class NotificationCardWidget extends StatelessWidget {
   final NotificationModel notification;
@@ -100,5 +100,46 @@ class NotificationCardWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // format time ago
+
+  String _formatTimeAgo(DateTime dateTime) {
+    // Don't cast the Duration to DateTime - just pass the original dateTime
+    return formatTimeAgo(dateTime);
+  }
+
+  IconData _getIconData(NotificationType type) {
+    switch (type) {
+      case NotificationType.orderAccepted:
+        return Icons.assignment;
+      case NotificationType.confirmOrder:
+        return Icons.verified_user;
+      case NotificationType.orderAssigned:
+        return Icons.engineering;
+      case NotificationType.orderCompleted:
+        return Icons.check_circle;
+      case NotificationType.orderCancelled:
+        return Icons.sentiment_dissatisfied;
+      case NotificationType.announcement:
+        return Icons.campaign;
+    }
+  }
+
+  Color _getIconBackgroundColor(NotificationType type) {
+    switch (type) {
+      case NotificationType.orderAccepted:
+        return Colors.orange;
+      case NotificationType.confirmOrder:
+        return Colors.purple;
+      case NotificationType.orderAssigned:
+        return Colors.blue;
+      case NotificationType.orderCompleted:
+        return Colors.green;
+      case NotificationType.orderCancelled:
+        return Colors.red;
+      case NotificationType.announcement:
+        return Colors.grey.shade700;
+    }
   }
 }

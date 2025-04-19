@@ -1,7 +1,7 @@
-// lib/screens/order/widgets/order_card_widget.dart
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/order/models/order_model.dart';
+import '../../utils/date_time_utils.dart';
 
 class OrderCardWidget extends StatelessWidget {
   final OrderModel order;
@@ -14,19 +14,8 @@ class OrderCardWidget extends StatelessWidget {
   });
 
   String _formatTimeAgo(DateTime dateTime) {
-    final difference = DateTime.now().difference(dateTime);
-
-    if (difference.inDays > 7) {
-      return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-    } else if (difference.inDays > 0) {
-      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours} hr${difference.inHours > 1 ? 's' : ''} ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} min${difference.inMinutes > 1 ? 's' : ''} ago';
-    } else {
-      return 'Just now';
-    }
+    // Don't cast the Duration to DateTime - just pass the original dateTime
+    return formatTimeAgo(dateTime);
   }
 
   @override
