@@ -1,4 +1,3 @@
-// lib/screens/notification/models/notification_model.dart
 enum NotificationType {
   orderAccepted,
   confirmOrder,
