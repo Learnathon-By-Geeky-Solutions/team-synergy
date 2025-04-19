@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';
+import 'package:sohojogi/screens/business_profile/views/business_profile_list_view.dart';
+import '../business_profile/view_model/worker_registration_view_model.dart';
+import 'package:sohojogi/screens/business_profile/views/worker_benefits_view.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -22,7 +26,7 @@ class AppDrawer extends StatelessWidget {
                 children: [
                   const CircleAvatar(
                     radius: 30,
-                    backgroundImage: AssetImage('assets/images/user_image.png'), // Replace with actual user image
+                    backgroundImage: AssetImage('assets/images/user_image.png'),
                   ),
                   const SizedBox(width: 10),
                   Column(
@@ -106,12 +110,302 @@ class AppDrawer extends StatelessWidget {
           ),
         ),
         ...items.map((item) => ListTile(
-          title: Text(item, style: Theme.of(context).textTheme.bodyMedium),
-          onTap: () {
-            // Handle menu item tap
-          },
+          title: Text(item, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: isDarkMode ? lightColor : darkColor,
+          )),
+          onTap: () => _handleNavigation(context, item),
         )),
       ],
+    );
+  }
+
+  void _handleNavigation(BuildContext context, String item) {
+    // Close drawer first
+    Navigator.pop(context);
+
+    // Handle navigation based on item
+    switch (item) {
+      case 'Business Profile':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChangeNotifierProvider(
+              create: (_) => WorkerRegistrationViewModel(),
+              child: BusinessProfileListView(
+                onBackPressed: () => Navigator.pop(context),
+              ),
+            ),
+          ),
+        );
+        break;
+
+      case 'Payment Methods':
+        _showComingSoonSnackBar(context, 'Payment Methods');
+        break;
+
+      case 'Saved Address':
+        _showComingSoonSnackBar(context, 'Saved Address');
+        break;
+
+      case 'Bookmark':
+        _showComingSoonSnackBar(context, 'Bookmarks');
+        break;
+
+      case 'Membership':
+        _showComingSoonSnackBar(context, 'Membership Plans');
+        break;
+
+      case 'Offers & Promos':
+        _showComingSoonSnackBar(context, 'Offers & Promotions');
+        break;
+
+      case 'Refer & Discount':
+        _showComingSoonSnackBar(context, 'Referral Program');
+        break;
+
+      case 'Theme':
+        _showThemeSelectionDialog(context);
+        break;
+
+      case 'Language':
+        _showLanguageSelectionDialog(context);
+        break;
+
+      case 'Account Security':
+        _showComingSoonSnackBar(context, 'Account Security');
+        break;
+
+      case 'Terms & Privacy':
+        _showComingSoonSnackBar(context, 'Terms and Privacy Policy');
+        break;
+
+      case 'Permissions':
+        _showComingSoonSnackBar(context, 'App Permissions');
+        break;
+
+      case 'Help Center':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HelpCenterScreen(),
+          ),
+        );
+        break;
+
+      case 'Log Out':
+        _showLogoutConfirmationDialog(context);
+        break;
+
+      default:
+      // Default case if item doesn't match
+        break;
+    }
+  }
+
+  void _showComingSoonSnackBar(BuildContext context, String feature) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$feature feature coming soon'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _showThemeSelectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Theme'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('Light'),
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Light theme selected')),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('Dark'),
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Dark theme selected')),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('System Default'),
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('System default theme selected')),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLanguageSelectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Language'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('English'),
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('English language selected')),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('Arabic'),
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Arabic language selected')),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('Bengali'),
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Bengali language selected')),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Log Out'),
+        content: const Text('Are you sure you want to log out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Logged out successfully')),
+              );
+              // TODO: Implement actual logout logic
+              // This might include clearing authentication tokens and navigating to login screen
+            },
+            child: const Text('Log Out'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Simple Help Center screen
+class HelpCenterScreen extends StatelessWidget {
+  const HelpCenterScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Help Center'),
+        backgroundColor: isDarkMode ? darkColor : lightColor,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          _buildHelpItem(
+            context,
+            'FAQs',
+            'Get answers to common questions',
+            Icons.help_outline,
+            isDarkMode,
+          ),
+          _buildHelpItem(
+            context,
+            'Contact Support',
+            'Reach out to our support team',
+            Icons.support_agent,
+            isDarkMode,
+          ),
+          _buildHelpItem(
+            context,
+            'Report an Issue',
+            'Let us know about any problems',
+            Icons.bug_report,
+            isDarkMode,
+          ),
+          _buildHelpItem(
+            context,
+            'Request a Feature',
+            'Suggest improvements to our app',
+            Icons.lightbulb_outline,
+            isDarkMode,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHelpItem(
+      BuildContext context,
+      String title,
+      String subtitle,
+      IconData icon,
+      bool isDarkMode,
+      ) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      color: isDarkMode ? darkColor.withOpacity(0.8) : lightColor,
+      child: ListTile(
+        leading: Icon(icon, color: primaryColor),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: isDarkMode ? lightColor : darkColor,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(
+            color: isDarkMode ? lightGrayColor : grayColor,
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          size: 16,
+          color: isDarkMode ? lightGrayColor : grayColor,
+        ),
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('$title page coming soon')),
+          );
+        },
+      ),
     );
   }
 }
