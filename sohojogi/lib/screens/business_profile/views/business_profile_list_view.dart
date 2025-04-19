@@ -13,9 +13,9 @@ class BusinessProfileListView extends StatelessWidget {
   final VoidCallback onBackPressed;
 
   const BusinessProfileListView({
-    Key? key,
+    super.key,
     required this.onBackPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -63,11 +63,11 @@ class RegistrationFormWidget extends StatefulWidget {
   final VoidCallback onBackPressed;
 
   const RegistrationFormWidget({
-    Key? key,
+    super.key,
     required this.viewModel,
     required this.isDarkMode,
     required this.onBackPressed,
-  }) : super(key: key);
+  });
 
   @override
   State<RegistrationFormWidget> createState() => _RegistrationFormWidgetState();

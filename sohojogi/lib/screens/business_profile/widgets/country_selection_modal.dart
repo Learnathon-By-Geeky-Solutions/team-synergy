@@ -8,10 +8,10 @@ class CountrySelectionModal extends StatelessWidget {
   final Function(String) onToggleCountry;
 
   const CountrySelectionModal({
-    Key? key,
+    super.key,
     required this.countries,
     required this.onToggleCountry,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

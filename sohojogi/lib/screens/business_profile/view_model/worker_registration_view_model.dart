@@ -1,4 +1,3 @@
-// lib/screens/business_profile/view_model/worker_registration_view_model.dart
 import 'package:flutter/material.dart';
 import '../models/worker_registration_model.dart';
 
@@ -9,7 +8,6 @@ class WorkerRegistrationViewModel extends ChangeNotifier {
   bool _registrationSuccess = false;
 
   // Available work types
-
   final List<WorkTypeModel> _workTypes = [
     WorkTypeModel(id: '1', name: 'Plumber', icon: 'assets/icons/plumber.png'),
     WorkTypeModel(id: '2', name: 'Cleaning', icon: 'assets/icons/cleaning.png'),
@@ -75,12 +73,10 @@ class WorkerRegistrationViewModel extends ChangeNotifier {
   }
 
   void toggleCountry(String id) {
-    // First unselect all countries
     for (var country in _countries) {
       country.isSelected = false;
     }
 
-    // Then select the chosen one
     final index = _countries.indexWhere((country) => country.id == id);
     if (index != -1) {
       _countries[index].isSelected = true;
