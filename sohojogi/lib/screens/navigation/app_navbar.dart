@@ -1,6 +1,10 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
+import 'package:sohojogi/screens/chat/views/inbox_list_view.dart';
+import 'package:sohojogi/screens/home/views/home_list_view.dart';
+
+import '../order/views/order_list_view.dart';
 
 class AppNavBar extends StatefulWidget {
   const AppNavBar({super.key});
@@ -22,6 +26,12 @@ class AppNavBarState extends State<AppNavBar> {
     Icons.shopping_cart,
     Icons.home,
     Icons.chat,
+  ];
+
+  final List<Widget> _screens = [
+    const OrderListView(),
+    const HomeScreen(),
+    const InboxListView(),
   ];
 
   @override
@@ -51,6 +61,12 @@ class AppNavBarState extends State<AppNavBar> {
         setState(() {
           _selectedIndex = index;
         });
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => _screens[index],
+          ),
+        );
       },
       animationDuration: const Duration(milliseconds: 200),
       buttonBackgroundColor: (isDarkMode ? darkColor : primaryColor),
@@ -58,3 +74,4 @@ class AppNavBarState extends State<AppNavBar> {
     );
   }
 }
+
