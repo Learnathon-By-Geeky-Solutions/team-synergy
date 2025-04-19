@@ -1,4 +1,3 @@
-// lib/screens/business_profile/widgets/registration_success_modal.dart
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 

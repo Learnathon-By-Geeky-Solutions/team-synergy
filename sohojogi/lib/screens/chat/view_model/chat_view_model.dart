@@ -1,4 +1,3 @@
-// lib/screens/chat/view_model/chat_view_model.dart
 import 'package:flutter/material.dart';
 import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
@@ -111,7 +110,7 @@ class ChatViewModel extends ChangeNotifier {
 
     _messages.add(newMessage);
 
-    // Update the last message in the conversation list
+    // Update the conversation list with the last message
     final index = _conversations.indexWhere((c) => c.id == _activeConversationId);
     if (index != -1) {
       final conversation = _conversations[index];

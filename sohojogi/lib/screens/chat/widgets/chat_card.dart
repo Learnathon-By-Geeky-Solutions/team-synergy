@@ -1,4 +1,3 @@
-// lib/screens/chat/widgets/chat_card.dart
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import '../models/chat_conversation.dart';
