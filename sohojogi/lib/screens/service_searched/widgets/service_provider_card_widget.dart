@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/service_searched/models/service_provider_model.dart';
 
+import '../../worker_profile/views/worker_profile_screen.dart';
+
 class ServiceProviderCardWidget extends StatelessWidget {
   final ServiceProviderModel serviceProvider;
   final VoidCallback onCardTap;
@@ -33,7 +35,17 @@ class ServiceProviderCardWidget extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.zero,
       child: InkWell(
-        onTap: onCardTap,
+
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => WorkerProfileScreen(
+                  workerId: serviceProvider.id,
+                ),
+              ),
+            );
+          },
         borderRadius: BorderRadius.circular(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,6 +57,7 @@ class ServiceProviderCardWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Profile picture
+
                   GestureDetector(
                     onTap: onCardTap,
                     child: Container(

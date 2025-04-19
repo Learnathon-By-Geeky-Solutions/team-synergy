@@ -1,4 +1,5 @@
 // lib/screens/service_searched/views/service_searched_list_view.dart
+
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/navigation/app_navbar.dart';
