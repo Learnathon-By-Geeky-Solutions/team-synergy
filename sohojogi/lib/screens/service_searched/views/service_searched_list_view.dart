@@ -231,7 +231,7 @@ class _ServiceSearchedListViewState extends State<ServiceSearchedListView> {
                     onTap: () async {
                       final selectedLocation = await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const LocationScreen()),
+                        MaterialPageRoute(builder: (context) => const LocationListView()),
                       );
 
                       if (selectedLocation != null && mounted) {

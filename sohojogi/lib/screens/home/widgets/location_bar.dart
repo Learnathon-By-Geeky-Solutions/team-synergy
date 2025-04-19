@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/location/views/location_list_view.dart';
+import 'package:sohojogi/screens/location/view_model/location_view_model.dart';
 
 class LocationBar extends StatelessWidget {
   final String currentLocation;
@@ -20,7 +22,12 @@ class LocationBar extends StatelessWidget {
       onTap: () async {
         final selectedLocation = await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const LocationScreen()),
+          MaterialPageRoute(
+            builder: (context) => ChangeNotifierProvider(
+              create: (_) => LocationViewModel(),
+              child: const LocationListView(),
+            ),
+          ),
         );
 
         if (selectedLocation != null) {
