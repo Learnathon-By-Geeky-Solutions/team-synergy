@@ -11,7 +11,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppAppBar(title: 'Sohojogi',),
+      appBar: const AppAppBar(),
       body: const SingleChildScrollView(
         child: HomeBodyContent(),
       ),
