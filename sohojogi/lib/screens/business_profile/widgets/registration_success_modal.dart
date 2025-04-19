@@ -6,9 +6,9 @@ class RegistrationSuccessModal extends StatelessWidget {
   final VoidCallback onOkPressed;
 
   const RegistrationSuccessModal({
-    Key? key,
+    super.key,
     required this.onOkPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class RegistrationSuccessModal extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green,
                 shape: BoxShape.circle,
               ),
               child: const Icon(

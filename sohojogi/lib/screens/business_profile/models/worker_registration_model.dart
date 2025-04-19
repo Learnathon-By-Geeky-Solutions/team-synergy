@@ -1,4 +1,3 @@
-// lib/screens/business_profile/models/worker_registration_model.dart
 class WorkerRegistrationModel {
   String fullName;
   String phoneNumber;

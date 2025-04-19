@@ -8,10 +8,10 @@ class WorkTypeSelectionModal extends StatelessWidget {
   final Function(String) onToggleWorkType;
 
   const WorkTypeSelectionModal({
-    Key? key,
+    super.key,
     required this.workTypes,
     required this.onToggleWorkType,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
