@@ -1,4 +1,3 @@
-// lib/screens/service_searched/widgets/search_header_widget.dart
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 
@@ -8,6 +7,8 @@ class SearchHeaderWidget extends StatelessWidget {
   final VoidCallback onFilterTap;
   final VoidCallback onBackTap;
   final VoidCallback onLocationTap;
+  final TextEditingController searchController;
+  final Function(String) onSearchSubmitted;
 
   const SearchHeaderWidget({
     super.key,
@@ -16,6 +17,8 @@ class SearchHeaderWidget extends StatelessWidget {
     required this.onFilterTap,
     required this.onBackTap,
     required this.onLocationTap,
+    required this.searchController,
+    required this.onSearchSubmitted,
   });
 
   @override
@@ -27,7 +30,7 @@ class SearchHeaderWidget extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          // Top row with back button and filter
+          // Top row with back button, search bar, and filter
           Row(
             children: [
               // Back button
@@ -47,7 +50,35 @@ class SearchHeaderWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              const Spacer(),
+
+              // Search bar
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: TextField(
+                    controller: searchController,
+                    onSubmitted: onSearchSubmitted,
+                    decoration: InputDecoration(
+                      hintText: 'Search for services...',
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      filled: true,
+                      fillColor: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none,
+                      ),
+                      suffixIcon: Icon(
+                        Icons.search,
+                        color: isDarkMode ? lightGrayColor : grayColor,
+                      ),
+                    ),
+                    style: TextStyle(
+                      color: isDarkMode ? lightColor : darkColor,
+                    ),
+                  ),
+                ),
+              ),
+
               // Filter button
               InkWell(
                 onTap: onFilterTap,

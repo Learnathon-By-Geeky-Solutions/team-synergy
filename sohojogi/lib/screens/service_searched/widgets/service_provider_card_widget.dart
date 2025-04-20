@@ -1,8 +1,6 @@
-// lib/screens/service_searched/widgets/service_provider_card_widget.dart
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/service_searched/models/service_provider_model.dart';
-
 import '../../worker_profile/views/worker_profile_screen.dart';
 
 class ServiceProviderCardWidget extends StatelessWidget {
