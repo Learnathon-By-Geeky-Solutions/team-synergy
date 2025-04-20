@@ -1,4 +1,3 @@
-// lib/screens/profile/views/profile_edit_view.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';
@@ -11,9 +10,9 @@ class ProfileEditView extends StatelessWidget {
   final VoidCallback onBackPressed;
 
   const ProfileEditView({
-    Key? key,
+    super.key,
     required this.onBackPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -92,11 +91,11 @@ class ProfileFormWidget extends StatefulWidget {
   final VoidCallback onBackPressed;
 
   const ProfileFormWidget({
-    Key? key,
+    super.key,
     required this.viewModel,
     required this.isDarkMode,
     required this.onBackPressed,
-  }) : super(key: key);
+  });
 
   @override
   State<ProfileFormWidget> createState() => _ProfileFormWidgetState();
@@ -174,7 +173,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
   }
 
   bool _validateEmail(String email) {
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(email)) {
       setState(() => _emailError = 'Please enter a valid email address');
       return false;

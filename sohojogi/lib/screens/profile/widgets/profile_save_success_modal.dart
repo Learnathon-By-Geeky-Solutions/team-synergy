@@ -1,4 +1,3 @@
-// lib/screens/profile/widgets/profile_save_success_modal.dart
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 
@@ -6,9 +5,9 @@ class ProfileSaveSuccessModal extends StatelessWidget {
   final VoidCallback onOkPressed;
 
   const ProfileSaveSuccessModal({
-    Key? key,
+    super.key,
     required this.onOkPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

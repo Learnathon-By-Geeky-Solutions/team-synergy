@@ -1,155 +1,227 @@
-// lib/screens/profile/view_model/profile_view_model.dart
 import 'package:flutter/material.dart';
-import 'dart:io';
-import '../models/profile_model.dart';
+import 'package:provider/provider.dart';
+import 'package:sohojogi/constants/colors.dart';
+import '../view_model/profile_view_model.dart';
+import 'profile_edit_view.dart';
 
-class ProfileViewModel extends ChangeNotifier {
-  ProfileModel _profileData = ProfileModel();
-  bool _isLoading = false;
-  String? _errorMessage;
-  bool _hasChanges = false;
-  File? _profileImageFile;
+class ProfileListView extends StatelessWidget {
+  final VoidCallback onBackPressed;
 
-  // Getters
-  ProfileModel get profileData => _profileData;
-  bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage;
-  bool get hasChanges => _hasChanges;
+  const ProfileListView({super.key, required this.onBackPressed});
 
-  // Constructor - load data when created
-  ProfileViewModel() {
-    loadProfile();
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = Provider.of<ProfileViewModel>(context);
+    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
+    return Scaffold(
+      backgroundColor: isDarkMode ? darkColor : const Color(0xFFFFF8EC),
+      appBar: AppBar(
+        backgroundColor: isDarkMode ? darkColor : const Color(0xFFFFF8EC),
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDarkMode ? lightColor : darkColor,
+          ),
+          onPressed: onBackPressed,
+        ),
+        title: Text(
+          'My Profile',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: isDarkMode ? lightColor : darkColor,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.edit,
+              color: primaryColor,
+            ),
+            onPressed: () => _navigateToEditProfile(context),
+          ),
+        ],
+      ),
+      body: viewModel.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _buildProfileContent(context, viewModel, isDarkMode),
+    );
   }
 
-  // Load profile data
-  Future<void> loadProfile() async {
-    _isLoading = true;
-    notifyListeners();
-
-    try {
-      // Simulate API call with delay
-      await Future.delayed(const Duration(milliseconds: 800));
-
-      // In a real app, you would fetch from API
-      _profileData = ProfileModel(
-        fullName: 'John Doe',
-        email: 'johndoe@example.com',
-        isEmailVerified: true,
-        phoneNumber: '+1 234 567 8901',
-        gender: 'Male',
-        profilePhotoUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
-      );
-
-      _isLoading = false;
-      _hasChanges = false;
-      notifyListeners();
-    } catch (e) {
-      _isLoading = false;
-      _errorMessage = 'Failed to load profile data. Please try again.';
-      notifyListeners();
-    }
+  Widget _buildProfileContent(BuildContext context, ProfileViewModel viewModel, bool isDarkMode) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildProfileHeader(context, viewModel, isDarkMode),
+          const SizedBox(height: 24),
+          _buildProfileDetails(context, viewModel, isDarkMode),
+        ],
+      ),
+    );
   }
 
-  // Update methods
-  void updateFullName(String name) {
-    if (_profileData.fullName != name) {
-      _profileData = ProfileModel(
-        fullName: name,
-        email: _profileData.email,
-        isEmailVerified: _profileData.isEmailVerified,
-        phoneNumber: _profileData.phoneNumber,
-        gender: _profileData.gender,
-        profilePhotoUrl: _profileData.profilePhotoUrl,
-      );
-      _hasChanges = true;
-      notifyListeners();
-    }
+  Widget _buildProfileHeader(BuildContext context, ProfileViewModel viewModel, bool isDarkMode) {
+    return Center(
+      child: Column(
+        children: [
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isDarkMode ? darkColor.withOpacity(0.5) : grayColor.withOpacity(0.3),
+              image: viewModel.profileData.profilePhotoUrl != null
+                  ? DecorationImage(
+                image: NetworkImage(viewModel.profileData.profilePhotoUrl!),
+                fit: BoxFit.cover,
+              )
+                  : null,
+            ),
+            child: viewModel.profileData.profilePhotoUrl == null
+                ? Icon(
+              Icons.person,
+              size: 60,
+              color: isDarkMode ? lightGrayColor : grayColor,
+            )
+                : null,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            viewModel.profileData.fullName,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: isDarkMode ? lightColor : darkColor,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  void updateEmail(String email) {
-    if (_profileData.email != email) {
-      _profileData = ProfileModel(
-        fullName: _profileData.fullName,
-        email: email,
-        isEmailVerified: email == _profileData.email ? _profileData.isEmailVerified : false,
-        phoneNumber: _profileData.phoneNumber,
-        gender: _profileData.gender,
-        profilePhotoUrl: _profileData.profilePhotoUrl,
-      );
-      _hasChanges = true;
-      notifyListeners();
-    }
+  Widget _buildProfileDetails(BuildContext context, ProfileViewModel viewModel, bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Personal Information',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: isDarkMode ? lightColor : darkColor,
+          ),
+        ),
+        const SizedBox(height: 16),
+        _buildInfoItem(
+          context,
+          'Email',
+          viewModel.profileData.email,
+          Icons.email,
+          isDarkMode,
+          isVerified: viewModel.profileData.isEmailVerified,
+        ),
+        _buildInfoItem(
+          context,
+          'Phone',
+          viewModel.profileData.phoneNumber,
+          Icons.phone,
+          isDarkMode,
+        ),
+        _buildInfoItem(
+          context,
+          'Gender',
+          viewModel.profileData.gender,
+          Icons.person,
+          isDarkMode,
+        ),
+      ],
+    );
   }
 
-  void updatePhoneNumber(String phoneNumber) {
-    if (_profileData.phoneNumber != phoneNumber) {
-      _profileData = ProfileModel(
-        fullName: _profileData.fullName,
-        email: _profileData.email,
-        isEmailVerified: _profileData.isEmailVerified,
-        phoneNumber: phoneNumber,
-        gender: _profileData.gender,
-        profilePhotoUrl: _profileData.profilePhotoUrl,
-      );
-      _hasChanges = true;
-      notifyListeners();
-    }
+  Widget _buildInfoItem(
+      BuildContext context,
+      String label,
+      String value,
+      IconData icon,
+      bool isDarkMode, {
+        bool isVerified = false,
+      }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: isDarkMode ? darkColor.withOpacity(0.5) : grayColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              color: primaryColor,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: isDarkMode ? lightGrayColor : grayColor,
+                      ),
+                    ),
+                    if (isVerified) ...[
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.verified,
+                        color: Colors.green,
+                        size: 14,
+                      ),
+                      const SizedBox(width: 4),
+                      const Text(
+                        'Verified',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: isDarkMode ? lightColor : darkColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  void updateGender(String gender) {
-    if (_profileData.gender != gender) {
-      _profileData = ProfileModel(
-        fullName: _profileData.fullName,
-        email: _profileData.email,
-        isEmailVerified: _profileData.isEmailVerified,
-        phoneNumber: _profileData.phoneNumber,
-        gender: gender,
-        profilePhotoUrl: _profileData.profilePhotoUrl,
-      );
-      _hasChanges = true;
-      notifyListeners();
-    }
-  }
-
-  void updateProfileImage(File image) {
-    _profileImageFile = image;
-    // In a real app, you would upload the image to a server
-    // and then update the profilePhotoUrl
-    _hasChanges = true;
-    notifyListeners();
-  }
-
-  // Save profile changes
-  Future<bool> saveProfile() async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
-    try {
-      // Simulate API call with delay
-      await Future.delayed(const Duration(seconds: 1));
-
-      // In a real app, you would send the data to an API
-      if (_profileImageFile != null) {
-        // Simulate image upload
-        // profileData.profilePhotoUrl would be updated with the new URL
-      }
-
-      _isLoading = false;
-      _hasChanges = false;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      _isLoading = false;
-      _errorMessage = 'Failed to save profile. Please try again.';
-      notifyListeners();
-      return false;
-    }
-  }
-
-  // Reset any error messages
-  void resetError() {
-    _errorMessage = null;
-    notifyListeners();
+  void _navigateToEditProfile(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProfileEditView(
+          onBackPressed: () => Navigator.pop(context),
+        ),
+      ),
+    );
   }
 }
