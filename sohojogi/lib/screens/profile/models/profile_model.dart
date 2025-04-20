@@ -1,4 +1,3 @@
-// lib/screens/profile/models/profile_model.dart
 class ProfileModel {
   String fullName;
   String email;

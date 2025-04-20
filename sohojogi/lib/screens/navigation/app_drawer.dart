@@ -14,11 +14,9 @@ class AppDrawer extends StatelessWidget {
     final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     // Create a local provider if none is found above
-    return ChangeNotifierProvider(
-      create: (_) => ProfileViewModel(),
-      child: Consumer<ProfileViewModel>(
-          builder: (context, profileViewModel, _) {
-            return Drawer(
+    return Consumer<ProfileViewModel>(
+        builder: (context, profileViewModel, _) {
+          return Drawer(
               child: Container(
                 color: isDarkMode ? darkColor : lightColor,
                 child: ListView(
@@ -102,9 +100,8 @@ class AppDrawer extends StatelessWidget {
                   ],
                 ),
               ),
-            );
-          }
-      ),
+          );
+        }
     );
   }
 
@@ -142,15 +139,12 @@ class AppDrawer extends StatelessWidget {
     // Close the drawer first
     Navigator.pop(context);
 
-    // Navigate to profile edit page
+    // Navigate to profile edit page without creating a new ViewModel instance
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChangeNotifierProvider(
-          create: (_) => ProfileViewModel(),
-          child: ProfileEditView(
-            onBackPressed: () => Navigator.pop(context),
-          ),
+        builder: (context) => ProfileEditView(
+          onBackPressed: () => Navigator.pop(context),
         ),
       ),
     );

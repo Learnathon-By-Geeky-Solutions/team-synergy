@@ -1,4 +1,3 @@
-// lib/screens/profile/widgets/profile_image_selection_modal.dart
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'dart:io';
@@ -9,10 +8,10 @@ class ProfileImageSelectionModal extends StatelessWidget {
   final bool isDarkMode;
 
   const ProfileImageSelectionModal({
-    Key? key,
+    super.key,
     required this.onImageSelected,
     required this.isDarkMode,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +111,9 @@ class ProfileImageSelectionModal extends StatelessWidget {
         imageQuality: 70,
       );
 
+      // Check if context is still mounted before using it
+      if (!context.mounted) return;
+
       if (pickedFile != null) {
         onImageSelected(File(pickedFile.path));
         Navigator.of(context).pop();
@@ -125,6 +127,9 @@ class ProfileImageSelectionModal extends StatelessWidget {
         );
       }
     } catch (e) {
+      // Check if context is still mounted before using it
+      if (!context.mounted) return;
+
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
