@@ -1,5 +1,3 @@
-// lib/screens/worker_profile/models/worker_profile_model.dart
-import 'package:flutter/material.dart';
 import 'package:sohojogi/screens/service_searched/models/service_provider_model.dart';
 
 class WorkerProfileModel extends ServiceProviderModel {
@@ -16,16 +14,16 @@ class WorkerProfileModel extends ServiceProviderModel {
   final bool isVerified;
 
   WorkerProfileModel({
-    required String id,
-    required String name,
-    required String profileImage,
-    required String location,
-    required String serviceCategory,
-    required double rating,
-    required int reviewCount,
-    required String email,
-    required String phoneNumber,
-    required Gender gender,
+    required super.id,
+    required super.name,
+    required super.profileImage,
+    required super.location,
+    required super.serviceCategory,
+    required super.rating,
+    required super.reviewCount,
+    required super.email,
+    required super.phoneNumber,
+    required super.gender,
     required this.bio,
     required this.services,
     required this.skills,
@@ -37,18 +35,7 @@ class WorkerProfileModel extends ServiceProviderModel {
     required this.jobsCompleted,
     required this.yearsOfExperience,
     required this.isVerified,
-  }) : super(
-    id: id,
-    name: name,
-    profileImage: profileImage,
-    location: location,
-    serviceCategory: serviceCategory,
-    rating: rating,
-    reviewCount: reviewCount,
-    email: email,
-    phoneNumber: phoneNumber,
-    gender: gender,
-  );
+  });
 }
 
 class WorkerServiceModel {

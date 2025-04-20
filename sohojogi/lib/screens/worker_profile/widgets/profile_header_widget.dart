@@ -1,8 +1,6 @@
-// lib/screens/worker_profile/widgets/profile_header_widget.dart
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/worker_profile/models/worker_profile_model.dart';
-import 'package:sohojogi/screens/service_searched/models/service_provider_model.dart';
 
 class ProfileHeaderWidget extends StatelessWidget {
   final WorkerProfileModel worker;
