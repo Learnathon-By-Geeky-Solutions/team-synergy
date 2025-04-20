@@ -54,11 +54,11 @@ class CredentialsSectionWidget extends StatelessWidget {
               return Card(
                 elevation: 0,
                 margin: const EdgeInsets.only(bottom: 12),
-                color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade50,
+                color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade50,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(
-                    color: isDarkMode ? grayColor.withOpacity(0.3) : Colors.grey.shade300,
+                    color: isDarkMode ? grayColor.withValues(alpha: 0.3) : Colors.grey.shade300,
                     width: 1,
                   ),
                 ),
@@ -100,14 +100,14 @@ class CredentialsSectionWidget extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: qualification.expiryDate != null &&
                                   qualification.expiryDate!.isBefore(DateTime.now())
-                                  ? Colors.red.withOpacity(0.1)
-                                  : Colors.green.withOpacity(0.1),
+                                  ? Colors.red.withValues(alpha: 0.1)
+                                  : Colors.green.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 color: qualification.expiryDate != null &&
                                     qualification.expiryDate!.isBefore(DateTime.now())
-                                    ? Colors.red.withOpacity(0.5)
-                                    : Colors.green.withOpacity(0.5),
+                                    ? Colors.red.withValues(alpha: 0.5)
+                                    : Colors.green.withValues(alpha: 0.5),
                                 width: 1,
                               ),
                             ),

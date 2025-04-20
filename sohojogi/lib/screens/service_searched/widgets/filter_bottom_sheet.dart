@@ -130,7 +130,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   }
                 });
               },
-              selectedColor: primaryColor.withOpacity(0.2),
+              selectedColor: primaryColor.withValues(alpha: 0.2),
               checkmarkColor: primaryColor,
               backgroundColor: isDarkMode ? darkColor : Colors.grey.shade200,
               labelStyle: TextStyle(
@@ -162,7 +162,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   });
                 }
               },
-              selectedColor: primaryColor.withOpacity(0.2),
+              selectedColor: primaryColor.withValues(alpha: 0.2),
               backgroundColor: isDarkMode ? darkColor : Colors.grey.shade200,
               labelStyle: TextStyle(
                 color: isSelected ? primaryColor : (isDarkMode ? lightColor : darkColor),

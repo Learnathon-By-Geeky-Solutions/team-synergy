@@ -41,7 +41,7 @@ class SearchHeaderWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                    color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade200,
                   ),
                   child: Icon(
                     Icons.arrow_back,
@@ -62,7 +62,7 @@ class SearchHeaderWidget extends StatelessWidget {
                       hintText: 'Search for services...',
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       filled: true,
-                      fillColor: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                      fillColor: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade200,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none,
@@ -87,7 +87,7 @@ class SearchHeaderWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                    color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade200,
                   ),
                   child: Icon(
                     Icons.filter_list,

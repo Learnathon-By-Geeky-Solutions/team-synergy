@@ -84,13 +84,13 @@ class AvailabilitySectionWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         decoration: BoxDecoration(
           color: isDarkMode
-              ? (day.available ? grayColor.withOpacity(0.2) : Colors.red.withOpacity(0.05))
-              : (day.available ? Colors.green.withOpacity(0.05) : Colors.red.withOpacity(0.05)),
+              ? (day.available ? grayColor.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.05))
+              : (day.available ? Colors.green.withValues(alpha: 0.05) : Colors.red.withValues(alpha: 0.05)),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: day.available
-                ? (isDarkMode ? Colors.green.withOpacity(0.3) : Colors.green.withOpacity(0.2))
-                : (isDarkMode ? Colors.red.withOpacity(0.3) : Colors.red.withOpacity(0.2)),
+                ? (isDarkMode ? Colors.green.withValues(alpha: 0.3) : Colors.green.withValues(alpha: 0.2))
+                : (isDarkMode ? Colors.red.withValues(alpha: 0.3) : Colors.red.withValues(alpha: 0.2)),
             width: 1,
           ),
         ),
@@ -157,7 +157,7 @@ class AvailabilitySectionWidget extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 4),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: primaryColor.withOpacity(0.1),
+            color: primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(

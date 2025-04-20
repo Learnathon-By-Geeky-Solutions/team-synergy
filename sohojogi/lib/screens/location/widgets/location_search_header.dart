@@ -25,7 +25,7 @@ class LocationSearchHeader extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Container(
             decoration: BoxDecoration(
-              color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey[200],
+              color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey[200],
               borderRadius: BorderRadius.circular(8),
             ),
             child: TextField(

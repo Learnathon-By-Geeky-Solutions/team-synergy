@@ -22,7 +22,7 @@ class ServiceProviderCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
-    final dividerColor = isDarkMode ? lightGrayColor.withOpacity(0.3) : Colors.grey.shade300;
+    final dividerColor = isDarkMode ? lightGrayColor.withValues(alpha: 0.3) : Colors.grey.shade300;
 
     return Card(
       elevation: 2,
@@ -62,12 +62,12 @@ class ServiceProviderCardWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: primaryColor.withOpacity(0.3),
+                          color: primaryColor.withValues(alpha: 0.3),
                           width: 2,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -146,10 +146,10 @@ class ServiceProviderCardWidget extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: primaryColor.withOpacity(0.15),
+                            color: primaryColor.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: primaryColor.withOpacity(0.3),
+                              color: primaryColor.withValues(alpha: 0.3),
                               width: 1,
                             ),
                           ),
@@ -234,7 +234,7 @@ class ServiceProviderCardWidget extends StatelessWidget {
                         child: Text(
                           serviceProvider.email,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: isDarkMode ? lightColor.withOpacity(0.9) : darkColor.withOpacity(0.9),
+                            color: isDarkMode ? lightColor.withValues(alpha: 0.9) : darkColor.withValues(alpha: 0.9),
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -256,7 +256,7 @@ class ServiceProviderCardWidget extends StatelessWidget {
                         child: Text(
                           serviceProvider.phoneNumber,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: isDarkMode ? lightColor.withOpacity(0.9) : darkColor.withOpacity(0.9),
+                            color: isDarkMode ? lightColor.withValues(alpha: 0.9) : darkColor.withValues(alpha: 0.9),
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -270,7 +270,7 @@ class ServiceProviderCardWidget extends StatelessWidget {
             // Action buttons
             Container(
               decoration: BoxDecoration(
-                color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade50,
+                color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade50,
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(16),
                   bottomRight: Radius.circular(16),

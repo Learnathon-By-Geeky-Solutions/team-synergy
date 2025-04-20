@@ -97,10 +97,10 @@ class ReviewsSectionWidget extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isDarkMode ? grayColor.withOpacity(0.1) : Colors.grey.shade50,
+        color: isDarkMode ? grayColor.withValues(alpha: 0.1) : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+          color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade200,
         ),
       ),
       child: Column(
@@ -152,7 +152,7 @@ class ReviewsSectionWidget extends StatelessWidget {
             review.comment,
             style: TextStyle(
               fontSize: 14,
-              color: isDarkMode ? lightColor.withOpacity(0.9) : darkColor.withOpacity(0.9),
+              color: isDarkMode ? lightColor.withValues(alpha: 0.9) : darkColor.withValues(alpha: 0.9),
             ),
           ),
 

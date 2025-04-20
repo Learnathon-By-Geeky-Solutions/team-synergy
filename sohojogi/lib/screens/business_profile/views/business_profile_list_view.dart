@@ -386,7 +386,7 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -479,7 +479,7 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget> {
             border: Border.all(
               color: errorText != null
                   ? Colors.red
-                  : (widget.isDarkMode ? grayColor.withOpacity(0.3) : grayColor.withOpacity(0.3)),
+                  : (widget.isDarkMode ? grayColor.withValues(alpha: 0.3) : grayColor.withValues(alpha: 0.3)),
             ),
           ),
           child: TextField(
@@ -531,7 +531,7 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget> {
               border: Border.all(
                 color: errorText != null
                     ? Colors.red
-                    : (widget.isDarkMode ? grayColor.withOpacity(0.3) : grayColor.withOpacity(0.3)),
+                    : (widget.isDarkMode ? grayColor.withValues(alpha: 0.3) : grayColor.withValues(alpha: 0.3)),
               ),
             ),
             child: Row(

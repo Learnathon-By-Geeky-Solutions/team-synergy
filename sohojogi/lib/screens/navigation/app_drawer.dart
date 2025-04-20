@@ -125,7 +125,7 @@ class AppDrawer extends StatelessWidget {
     else {
       return CircleAvatar(
         radius: 30,
-        backgroundColor: isDarkMode ? lightGrayColor : grayColor.withOpacity(0.3),
+        backgroundColor: isDarkMode ? lightGrayColor : grayColor.withValues(alpha: 0.3),
         child: Icon(
           Icons.person,
           size: 30,
@@ -447,7 +447,7 @@ class HelpCenterScreen extends StatelessWidget {
       ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      color: isDarkMode ? darkColor.withOpacity(0.8) : lightColor,
+      color: isDarkMode ? darkColor.withValues(alpha: 0.8) : lightColor,
       child: ListTile(
         leading: Icon(icon, color: primaryColor),
         title: Text(

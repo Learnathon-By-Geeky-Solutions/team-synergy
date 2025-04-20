@@ -72,7 +72,7 @@ class ProfileListView extends StatelessWidget {
             height: 120,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isDarkMode ? darkColor.withOpacity(0.5) : grayColor.withOpacity(0.3),
+              color: isDarkMode ? darkColor.withValues(alpha: 0.5) : grayColor.withValues(alpha: 0.3),
               image: viewModel.profileData.profilePhotoUrl != null
                   ? DecorationImage(
                 image: NetworkImage(viewModel.profileData.profilePhotoUrl!),
@@ -157,7 +157,7 @@ class ProfileListView extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: isDarkMode ? darkColor.withOpacity(0.5) : grayColor.withOpacity(0.1),
+              color: isDarkMode ? darkColor.withValues(alpha: 0.5) : grayColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(

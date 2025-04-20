@@ -39,11 +39,11 @@ class ServicesSectionWidget extends StatelessWidget {
               return Card(
                 elevation: 0,
                 margin: const EdgeInsets.only(bottom: 12),
-                color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade50,
+                color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade50,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(
-                    color: isDarkMode ? grayColor.withOpacity(0.3) : Colors.grey.shade300,
+                    color: isDarkMode ? grayColor.withValues(alpha: 0.3) : Colors.grey.shade300,
                     width: 1,
                   ),
                 ),
@@ -78,7 +78,7 @@ class ServicesSectionWidget extends StatelessWidget {
                                           vertical: 2,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: Colors.orange.withOpacity(0.2),
+                                          color: Colors.orange.withValues(alpha: 0.2),
                                           borderRadius: BorderRadius.circular(12),
                                           border: Border.all(
                                             color: Colors.orange,
