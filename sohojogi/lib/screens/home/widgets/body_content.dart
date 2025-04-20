@@ -73,7 +73,7 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -208,7 +208,7 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                         gradient: LinearGradient(
                           colors: [
                             banner.color,
-                            banner.color.withOpacity(0.7),
+                            banner.color.withValues(alpha: 0.7),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -222,7 +222,7 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                             child: Icon(
                               Icons.shield,
                               size: 60,
-                              color: Colors.white.withOpacity(0.3),
+                              color: Colors.white.withValues(alpha: 0.3),
                             ),
                           ),
                           Center(
@@ -338,7 +338,7 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: primaryColor.withOpacity(0.15),
+                                color: primaryColor.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(

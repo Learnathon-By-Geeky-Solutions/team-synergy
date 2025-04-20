@@ -19,10 +19,10 @@ class RatingBreakdownWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade50,
+        color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDarkMode ? grayColor.withOpacity(0.3) : Colors.grey.shade200,
+          color: isDarkMode ? grayColor.withValues(alpha: 0.3) : Colors.grey.shade200,
         ),
       ),
       child: Column(
@@ -117,7 +117,7 @@ class RatingBreakdownWidget extends StatelessWidget {
               Container(
                 height: 8,
                 decoration: BoxDecoration(
-                  color: isDarkMode ? grayColor.withOpacity(0.3) : Colors.grey.shade200,
+                  color: isDarkMode ? grayColor.withValues(alpha: 0.3) : Colors.grey.shade200,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),

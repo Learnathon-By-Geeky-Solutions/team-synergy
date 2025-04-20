@@ -227,8 +227,8 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: isDarkMode
-          ? darkColor.withOpacity(0.95)
-          : lightColor.withOpacity(0.95),
+          ? darkColor.withValues(alpha: 0.95)
+          : lightColor.withValues(alpha: 0.95),
       child: SafeArea(
         bottom: false,
         child: Row(
@@ -326,7 +326,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                          color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade200,
                         ),
                         child: Icon(
                           Icons.arrow_back,
@@ -402,7 +402,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                          color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade200,
                         ),
                         child: Icon(
                           Icons.arrow_back,

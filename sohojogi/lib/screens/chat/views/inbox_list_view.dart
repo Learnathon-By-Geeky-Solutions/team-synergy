@@ -38,7 +38,7 @@ class InboxListView extends StatelessWidget {
               itemCount: conversations.length,
               separatorBuilder: (context, index) => Divider(
                 height: 1,
-                color: isDarkMode ? darkColor.withOpacity(0.1) : Colors.grey.withOpacity(0.2),
+                color: isDarkMode ? darkColor.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.2),
                 indent: 76,
               ),
               itemBuilder: (context, index) {

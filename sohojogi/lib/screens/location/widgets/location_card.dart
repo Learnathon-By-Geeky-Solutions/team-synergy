@@ -22,7 +22,7 @@ class LocationCard extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: (location.isSaved ? primaryColor : Colors.grey).withOpacity(0.2),
+          color: (location.isSaved ? primaryColor : Colors.grey).withValues(alpha: 0.2),
           shape: BoxShape.circle,
         ),
         child: Icon(
@@ -46,7 +46,7 @@ class LocationCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.1),
+                color: primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(

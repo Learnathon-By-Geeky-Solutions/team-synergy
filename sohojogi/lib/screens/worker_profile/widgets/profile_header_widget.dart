@@ -41,7 +41,7 @@ class ProfileHeaderWidget extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                      color: isDarkMode ? grayColor.withValues(alpha: 0.3) : Colors.grey.shade200,
                     ),
                     child: Icon(
                       Icons.arrow_back,
@@ -74,7 +74,7 @@ class ProfileHeaderWidget extends StatelessWidget {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                          color: isDarkMode ? grayColor.withValues(alpha: 0.3) : Colors.grey.shade200,
                         ),
                         child: Icon(
                           isBookmarked ? Icons.bookmark : Icons.bookmark_border,
@@ -94,7 +94,7 @@ class ProfileHeaderWidget extends StatelessWidget {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                          color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade200,
                         ),
                         child: Icon(
                           Icons.share,

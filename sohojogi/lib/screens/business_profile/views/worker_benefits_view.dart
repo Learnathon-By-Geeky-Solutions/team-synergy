@@ -159,7 +159,7 @@ class WorkerBenefitsView extends StatelessWidget {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.1),
+              color: primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(

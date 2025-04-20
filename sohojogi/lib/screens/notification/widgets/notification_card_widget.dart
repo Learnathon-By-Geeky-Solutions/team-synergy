@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/notification/models/notification_model.dart';
 import '../../../utils/notification_utils.dart';
-import '../../utils/date_time_utils.dart';
 
 class NotificationCardWidget extends StatelessWidget {
   final NotificationModel notification;
@@ -16,14 +15,17 @@ class NotificationCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final bool isDarkMode = MediaQuery
+        .of(context)
+        .platformBrightness == Brightness.dark;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 0,
       color: notification.isRead
           ? (isDarkMode ? darkColor : lightColor)
-          : (isDarkMode ? darkColor.withOpacity(0.8) : primaryColor.withOpacity(0.05)),
+          : (isDarkMode ? darkColor.withValues(alpha: 0.8) : primaryColor
+          .withValues(alpha: 0.05)),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -40,13 +42,15 @@ class NotificationCardWidget extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: NotificationUtils.getIconBackgroundColor(notification.type).withOpacity(0.1),
+                  color: NotificationUtils.getIconBackgroundColor(
+                      notification.type).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Icon(
                     NotificationUtils.getIconData(notification.type),
-                    color: NotificationUtils.getIconBackgroundColor(notification.type),
+                    color: NotificationUtils.getIconBackgroundColor(
+                        notification.type),
                     size: 20,
                   ),
                 ),
@@ -101,46 +105,5 @@ class NotificationCardWidget extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  // format time ago
-
-  String _formatTimeAgo(DateTime dateTime) {
-    // Don't cast the Duration to DateTime - just pass the original dateTime
-    return formatTimeAgo(dateTime);
-  }
-
-  IconData _getIconData(NotificationType type) {
-    switch (type) {
-      case NotificationType.orderAccepted:
-        return Icons.assignment;
-      case NotificationType.confirmOrder:
-        return Icons.verified_user;
-      case NotificationType.orderAssigned:
-        return Icons.engineering;
-      case NotificationType.orderCompleted:
-        return Icons.check_circle;
-      case NotificationType.orderCancelled:
-        return Icons.sentiment_dissatisfied;
-      case NotificationType.announcement:
-        return Icons.campaign;
-    }
-  }
-
-  Color _getIconBackgroundColor(NotificationType type) {
-    switch (type) {
-      case NotificationType.orderAccepted:
-        return Colors.orange;
-      case NotificationType.confirmOrder:
-        return Colors.purple;
-      case NotificationType.orderAssigned:
-        return Colors.blue;
-      case NotificationType.orderCompleted:
-        return Colors.green;
-      case NotificationType.orderCancelled:
-        return Colors.red;
-      case NotificationType.announcement:
-        return Colors.grey.shade700;
-    }
   }
 }

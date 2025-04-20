@@ -29,12 +29,12 @@ class ProfileOverviewWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: primaryColor.withOpacity(0.3),
+                    color: primaryColor.withValues(alpha: 0.3),
                     width: 3,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -148,10 +148,10 @@ class ProfileOverviewWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.15),
+              color: primaryColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: primaryColor.withOpacity(0.3),
+                color: primaryColor.withValues(alpha: 0.3),
                 width: 1,
               ),
             ),

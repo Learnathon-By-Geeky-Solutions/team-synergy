@@ -48,7 +48,7 @@ class SkillsSectionWidget extends StatelessWidget {
           color: isDarkMode ? darkColor : lightColor,
         ),
       ),
-      backgroundColor: primaryColor.withOpacity(0.8),
+      backgroundColor: primaryColor.withValues(alpha: 0.8),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
