@@ -279,7 +279,7 @@ class _ChatListViewState extends State<ChatListView> {
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 4),
                           decoration: BoxDecoration(
-                            color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                            color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade200,
                             borderRadius: BorderRadius.circular(24),
                           ),
                           child: TextField(
