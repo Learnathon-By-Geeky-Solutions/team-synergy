@@ -1,4 +1,3 @@
-// lib/screens/worker_profile/view_models/worker_profile_view_model.dart
 import 'package:flutter/material.dart';
 import 'package:sohojogi/screens/service_searched/models/service_provider_model.dart';
 import 'package:sohojogi/screens/worker_profile/models/worker_profile_model.dart';
@@ -255,7 +254,7 @@ class WorkerProfileViewModel extends ChangeNotifier {
       reviews.add(
         WorkerReviewModel(
           id: 'r$i',
-          userName: 'Customer ${i}',
+          userName: 'Customer $i',
           userImage: 'https://randomuser.me/api/portraits/${i % 2 == 0 ? 'women' : 'men'}/${20 + i}.jpg',
           rating: 3 + (i % 3),
           comment: i % 3 == 0

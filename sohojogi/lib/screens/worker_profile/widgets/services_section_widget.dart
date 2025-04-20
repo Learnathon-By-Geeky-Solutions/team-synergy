@@ -1,4 +1,3 @@
-// lib/screens/worker_profile/widgets/services_section_widget.dart
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/worker_profile/models/worker_profile_model.dart';

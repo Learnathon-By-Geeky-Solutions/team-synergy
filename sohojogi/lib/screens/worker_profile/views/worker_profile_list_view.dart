@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';
-import 'package:sohojogi/screens/worker_profile/models/worker_profile_model.dart';
 import 'package:sohojogi/screens/worker_profile/view_model/worker_profile_view_model.dart';
 import 'package:sohojogi/screens/worker_profile/widgets/about_section_widget.dart';
 import 'package:sohojogi/screens/worker_profile/widgets/action_buttons_widget.dart';
@@ -21,11 +20,11 @@ class WorkerProfileListView extends StatefulWidget {
   final VoidCallback onSharePressed;
 
   const WorkerProfileListView({
-    Key? key,
+    super.key,
     required this.workerId,
     required this.onBackPressed,
     required this.onSharePressed,
-  }) : super(key: key);
+  });
 
   @override
   State<WorkerProfileListView> createState() => _WorkerProfileListViewState();
@@ -100,6 +99,11 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
           controller: _scrollController,
           slivers: [
             // Main content
+
+            const SliverPadding(
+              padding: EdgeInsets.only(top: 80), // Adjust this value based on your header height
+            ),
+
             SliverToBoxAdapter(
               child: Column(
                 children: [
