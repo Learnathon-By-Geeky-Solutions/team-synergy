@@ -15,7 +15,6 @@ class OrderListView extends StatefulWidget {
 
 class _OrderListViewState extends State<OrderListView> with SingleTickerProviderStateMixin {
   TabController? _tabController;
-  int _currentTabIndex = 0;
 
   @override
   void initState() {
@@ -24,7 +23,6 @@ class _OrderListViewState extends State<OrderListView> with SingleTickerProvider
     _tabController!.addListener(() {
       if (_tabController!.indexIsChanging) {
         setState(() {
-          _currentTabIndex = _tabController!.index;
         });
       }
     });

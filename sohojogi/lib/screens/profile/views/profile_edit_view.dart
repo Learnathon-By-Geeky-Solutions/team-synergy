@@ -269,6 +269,39 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
     );
   }
 
+  Widget _buildProfileImage() {
+    DecorationImage? profileImageDecoration;
+
+    if (_profileImageFile != null) {
+      profileImageDecoration = DecorationImage(
+        image: FileImage(_profileImageFile!),
+        fit: BoxFit.cover,
+      );
+    } else if (widget.viewModel.profileData.profilePhotoUrl != null) {
+      profileImageDecoration = DecorationImage(
+        image: NetworkImage(widget.viewModel.profileData.profilePhotoUrl!),
+        fit: BoxFit.cover,
+      );
+    }
+
+    return Container(
+      width: 120,
+      height: 120,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: widget.isDarkMode ? lightGrayColor : grayColor.withValues(alpha:0.3),
+        image: profileImageDecoration,
+      ),
+      child: profileImageDecoration == null
+          ? Icon(
+              Icons.person,
+              size: 60,
+              color: widget.isDarkMode ? lightGrayColor : grayColor,
+            )
+          : null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -285,32 +318,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
                     onTap: _showProfileImageSelectionModal,
                     child: Stack(
                       children: [
-                        Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: widget.isDarkMode ? lightGrayColor : grayColor.withValues(alpha: 0.3),
-                            image: _profileImageFile != null
-                                ? DecorationImage(
-                              image: FileImage(_profileImageFile!),
-                              fit: BoxFit.cover,
-                            )
-                                : widget.viewModel.profileData.profilePhotoUrl != null
-                                ? DecorationImage(
-                              image: NetworkImage(widget.viewModel.profileData.profilePhotoUrl!),
-                              fit: BoxFit.cover,
-                            )
-                                : null,
-                          ),
-                          child: widget.viewModel.profileData.profilePhotoUrl == null && _profileImageFile == null
-                              ? Icon(
-                            Icons.person,
-                            size: 60,
-                            color: widget.isDarkMode ? lightGrayColor : grayColor,
-                          )
-                              : null,
-                        ),
+                        _buildProfileImage(),
                         Positioned(
                           bottom: 0,
                           right: 0,
@@ -400,7 +408,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
+                  color: Colors.red.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -420,10 +428,10 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
                 onPressed: widget.viewModel.isLoading || !widget.viewModel.hasChanges
                     ? null
                     : () {
-                  if (_validateForm()) {
-                    _saveProfile(context);
-                  }
-                },
+                        if (_validateForm()) {
+                          _saveProfile(context);
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: darkColor,
                   foregroundColor: Colors.amber,
@@ -435,20 +443,20 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
                 ),
                 child: widget.viewModel.isLoading
                     ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                )
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
                     : const Text(
-                  'Save Changes',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                        'Save Changes',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
             ),
           ],
@@ -505,7 +513,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
             border: Border.all(
               color: errorText != null
                   ? Colors.red
-                  : (widget.isDarkMode ? grayColor.withValues(alpha: 0.3) : grayColor.withValues(alpha: 0.3)),
+                  : (widget.isDarkMode ? grayColor.withValues(alpha:0.3) : grayColor.withValues(alpha:0.3)),
             ),
           ),
           child: TextField(
@@ -549,7 +557,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
             border: Border.all(
               color: _emailError != null
                   ? Colors.red
-                  : (widget.isDarkMode ? grayColor.withValues(alpha: 0.3) : grayColor.withValues(alpha: 0.3)),
+                  : (widget.isDarkMode ? grayColor.withValues(alpha:0.3) : grayColor.withValues(alpha:0.3)),
             ),
           ),
           child: Row(

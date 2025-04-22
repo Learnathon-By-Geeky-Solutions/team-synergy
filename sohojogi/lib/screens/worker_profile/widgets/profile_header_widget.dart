@@ -22,6 +22,11 @@ class ProfileHeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
+    // Extracted color logic
+    final Color backButtonColor = isDarkMode
+        ? grayColor.withValues(alpha: 0.3)
+        : Colors.grey.shade200;
+
     return Container(
       color: isDarkMode ? darkColor : lightColor,
       child: SafeArea(
@@ -41,7 +46,7 @@ class ProfileHeaderWidget extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isDarkMode ? grayColor.withValues(alpha: 0.3) : Colors.grey.shade200,
+                      color: backButtonColor, // Use the extracted variable
                     ),
                     child: Icon(
                       Icons.arrow_back,
