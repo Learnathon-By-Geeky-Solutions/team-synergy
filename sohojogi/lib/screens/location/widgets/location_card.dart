@@ -16,18 +16,27 @@ class LocationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tileBackgroundColor = isDarkMode ? darkColor : lightColor;
+    final iconColor = location.isSaved
+        ? primaryColor
+        : (isDarkMode ? lightGrayColor : grayColor);
+    final titleText = location.name ?? location.address;
+    final subtitleText =
+    location.name != null ? location.address : location.subAddress;
+
     return ListTile(
       onTap: onTap,
-      tileColor: isDarkMode ? darkColor : lightColor,
+      tileColor: tileBackgroundColor,
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: (location.isSaved ? primaryColor : Colors.grey).withValues(alpha: 0.2),
+          color: (location.isSaved ? primaryColor : Colors.grey)
+              .withValues(alpha: 0.2),
           shape: BoxShape.circle,
         ),
         child: Icon(
           location.icon ?? (location.isSaved ? Icons.star : Icons.history),
-          color: location.isSaved ? primaryColor : (isDarkMode ? lightGrayColor : grayColor),
+          color: iconColor,
           size: 20,
         ),
       ),
@@ -44,14 +53,15 @@ class LocationCard extends StatelessWidget {
           if (location.isSaved) ...[
             const SizedBox(width: 8),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              padding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
                 color: primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Text(
                 'Saved',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 10,
                   color: primaryColor,
                   fontWeight: FontWeight.w500,
@@ -62,7 +72,7 @@ class LocationCard extends StatelessWidget {
         ],
       )
           : Text(
-        location.address,
+        titleText,
         style: TextStyle(
           fontWeight: FontWeight.w500,
           color: isDarkMode ? lightColor : darkColor,
@@ -70,7 +80,7 @@ class LocationCard extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(
-        location.name != null ? location.address : location.subAddress,
+        subtitleText,
         style: TextStyle(
           fontSize: 12,
           color: isDarkMode ? lightGrayColor : grayColor,
