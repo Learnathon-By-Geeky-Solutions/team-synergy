@@ -126,19 +126,8 @@ class _ChatListViewState extends State<ChatListView> {
   }
 
   Widget _buildMessageBubble(ChatMessage message, bool isMe, bool showAvatar, ChatConversation conversation, bool isDarkMode) {
-    final Color bubbleColor = isMe
-        ? primaryColor
-        : isDarkMode
-        ? darkColor
-        : const Color(0xFF8D7B68);
-
-    final BorderRadius bubbleBorderRadius = BorderRadius.only(
-      topLeft: Radius.circular(isMe ? 16 : showAvatar ? 0 : 16),
-      topRight: Radius.circular(isMe ? showAvatar ? 0 : 16 : 16),
-      bottomLeft: const Radius.circular(16),
-      bottomRight: const Radius.circular(16),
-    );
-
+    final Color bubbleColor = _getBubbleColor(isMe, isDarkMode);
+    final BorderRadius bubbleBorderRadius = _getBubbleBorderRadius(isMe, showAvatar);
     final Color textColor = isMe ? darkColor : lightColor;
 
     return Padding(
@@ -147,62 +136,86 @@ class _ChatListViewState extends State<ChatListView> {
         mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!isMe && showAvatar)
-            CircleAvatar(
-              radius: 16,
-              backgroundImage: NetworkImage(conversation.userImage),
-            )
-          else if (!isMe && !showAvatar)
-            const SizedBox(width: 32),
+          if (!isMe) _buildAvatar(showAvatar, conversation.userImage),
           const SizedBox(width: 8),
           Flexible(
             child: Column(
               crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: bubbleColor,
-                    borderRadius: bubbleBorderRadius,
-                  ),
-                  child: Text(
-                    message.text,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _formatMessageTime(message.timestamp),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isDarkMode ? lightGrayColor : grayColor,
-                        ),
-                      ),
-                      if (isMe) ...[
-                        const SizedBox(width: 4),
-                        _buildMessageStatus(message.status),
-                      ],
-                    ],
-                  ),
-                ),
+                _buildMessageContainer(message.text, bubbleColor, bubbleBorderRadius, textColor),
+                _buildMessageMetadata(message, isMe, isDarkMode),
               ],
             ),
           ),
           const SizedBox(width: 8),
-          if (isMe && showAvatar)
-            const CircleAvatar(
-              radius: 16,
-              backgroundImage: AssetImage('assets/images/user_image.png'),
-            )
-          else if (isMe && !showAvatar)
-            const SizedBox(width: 32),
+          if (isMe) _buildAvatar(showAvatar, 'assets/images/user_image.png'),
+        ],
+      ),
+    );
+  }
+
+  Color _getBubbleColor(bool isMe, bool isDarkMode) {
+    return isMe
+        ? primaryColor
+        : isDarkMode
+        ? darkColor
+        : const Color(0xFF8D7B68);
+  }
+
+  BorderRadius _getBubbleBorderRadius(bool isMe, bool showAvatar) {
+    return BorderRadius.only(
+      topLeft: Radius.circular(isMe ? 16 : showAvatar ? 0 : 16),
+      topRight: Radius.circular(isMe ? showAvatar ? 0 : 16 : 16),
+      bottomLeft: const Radius.circular(16),
+      bottomRight: const Radius.circular(16),
+    );
+  }
+
+  Widget _buildAvatar(bool showAvatar, String imageUrl) {
+    if (showAvatar) {
+      return CircleAvatar(
+        radius: 16,
+        backgroundImage: NetworkImage(imageUrl),
+      );
+    } else {
+      return const SizedBox(width: 32);
+    }
+  }
+
+  Widget _buildMessageContainer(String text, Color bubbleColor, BorderRadius borderRadius, Color textColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: bubbleColor,
+        borderRadius: borderRadius,
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 15,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMessageMetadata(ChatMessage message, bool isMe, bool isDarkMode) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            _formatMessageTime(message.timestamp),
+            style: TextStyle(
+              fontSize: 12,
+              color: isDarkMode ? lightGrayColor : grayColor,
+            ),
+          ),
+          if (isMe) ...[
+            const SizedBox(width: 4),
+            _buildMessageStatus(message.status),
+          ],
         ],
       ),
     );
@@ -214,7 +227,7 @@ class _ChatListViewState extends State<ChatListView> {
         color: isDarkMode ? darkColor : lightColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, -1),
           ),
@@ -236,7 +249,7 @@ class _ChatListViewState extends State<ChatListView> {
               child: Container(
                 margin: const EdgeInsets.only(bottom: 4),
                 decoration: BoxDecoration(
-                  color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                  color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade200,
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: TextField(

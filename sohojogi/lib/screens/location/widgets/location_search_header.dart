@@ -59,13 +59,13 @@ class LocationSearchHeader extends StatelessWidget {
             children: [
               OutlinedButton.icon(
                 onPressed: useCurrentLocation,
-                icon: Icon(Icons.my_location, color: primaryColor, size: 18),
-                label: Text(
+                icon: const Icon(Icons.my_location, color: primaryColor, size: 18),
+                label: const Text(
                   'Use current location',
-                  style: TextStyle(color: primaryColor, fontWeight: FontWeight.w500),
+                  style: const TextStyle(color: primaryColor, fontWeight: FontWeight.w500),
                 ),
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: primaryColor),
+                  side: const BorderSide(color: primaryColor),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   minimumSize: const Size(double.infinity, 0),
@@ -74,13 +74,13 @@ class LocationSearchHeader extends StatelessWidget {
               const SizedBox(height: 12),
               OutlinedButton.icon(
                 onPressed: chooseOnMap,
-                icon: Icon(Icons.map, color: secondaryColor, size: 18),
-                label: Text(
+                icon: const Icon(Icons.map, color: secondaryColor, size: 18),
+                label: const Text(
                   'Choose on map',
-                  style: TextStyle(color: secondaryColor, fontWeight: FontWeight.w500),
+                  style: const TextStyle(color: secondaryColor, fontWeight: FontWeight.w500),
                 ),
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: secondaryColor),
+                  side: const BorderSide(color: secondaryColor),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   minimumSize: const Size(double.infinity, 0),
