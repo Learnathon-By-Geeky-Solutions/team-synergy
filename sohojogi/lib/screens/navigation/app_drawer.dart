@@ -173,101 +173,62 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
+  static const String paymentMethods = "Payment Methods";
+  static const String savedAddress = "Saved Address";
+  static const String accountSecurity = "Account Security";
+  static const String helpCenter = "Help Center";
+  static const String logOut = "Log Out";
+
   void _handleNavigation(BuildContext context, String item) {
     // Close drawer first
     Navigator.pop(context);
 
-    // Handle navigation based on item
-    switch (item) {
-      case 'Profile':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChangeNotifierProvider(
-              create: (_) => ProfileViewModel(),
-              child: ProfileEditView(
-                onBackPressed: () => Navigator.pop(context),
+    // Map item to actions
+    final navigationActions = {
+      'Profile': () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChangeNotifierProvider(
+                create: (_) => ProfileViewModel(),
+                child: ProfileEditView(
+                  onBackPressed: () => Navigator.pop(context),
+                ),
               ),
             ),
           ),
-        );
-        break;
-
-      case 'Business Profile':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChangeNotifierProvider(
-              create: (_) => WorkerRegistrationViewModel(),
-              child: BusinessProfileListView(
-                onBackPressed: () => Navigator.pop(context),
+      'Business Profile': () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChangeNotifierProvider(
+                create: (_) => WorkerRegistrationViewModel(),
+                child: BusinessProfileListView(
+                  onBackPressed: () => Navigator.pop(context),
+                ),
               ),
             ),
           ),
-        );
-        break;
-
-      case 'Payment Methods':
-        _showComingSoonSnackBar(context, 'Payment Methods');
-        break;
-
-      case 'Saved Address':
-        _showComingSoonSnackBar(context, 'Saved Address');
-        break;
-
-      case 'Bookmark':
-        _showComingSoonSnackBar(context, 'Bookmarks');
-        break;
-
-      case 'Membership':
-        _showComingSoonSnackBar(context, 'Membership Plans');
-        break;
-
-      case 'Offers & Promos':
-        _showComingSoonSnackBar(context, 'Offers & Promotions');
-        break;
-
-      case 'Refer & Discount':
-        _showComingSoonSnackBar(context, 'Referral Program');
-        break;
-
-      case 'Theme':
-        _showThemeSelectionDialog(context);
-        break;
-
-      case 'Language':
-        _showLanguageSelectionDialog(context);
-        break;
-
-      case 'Account Security':
-        _showComingSoonSnackBar(context, 'Account Security');
-        break;
-
-      case 'Terms & Privacy':
-        _showComingSoonSnackBar(context, 'Terms and Privacy Policy');
-        break;
-
-      case 'Permissions':
-        _showComingSoonSnackBar(context, 'App Permissions');
-        break;
-
-      case 'Help Center':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const HelpCenterScreen(),
+      paymentMethods: () => _showComingSoonSnackBar(context, paymentMethods),
+      savedAddress: () => _showComingSoonSnackBar(context, savedAddress),
+      'Bookmark': () => _showComingSoonSnackBar(context, 'Bookmarks'),
+      'Membership': () => _showComingSoonSnackBar(context, 'Membership Plans'),
+      'Offers & Promos': () => _showComingSoonSnackBar(context, 'Offers & Promotions'),
+      'Refer & Discount': () => _showComingSoonSnackBar(context, 'Referral Program'),
+      'Theme': () => _showThemeSelectionDialog(context),
+      'Language': () => _showLanguageSelectionDialog(context),
+      accountSecurity: () => _showComingSoonSnackBar(context, accountSecurity),
+      'Terms & Privacy': () => _showComingSoonSnackBar(context, 'Terms and Privacy Policy'),
+      'Permissions': () => _showComingSoonSnackBar(context, 'App Permissions'),
+      helpCenter: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const HelpCenterScreen(),
+            ),
           ),
-        );
-        break;
+      logOut: () => _showLogoutConfirmationDialog(context),
+    };
 
-      case 'Log Out':
-        _showLogoutConfirmationDialog(context);
-        break;
-
-      default:
-      // Default case if item doesn't match
-        break;
-    }
+    // Execute the corresponding action if it exists
+    navigationActions[item]?.call();
   }
 
   void _showComingSoonSnackBar(BuildContext context, String feature) {
@@ -378,8 +339,7 @@ class AppDrawer extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Logged out successfully')),
               );
-              // TODO: Implement actual logout logic
-              // This might include clearing authentication tokens and navigating to login screen
+              // Implement actual logout logic
             },
             child: const Text('Log Out'),
           ),

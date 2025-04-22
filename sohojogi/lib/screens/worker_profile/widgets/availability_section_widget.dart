@@ -79,20 +79,19 @@ class AvailabilitySectionWidget extends StatelessWidget {
     sortedAvailability.sort((a, b) => a.day.index.compareTo(b.day.index));
 
     return sortedAvailability.map((day) {
+      final dayName = dayNames[day.day] ?? 'Unknown';
+      final backgroundColor = _getBackgroundColor(day, isDarkMode);
+      final borderColor = _getBorderColor(day, isDarkMode);
+      final textColor = _getTextColor(day, isDarkMode);
+      final statusIconColor = day.available ? Colors.green : Colors.red.shade400;
+
       return Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         decoration: BoxDecoration(
-          color: isDarkMode
-              ? (day.available ? grayColor.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.05))
-              : (day.available ? Colors.green.withValues(alpha: 0.05) : Colors.red.withValues(alpha: 0.05)),
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: day.available
-                ? (isDarkMode ? Colors.green.withValues(alpha: 0.3) : Colors.green.withValues(alpha: 0.2))
-                : (isDarkMode ? Colors.red.withValues(alpha: 0.3) : Colors.red.withValues(alpha: 0.2)),
-            width: 1,
-          ),
+          border: Border.all(color: borderColor, width: 1),
         ),
         child: Row(
           children: [
@@ -100,12 +99,10 @@ class AvailabilitySectionWidget extends StatelessWidget {
             SizedBox(
               width: 100,
               child: Text(
-                dayNames[day.day] ?? 'Unknown',
+                dayName,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
-                  color: isDarkMode
-                      ? (day.available ? lightColor : Colors.red.shade300)
-                      : (day.available ? darkColor : Colors.red.shade700),
+                  color: textColor,
                 ),
               ),
             ),
@@ -114,9 +111,7 @@ class AvailabilitySectionWidget extends StatelessWidget {
             Icon(
               day.available ? Icons.check_circle_outline : Icons.cancel_outlined,
               size: 16,
-              color: day.available
-                  ? Colors.green
-                  : Colors.red.shade400,
+              color: statusIconColor,
             ),
 
             const SizedBox(width: 8),
@@ -126,17 +121,47 @@ class AvailabilitySectionWidget extends StatelessWidget {
               child: day.available
                   ? _buildTimeSlots(day.timeSlots, isDarkMode)
                   : Text(
-                'Closed',
-                style: TextStyle(
-                  color: isDarkMode ? Colors.red.shade300 : Colors.red.shade700,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
+                      'Closed',
+                      style: TextStyle(
+                        color: isDarkMode ? Colors.red.shade300 : Colors.red.shade700,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
             ),
           ],
         ),
       );
     }).toList();
+  }
+
+  Color _getBackgroundColor(WorkerAvailabilityDay day, bool isDarkMode) {
+    if (day.available) {
+      return isDarkMode
+          ? grayColor.withValues(alpha:0.2)
+          : Colors.green.withValues(alpha:0.05);
+    } else {
+      return Colors.red.withValues(alpha:0.05);
+    }
+  }
+
+  Color _getBorderColor(WorkerAvailabilityDay day, bool isDarkMode) {
+    if (day.available) {
+      return isDarkMode
+          ? Colors.green.withValues(alpha:0.3)
+          : Colors.green.withValues(alpha:0.2);
+    } else {
+      return isDarkMode
+          ? Colors.red.withValues(alpha:0.3)
+          : Colors.red.withValues(alpha:0.2);
+    }
+  }
+
+  Color _getTextColor(WorkerAvailabilityDay day, bool isDarkMode) {
+    if (day.available) {
+      return isDarkMode ? lightColor : darkColor;
+    } else {
+      return isDarkMode ? Colors.red.shade300 : Colors.red.shade700;
+    }
   }
 
   Widget _buildTimeSlots(List<TimeSlot> timeSlots, bool isDarkMode) {

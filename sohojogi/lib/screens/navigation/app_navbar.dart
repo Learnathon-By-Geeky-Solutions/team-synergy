@@ -48,6 +48,11 @@ class AppNavBarState extends State<AppNavBar> {
 
     return CurvedNavigationBar(
       items: List<Widget>.generate(_iconData.length, (index) {
+        // Extracted color logic
+        final Color iconColor = _selectedIndex == index
+            ? (isDarkMode ? lightColor : darkColor)
+            : getUnselectedColor();
+
         return Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -55,9 +60,7 @@ class AppNavBarState extends State<AppNavBar> {
             Icon(
               _selectedIndex == index ? _selectedIconData[index] : _iconData[index],
               size: 30,
-              color: _selectedIndex == index
-                  ? (isDarkMode ? lightColor : darkColor)
-                  : getUnselectedColor(),
+              color: iconColor, // Use the extracted variable
             ),
           ],
         );

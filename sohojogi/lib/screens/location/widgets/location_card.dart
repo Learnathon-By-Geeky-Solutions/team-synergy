@@ -17,12 +17,23 @@ class LocationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tileBackgroundColor = isDarkMode ? darkColor : lightColor;
+
     final iconColor = location.isSaved
         ? primaryColor
         : (isDarkMode ? lightGrayColor : grayColor);
+
     final titleText = location.name ?? location.address;
-    final subtitleText =
-    location.name != null ? location.address : location.subAddress;
+
+    final subtitleText = location.name != null
+        ? location.address
+        : location.subAddress;
+
+    final leadingIcon = location.icon != null
+        ? location.icon
+        : (location.isSaved ? Icons.star : Icons.history);
+
+    final leadingBackgroundColor = (location.isSaved ? primaryColor : Colors.grey)
+        .withValues(alpha: 0.2);
 
     return ListTile(
       onTap: onTap,
@@ -30,12 +41,11 @@ class LocationCard extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: (location.isSaved ? primaryColor : Colors.grey)
-              .withValues(alpha: 0.2),
+          color: leadingBackgroundColor,
           shape: BoxShape.circle,
         ),
         child: Icon(
-          location.icon ?? (location.isSaved ? Icons.star : Icons.history),
+          leadingIcon,
           color: iconColor,
           size: 20,
         ),

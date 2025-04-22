@@ -155,17 +155,24 @@ class _ChatListViewState extends State<ChatListView> {
   }
 
   Color _getBubbleColor(bool isMe, bool isDarkMode) {
-    return isMe
-        ? primaryColor
-        : isDarkMode
-        ? darkColor
-        : const Color(0xFF8D7B68);
+    Color bubbleColor;
+    if (isMe) {
+      bubbleColor = primaryColor;
+    } else if (isDarkMode) {
+      bubbleColor = darkColor;
+    } else {
+      bubbleColor = const Color(0xFF8D7B68);
+    }
+    return bubbleColor;
   }
 
   BorderRadius _getBubbleBorderRadius(bool isMe, bool showAvatar) {
+    Radius topLeftRadius = isMe ? Radius.circular(16) : (showAvatar ? Radius.zero : Radius.circular(16));
+    Radius topRightRadius = isMe ? (showAvatar ? Radius.zero : Radius.circular(16)) : Radius.circular(16);
+
     return BorderRadius.only(
-      topLeft: Radius.circular(isMe ? 16 : showAvatar ? 0 : 16),
-      topRight: Radius.circular(isMe ? showAvatar ? 0 : 16 : 16),
+      topLeft: topLeftRadius,
+      topRight: topRightRadius,
       bottomLeft: const Radius.circular(16),
       bottomRight: const Radius.circular(16),
     );

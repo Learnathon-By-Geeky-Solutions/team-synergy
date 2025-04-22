@@ -19,13 +19,16 @@ class NotificationCardWidget extends StatelessWidget {
         .of(context)
         .platformBrightness == Brightness.dark;
 
+    // Extracted color logic
+    final Color cardColor = notification.isRead
+        ? (isDarkMode ? darkColor : lightColor)
+        : (isDarkMode ? darkColor.withValues(alpha: 0.8) : primaryColor
+        .withValues(alpha: 0.05));
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 0,
-      color: notification.isRead
-          ? (isDarkMode ? darkColor : lightColor)
-          : (isDarkMode ? darkColor.withValues(alpha: 0.8) : primaryColor
-          .withValues(alpha: 0.05)),
+      color: cardColor, // Use the extracted variable
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -107,3 +110,4 @@ class NotificationCardWidget extends StatelessWidget {
     );
   }
 }
+

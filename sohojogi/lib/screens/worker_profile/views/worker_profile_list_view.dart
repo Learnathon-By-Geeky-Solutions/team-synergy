@@ -224,11 +224,14 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
       bool isDarkMode,
       WorkerProfileViewModel viewModel
       ) {
+    // Extracted color logic
+    final Color headerColor = isDarkMode
+        ? darkColor.withValues(alpha: 0.95)
+        : lightColor.withValues(alpha: 0.95);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: isDarkMode
-          ? darkColor.withValues(alpha: 0.95)
-          : lightColor.withValues(alpha: 0.95),
+      color: headerColor, // Use the extracted variable
       child: SafeArea(
         bottom: false,
         child: Row(
@@ -304,6 +307,11 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
   }
 
   Widget _buildLoadingState(bool isDarkMode) {
+    // Extracted color logic
+    final Color backButtonColor = isDarkMode
+        ? grayColor.withValues(alpha: 0.2)
+        : Colors.grey.shade200;
+
     return Column(
       children: [
         // Static header at top
@@ -326,7 +334,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade200,
+                          color: backButtonColor, // Use the extracted variable
                         ),
                         child: Icon(
                           Icons.arrow_back,
