@@ -54,9 +54,9 @@ class ReviewsSectionWidget extends StatelessWidget {
           itemCount: reviews.length + (isLoadingMore ? 1 : 0),
           itemBuilder: (context, index) {
             if (index == reviews.length) {
-              return Center(
+              return const Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
                     color: primaryColor,
@@ -77,7 +77,7 @@ class ReviewsSectionWidget extends StatelessWidget {
                 // This will trigger loadMoreReviews via scroll listener
                 // when reaching bottom of the page
               },
-              child: Text(
+              child: const Text(
                 'View more reviews',
                 style: TextStyle(
                   color: primaryColor,

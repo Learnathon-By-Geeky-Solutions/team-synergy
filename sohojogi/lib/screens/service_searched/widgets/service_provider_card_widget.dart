@@ -155,7 +155,7 @@ class ServiceProviderCardWidget extends StatelessWidget {
                           ),
                           child: Text(
                             serviceProvider.serviceCategory,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               color: primaryColor,
                               fontWeight: FontWeight.w500,
@@ -281,8 +281,8 @@ class ServiceProviderCardWidget extends StatelessWidget {
                   Expanded(
                     child: InkWell(
                       onTap: onCallTap,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -291,7 +291,7 @@ class ServiceProviderCardWidget extends StatelessWidget {
                               size: 20,
                               color: primaryColor,
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Text(
                               'Call',
                               style: TextStyle(
@@ -312,8 +312,8 @@ class ServiceProviderCardWidget extends StatelessWidget {
                   Expanded(
                     child: InkWell(
                       onTap: onMailTap,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -322,7 +322,7 @@ class ServiceProviderCardWidget extends StatelessWidget {
                               size: 20,
                               color: primaryColor,
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Text(
                               'Email',
                               style: TextStyle(

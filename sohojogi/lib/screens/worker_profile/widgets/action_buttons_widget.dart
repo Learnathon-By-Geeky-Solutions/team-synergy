@@ -73,7 +73,7 @@ class ActionButtonsWidget extends StatelessWidget {
                   label: const Text('Call'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: primaryColor,
-                    side: BorderSide(color: primaryColor),
+                    side: const BorderSide(color: primaryColor),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -95,7 +95,7 @@ class ActionButtonsWidget extends StatelessWidget {
                   label: const Text('Message'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: secondaryColor,
-                    side: BorderSide(color: secondaryColor),
+                    side: const BorderSide(color: secondaryColor),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),

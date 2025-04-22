@@ -361,7 +361,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircularProgressIndicator(
+                const CircularProgressIndicator(
                   color: primaryColor,
                 ),
                 const SizedBox(height: 16),

@@ -35,7 +35,7 @@ class ProfileListView extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.edit,
               color: primaryColor,
             ),
