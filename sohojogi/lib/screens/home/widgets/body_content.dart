@@ -343,7 +343,7 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
                               ),
                               child: Text(
                                 provider.service,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 12,
                                   color: primaryColor,
                                   fontWeight: FontWeight.w500,
