@@ -49,9 +49,9 @@ class LocationCard extends StatelessWidget {
                 color: primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Text(
+              child: const Text(
                 'Saved',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 10,
                   color: primaryColor,
                   fontWeight: FontWeight.w500,

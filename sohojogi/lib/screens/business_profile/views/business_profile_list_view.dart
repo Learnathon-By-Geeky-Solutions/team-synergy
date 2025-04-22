@@ -15,6 +15,14 @@ class BusinessProfileListView extends StatelessWidget {
     required this.onBackPressed,
   });
 
+  Color _getBackgroundColor(bool isDarkMode) {
+    return isDarkMode ? darkColor : const Color(0xFFFFF8EC);
+  }
+
+  Color _getTextColor(bool isDarkMode) {
+    return isDarkMode ? lightColor : darkColor;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Access the view model to verify it exists
@@ -22,14 +30,14 @@ class BusinessProfileListView extends StatelessWidget {
     final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDarkMode ? darkColor : const Color(0xFFFFF8EC),
+      backgroundColor: _getBackgroundColor(isDarkMode),
       appBar: AppBar(
-        backgroundColor: isDarkMode ? darkColor : const Color(0xFFFFF8EC),
+        backgroundColor: _getBackgroundColor(isDarkMode),
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: isDarkMode ? lightColor : darkColor,
+            color: _getTextColor(isDarkMode),
           ),
           onPressed: onBackPressed,
         ),
@@ -37,7 +45,7 @@ class BusinessProfileListView extends StatelessWidget {
           'Become A Worker',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: isDarkMode ? lightColor : darkColor,
+            color: _getTextColor(isDarkMode),
           ),
         ),
       ),
@@ -281,6 +289,23 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget> {
     );
   }
 
+  Color _getBorderColor(bool isDarkMode, String? errorText) {
+    if (errorText != null) return Colors.red;
+    return isDarkMode ? grayColor.withOpacity(0.3) : grayColor.withOpacity(0.3);
+  }
+
+  TextStyle _getHintTextStyle(bool isDarkMode) {
+    return TextStyle(
+      color: isDarkMode ? lightGrayColor : grayColor,
+    );
+  }
+
+  TextStyle _getTextStyle(bool isDarkMode) {
+    return TextStyle(
+      color: isDarkMode ? lightColor : darkColor,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -386,7 +411,7 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
+                  color: Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -434,7 +459,7 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget> {
             Center(
               child: TextButton(
                 onPressed: _navigateToBenefits,
-                child: Text(
+                child: const Text(
                   'Learn about worker benefits',
                   style: TextStyle(
                     color: primaryColor,
@@ -477,24 +502,18 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: errorText != null
-                  ? Colors.red
-                  : (widget.isDarkMode ? grayColor.withValues(alpha: 0.3) : grayColor.withValues(alpha: 0.3)),
+              color: _getBorderColor(widget.isDarkMode, errorText),
             ),
           ),
           child: TextField(
             controller: controller,
             onChanged: onChanged,
             keyboardType: keyboardType,
-            style: TextStyle(
-              color: widget.isDarkMode ? lightColor : darkColor,
-            ),
+            style: _getTextStyle(widget.isDarkMode),
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               hintText: hintText,
-              hintStyle: TextStyle(
-                color: widget.isDarkMode ? lightGrayColor : grayColor,
-              ),
+              hintStyle: _getHintTextStyle(widget.isDarkMode),
               border: InputBorder.none,
             ),
           ),
@@ -529,9 +548,7 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: errorText != null
-                    ? Colors.red
-                    : (widget.isDarkMode ? grayColor.withValues(alpha: 0.3) : grayColor.withValues(alpha: 0.3)),
+                color: _getBorderColor(widget.isDarkMode, errorText),
               ),
             ),
             child: Row(
@@ -541,14 +558,14 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget> {
                     text,
                     style: TextStyle(
                       color: text.contains('e.g.') || text == 'Select Country'
-                          ? (widget.isDarkMode ? lightGrayColor : grayColor)
-                          : (widget.isDarkMode ? lightColor : darkColor),
+                          ? _getHintTextStyle(widget.isDarkMode).color
+                          : _getTextStyle(widget.isDarkMode).color,
                     ),
                   ),
                 ),
                 Icon(
                   Icons.keyboard_arrow_down,
-                  color: widget.isDarkMode ? lightGrayColor : grayColor,
+                  color: _getHintTextStyle(widget.isDarkMode).color,
                 ),
               ],
             ),
