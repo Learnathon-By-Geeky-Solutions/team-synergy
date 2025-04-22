@@ -24,8 +24,6 @@ class _ChatListViewState extends State<ChatListView> {
   @override
   void initState() {
     super.initState();
-
-    // Load messages after the widget is inserted in the tree
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final viewModel = Provider.of<ChatViewModel>(context, listen: false);
       viewModel.loadMessages(widget.conversationId);
@@ -76,6 +74,225 @@ class _ChatListViewState extends State<ChatListView> {
     return Icon(icon, size: 14, color: color);
   }
 
+  PreferredSizeWidget _buildAppBar(ChatConversation conversation, bool isDarkMode) {
+    return AppBar(
+      backgroundColor: isDarkMode ? darkColor : lightColor,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        color: isDarkMode ? lightColor : darkColor,
+        onPressed: () => Navigator.pop(context),
+      ),
+      title: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  conversation.userName,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: isDarkMode ? lightColor : darkColor,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  conversation.phoneNumber,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: primaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.notifications),
+          color: isDarkMode ? lightColor : darkColor,
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: const Icon(Icons.more_vert),
+          color: isDarkMode ? lightColor : darkColor,
+          onPressed: () {},
+        ),
+      ],
+      elevation: 0,
+    );
+  }
+
+  Widget _buildMessageBubble(ChatMessage message, bool isMe, bool showAvatar, ChatConversation conversation, bool isDarkMode) {
+    final Color bubbleColor = isMe
+        ? primaryColor
+        : isDarkMode
+        ? darkColor
+        : const Color(0xFF8D7B68);
+
+    final BorderRadius bubbleBorderRadius = BorderRadius.only(
+      topLeft: Radius.circular(isMe ? 16 : showAvatar ? 0 : 16),
+      topRight: Radius.circular(isMe ? showAvatar ? 0 : 16 : 16),
+      bottomLeft: const Radius.circular(16),
+      bottomRight: const Radius.circular(16),
+    );
+
+    final Color textColor = isMe ? darkColor : lightColor;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!isMe && showAvatar)
+            CircleAvatar(
+              radius: 16,
+              backgroundImage: NetworkImage(conversation.userImage),
+            )
+          else if (!isMe && !showAvatar)
+            const SizedBox(width: 32),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: bubbleColor,
+                    borderRadius: bubbleBorderRadius,
+                  ),
+                  child: Text(
+                    message.text,
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _formatMessageTime(message.timestamp),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDarkMode ? lightGrayColor : grayColor,
+                        ),
+                      ),
+                      if (isMe) ...[
+                        const SizedBox(width: 4),
+                        _buildMessageStatus(message.status),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          if (isMe && showAvatar)
+            const CircleAvatar(
+              radius: 16,
+              backgroundImage: AssetImage('assets/images/user_image.png'),
+            )
+          else if (isMe && !showAvatar)
+            const SizedBox(width: 32),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMessageInput(bool isDarkMode) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDarkMode ? darkColor : lightColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, -1),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      child: SafeArea(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.emoji_emotions_outlined,
+                color: isDarkMode ? lightGrayColor : grayColor,
+              ),
+              onPressed: () {},
+            ),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 4),
+                decoration: BoxDecoration(
+                  color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: TextField(
+                  controller: _messageController,
+                  style: TextStyle(
+                    color: isDarkMode ? lightColor : darkColor,
+                  ),
+                  maxLines: 5,
+                  minLines: 1,
+                  decoration: InputDecoration(
+                    hintText: 'Type message here...',
+                    hintStyle: TextStyle(
+                      color: isDarkMode ? lightGrayColor : grayColor,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8, bottom: 4),
+              child: InkWell(
+                onTap: () {
+                  final viewModel = Provider.of<ChatViewModel>(context, listen: false);
+                  viewModel.sendMessage(_messageController.text);
+                  _messageController.clear();
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _scrollToBottom();
+                  });
+                },
+                borderRadius: BorderRadius.circular(25),
+                child: Container(
+                  height: 46,
+                  width: 46,
+                  decoration: const BoxDecoration(
+                    color: primaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.send,
+                    color: lightColor,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
@@ -96,64 +313,15 @@ class _ChatListViewState extends State<ChatListView> {
           ),
         );
 
-        // Wait until messages are loaded to scroll to bottom
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _scrollToBottom();
         });
 
         return Scaffold(
           backgroundColor: bgColor,
-          appBar: AppBar(
-            backgroundColor: isDarkMode ? darkColor : lightColor,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              color: isDarkMode ? lightColor : darkColor,
-              onPressed: () => Navigator.pop(context),
-            ),
-            title: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        conversation.userName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: isDarkMode ? lightColor : darkColor,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        conversation.phoneNumber,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.notifications),
-                color: isDarkMode ? lightColor : darkColor,
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.more_vert),
-                color: isDarkMode ? lightColor : darkColor,
-                onPressed: () {},
-              ),
-            ],
-            elevation: 0,
-          ),
+          appBar: _buildAppBar(conversation, isDarkMode),
           body: Column(
             children: [
-              // Messages List
               Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
@@ -164,176 +332,11 @@ class _ChatListViewState extends State<ChatListView> {
                     final isMe = message.senderId == viewModel.currentUserId;
                     final showAvatar = index == 0 || viewModel.messages[index - 1].senderId != message.senderId;
 
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Row(
-                        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Other user's avatar
-                          if (!isMe && showAvatar)
-                            CircleAvatar(
-                              radius: 16,
-                              backgroundImage: NetworkImage(conversation.userImage),
-                            )
-                          else if (!isMe && !showAvatar)
-                            const SizedBox(width: 32),
-
-                          const SizedBox(width: 8),
-
-                          // Message bubble
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                  decoration: BoxDecoration(
-                                    color: isMe
-                                        ? primaryColor
-                                        : isDarkMode
-                                        ? darkColor
-                                        : const Color(0xFF8D7B68),
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(isMe ? 16 : showAvatar ? 0 : 16),
-                                      topRight: Radius.circular(isMe ? showAvatar ? 0 : 16 : 16),
-                                      bottomLeft: const Radius.circular(16),
-                                      bottomRight: const Radius.circular(16),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    message.text,
-                                    style: TextStyle(
-                                      color: isMe ? darkColor : lightColor,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ),
-
-                                // Time and status
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        _formatMessageTime(message.timestamp),
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: isDarkMode ? lightGrayColor : grayColor,
-                                        ),
-                                      ),
-                                      if (isMe) ...[
-                                        const SizedBox(width: 4),
-                                        _buildMessageStatus(message.status),
-                                      ],
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          const SizedBox(width: 8),
-
-                          // Current user's avatar
-                          if (isMe && showAvatar)
-                            const CircleAvatar(
-                              radius: 16,
-                              backgroundImage: AssetImage('assets/images/user_image.png'),
-                            )
-                          else if (isMe && !showAvatar)
-                            const SizedBox(width: 32),
-                        ],
-                      ),
-                    );
+                    return _buildMessageBubble(message, isMe, showAvatar, conversation, isDarkMode);
                   },
                 ),
               ),
-
-              // Message Input
-              Container(
-                decoration: BoxDecoration(
-                  color: isDarkMode ? darkColor : lightColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, -1),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: SafeArea(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.emoji_emotions_outlined,
-                          color: isDarkMode ? lightGrayColor : grayColor,
-                        ),
-                        onPressed: () {},
-                      ),
-                      Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 4),
-                          decoration: BoxDecoration(
-                            color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          child: TextField(
-                            controller: _messageController,
-                            style: TextStyle(
-                              color: isDarkMode ? lightColor : darkColor,
-                            ),
-                            maxLines: 5,
-                            minLines: 1,
-                            decoration: InputDecoration(
-                              hintText: 'Type message here...',
-                              hintStyle: TextStyle(
-                                color: isDarkMode ? lightGrayColor : grayColor,
-                              ),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 10,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8, bottom: 4),
-                        child: InkWell(
-                          onTap: () {
-                            viewModel.sendMessage(_messageController.text);
-                            _messageController.clear();
-                            // Scroll to bottom after sending
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              _scrollToBottom();
-                            });
-                          },
-                          borderRadius: BorderRadius.circular(25),
-                          child: Container(
-                            height: 46,
-                            width: 46,
-                            decoration: const BoxDecoration(
-                              color: primaryColor,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.send,
-                              color: lightColor,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              _buildMessageInput(isDarkMode),
             ],
           ),
         );
