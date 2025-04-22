@@ -62,7 +62,7 @@ class LocationSearchHeader extends StatelessWidget {
                 icon: const Icon(Icons.my_location, color: primaryColor, size: 18),
                 label: const Text(
                   'Use current location',
-                  style: const TextStyle(color: primaryColor, fontWeight: FontWeight.w500),
+                  style: TextStyle(color: primaryColor, fontWeight: FontWeight.w500),
                 ),
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: primaryColor),
@@ -77,7 +77,7 @@ class LocationSearchHeader extends StatelessWidget {
                 icon: const Icon(Icons.map, color: secondaryColor, size: 18),
                 label: const Text(
                   'Choose on map',
-                  style: const TextStyle(color: secondaryColor, fontWeight: FontWeight.w500),
+                  style: TextStyle(color: secondaryColor, fontWeight: FontWeight.w500),
                 ),
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: secondaryColor),

@@ -105,7 +105,7 @@ class OrderCardWidget extends StatelessWidget {
                     ),
                     child: Text(
                       order.serviceType,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: primaryColor,
                         fontWeight: FontWeight.w500,

@@ -157,7 +157,7 @@ class ProfileOverviewWidget extends StatelessWidget {
             ),
             child: Text(
               worker.serviceCategory,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: primaryColor,

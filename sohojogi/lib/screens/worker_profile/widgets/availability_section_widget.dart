@@ -162,7 +162,7 @@ class AvailabilitySectionWidget extends StatelessWidget {
           ),
           child: Text(
             '${slot.start} - ${slot.end}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               color: primaryColor,
               fontWeight: FontWeight.w500,

@@ -140,7 +140,7 @@ class ServicesSectionWidget extends StatelessWidget {
                             },
                             style: OutlinedButton.styleFrom(
                               foregroundColor: primaryColor,
-                              side: BorderSide(color: primaryColor),
+                              side: const BorderSide(color: primaryColor),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),

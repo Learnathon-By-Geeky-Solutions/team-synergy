@@ -42,7 +42,7 @@ class ProfileEditView extends StatelessWidget {
           if (viewModel.hasChanges)
             TextButton(
               onPressed: viewModel.isLoading ? null : () => _saveProfile(context),
-              child: Text(
+              child: const Text(
                 'Save',
                 style: TextStyle(
                   color: primaryColor,
@@ -259,7 +259,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
         ),
       ),
       trailing: widget.viewModel.profileData.gender == gender
-          ? Icon(Icons.check, color: primaryColor)
+          ? const Icon(Icons.check, color: primaryColor)
           : null,
       onTap: () {
         widget.viewModel.updateGender(gender);
@@ -335,7 +335,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text(
+                  const Text(
                     'Change Profile Photo',
                     style: TextStyle(
                       fontSize: 14,
@@ -572,8 +572,8 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
                 ),
               ),
               if (widget.viewModel.profileData.isEmailVerified)
-                Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
+                const Padding(
+                  padding: EdgeInsets.only(right: 16.0),
                   child: Row(
                     children: [
                       Icon(
@@ -581,7 +581,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
                         size: 16,
                         color: Colors.green,
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Text(
                         'Verified',
                         style: TextStyle(
@@ -599,7 +599,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
                     onPressed: () {
                       // Handle verify email action
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Verification email sent')),
+                        const SnackBar(content: Text('Verification email sent')),
                       );
                     },
                     style: TextButton.styleFrom(
@@ -607,7 +607,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: Text(
+                    child: const Text(
                       'Verify',
                       style: TextStyle(
                         fontSize: 12,
