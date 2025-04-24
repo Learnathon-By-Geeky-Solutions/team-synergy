@@ -19,7 +19,7 @@ class OTPVerificationView extends StatelessWidget {
 }
 
 class _OTPVerificationViewContent extends StatelessWidget {
-  const _OTPVerificationViewContent({super.key});
+  const _OTPVerificationViewContent();
 
   @override
   Widget build(BuildContext context) {

@@ -14,88 +14,62 @@ class LocationCard extends StatelessWidget {
     required this.isDarkMode,
   });
 
+  // Map string icon keys to IconData
+  IconData _getIconData(String? iconKey) {
+    final Map<String, IconData> iconMap = {
+      'home': Icons.home,
+      'work': Icons.work,
+      'favorite': Icons.favorite,
+      'store': Icons.store,
+      'location': Icons.location_on,
+    };
+
+    return iconMap[iconKey] ?? (location.isSaved ? Icons.bookmark : Icons.history);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final tileBackgroundColor = isDarkMode ? darkColor : lightColor;
+    // Create the leading icon based on location data
+    Widget leadingIcon = Icon(
+      location.icon != null ? _getIconData(location.icon as String) :
+      (location.isSaved ? Icons.bookmark : Icons.history),
+      color: location.isSaved ? primaryColor : Colors.grey,
+      size: 24,
+    );
 
-    final iconColor = location.isSaved
-        ? primaryColor
-        : (isDarkMode ? lightGrayColor : grayColor);
-
-    final titleText = location.name ?? location.address;
-
-    final subtitleText = location.name != null
-        ? location.address
-        : location.subAddress;
-
-    final leadingIcon = location.icon != null
-        ? location.icon
-        : (location.isSaved ? Icons.star : Icons.history);
-
-    final leadingBackgroundColor = (location.isSaved ? primaryColor : Colors.grey)
-        .withValues(alpha: 0.2);
-
-    return ListTile(
-      onTap: onTap,
-      tileColor: tileBackgroundColor,
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: leadingBackgroundColor,
-          shape: BoxShape.circle,
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      color: isDarkMode ? Colors.grey[850] : Colors.white,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: isDarkMode
+              ? primaryColor.withOpacity(0.2)
+              : primaryColor.withOpacity(0.1),
+          child: leadingIcon,
         ),
-        child: Icon(
-          leadingIcon,
-          color: iconColor,
-          size: 20,
-        ),
-      ),
-      title: location.name != null
-          ? Row(
-        children: [
-          Text(
-            location.name!,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: isDarkMode ? lightColor : darkColor,
-            ),
+        title: Text(
+          location.name ?? location.address,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: isDarkMode ? Colors.white : Colors.black87,
           ),
-          if (location.isSaved) ...[
-            const SizedBox(width: 8),
-            Container(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: primaryColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Text(
-                'Saved',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: primaryColor,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-        ],
-      )
-          : Text(
-        titleText,
-        style: TextStyle(
-          fontWeight: FontWeight.w500,
-          color: isDarkMode ? lightColor : darkColor,
         ),
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: Text(
-        subtitleText,
-        style: TextStyle(
-          fontSize: 12,
-          color: isDarkMode ? lightGrayColor : grayColor,
+        subtitle: Text(
+          location.subAddress.isEmpty ? location.address : location.subAddress,
+          style: TextStyle(
+            color: isDarkMode ? Colors.white70 : Colors.black54,
+            fontSize: 13,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-        overflow: TextOverflow.ellipsis,
+        onTap: onTap,
+        trailing: Icon(
+          Icons.chevron_right,
+          color: isDarkMode ? Colors.white54 : Colors.black45,
+        ),
       ),
     );
   }
