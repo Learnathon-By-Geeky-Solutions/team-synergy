@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';
+
+import '../view_model/location_view_model.dart';
 
 class LocationSearchHeader extends StatelessWidget {
   final TextEditingController searchController;
@@ -73,7 +76,13 @@ class LocationSearchHeader extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
-                onPressed: chooseOnMap,
+                onPressed: () async {
+                  final viewModel = Provider.of<LocationViewModel>(context, listen: false);
+                  final selectedLocation = await viewModel.navigateToMapSelector(context);
+                  if (selectedLocation != null) {
+                    Navigator.pop(context, selectedLocation.address);
+                  }
+                },
                 icon: const Icon(Icons.map, color: secondaryColor, size: 18),
                 label: const Text(
                   'Choose on map',
