@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/keys.dart';
+import 'package:sohojogi/screens/location/view_model/location_view_model.dart';
 import 'package:sohojogi/screens/notification/view_model/notification_view_model.dart';
 import 'package:sohojogi/screens/order/view_model/order_view_model.dart';
 import 'package:sohojogi/screens/profile/view_model/profile_view_model.dart';
@@ -22,11 +24,17 @@ void main() async {
         ChangeNotifierProvider(create: (_) => OrderViewModel()),
         ChangeNotifierProvider(create: (_) => ServiceSearchedViewModel()),
         ChangeNotifierProvider(create: (_) => WorkerRegistrationViewModel()),
+        ChangeNotifierProvider(create: (_) => LocationViewModel()),
       ],
       child: const MyApp(),
     ),
   );
+
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    // This is handled through gradle properties
+  }
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -42,3 +50,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+

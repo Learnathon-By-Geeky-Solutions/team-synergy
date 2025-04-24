@@ -1,63 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sohojogi/constants/colors.dart';
+import '../../../constants/colors.dart';
 import '../view_model/location_view_model.dart';
 import '../widgets/location_card.dart';
 import '../widgets/location_search_header.dart';
+import '../models/location_model.dart';
+import 'location_selector_view.dart';
 
 class LocationListView extends StatefulWidget {
   const LocationListView({super.key});
 
   @override
-  State<LocationListView> createState() => _LocationScreenState();
+  State<LocationListView> createState() => _LocationListViewState();
 }
 
-class _LocationScreenState extends State<LocationListView> {
+class _LocationListViewState extends State<LocationListView> {
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(_onSearchChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<LocationViewModel>(context, listen: false).init();
+    });
+
+    _searchController.addListener(() {
+      Provider.of<LocationViewModel>(context, listen: false)
+          .search(_searchController.text);
+    });
   }
 
   @override
   void dispose() {
-    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
   }
 
-  void _onSearchChanged() {
-    final viewModel = Provider.of<LocationViewModel>(context, listen: false);
-    viewModel.search(_searchController.text);
-  }
-
-  void _selectLocation(String address) {
-    Navigator.pop(context, address);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
     final viewModel = Provider.of<LocationViewModel>(context);
+    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDarkMode ? grayColor : Colors.grey[100],
+      backgroundColor: isDarkMode ? Colors.grey[900] : Colors.grey[100],
       appBar: AppBar(
         title: Text(
           'Select Location',
           style: TextStyle(
-            color: isDarkMode ? lightColor : darkColor,
+            color: isDarkMode ? Colors.white : Colors.black,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: isDarkMode ? darkColor : lightColor,
+        backgroundColor: isDarkMode ? Colors.grey[850] : Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: isDarkMode ? lightColor : darkColor,
+            color: isDarkMode ? Colors.white : Colors.black,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -65,124 +64,157 @@ class _LocationScreenState extends State<LocationListView> {
       ),
       body: Column(
         children: [
-          // Using the dedicated search header widget instead of duplicating code
+          // Search header with options to use current location or select on map
           LocationSearchHeader(
             searchController: _searchController,
-            useCurrentLocation: () {
-              final viewModel = Provider.of<LocationViewModel>(context, listen: false);
-              final currentLocation = viewModel.getCurrentLocation();
-              Navigator.pop(context, currentLocation);
+            useCurrentLocation: () async {
+              final location = await viewModel.useCurrentLocation();
+              if (location != null) {
+                Navigator.pop(context, location.address);
+              }
             },
-            chooseOnMap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Map view will be implemented soon')),
-              );
-            },
+            chooseOnMap: () {},
             isDarkMode: isDarkMode,
           ),
 
-          // Location lists
+          // Main content (search results or locations list)
           Expanded(
-            child: viewModel.isSearching
-                ? _buildSearchResults(viewModel, isDarkMode)
-                : _buildSavedAndRecentLocations(viewModel, isDarkMode),
+            child: viewModel.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : viewModel.errorMessage != null
+                ? Center(child: Text(viewModel.errorMessage!))
+                : _buildLocationsList(viewModel, isDarkMode),
+          ),
+
+          // Add new location button at bottom
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LocationSelectorView()),
+                );
+                if (result != null) {
+                  Navigator.pop(context, result);
+                }
+              },
+              icon: const Icon(Icons.add_location_alt, size: 18),
+              label: const Text('Add New Location'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor, // Use theme color
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 48),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
+  Widget _buildLocationsList(LocationViewModel viewModel, bool isDarkMode) {
+    if (viewModel.isSearching) {
+      return _buildSearchResults(viewModel, isDarkMode);
+    }
+
+    return ListView(
+      children: [
+        // Saved locations section
+        if (viewModel.savedLocations.isNotEmpty) ...[
+          _buildSectionHeader('Saved Locations', isDarkMode),
+          ...viewModel.savedLocations.map((location) => LocationCard(
+            location: location,
+            onTap: () => Navigator.pop(context, location.address),
+            isDarkMode: isDarkMode,
+          )),
+        ],
+
+        // Recent locations section
+        if (viewModel.recentLocations.isNotEmpty) ...[
+          _buildSectionHeader('Recent Locations', isDarkMode),
+          ...viewModel.recentLocations.map((location) => LocationCard(
+            location: location,
+            onTap: () => Navigator.pop(context, location.address),
+            isDarkMode: isDarkMode,
+          )),
+        ],
+
+        // Empty state message
+        if (viewModel.savedLocations.isEmpty && viewModel.recentLocations.isEmpty)
+          _buildEmptyState(isDarkMode),
+      ],
+    );
+  }
+
   Widget _buildSearchResults(LocationViewModel viewModel, bool isDarkMode) {
     if (viewModel.searchResults.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.location_off, size: 48, color: isDarkMode ? lightGrayColor : grayColor),
-            const SizedBox(height: 16),
-            Text(
-              'No locations found',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: isDarkMode ? lightColor : darkColor,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Try a different search term',
-              style: TextStyle(fontSize: 14, color: isDarkMode ? lightGrayColor : grayColor),
-            ),
-          ],
+        child: Text(
+          'No locations found',
+          style: TextStyle(
+            color: isDarkMode ? Colors.white70 : Colors.black54,
+          ),
         ),
       );
     }
 
-    return ListView.builder(
-      itemCount: viewModel.searchResults.length,
-      padding: EdgeInsets.zero,
-      itemBuilder: (context, index) {
-        final location = viewModel.searchResults[index];
-        return LocationCard(
-          location: location,
-          onTap: () => _selectLocation(location.address),
-          isDarkMode: isDarkMode,
-        );
-      },
+    return ListView(
+      children: viewModel.searchResults.map((location) => LocationCard(
+        location: location,
+        onTap: () => Navigator.pop(context, location.address),
+        isDarkMode: isDarkMode,
+      )).toList(),
     );
   }
 
-  Widget _buildSavedAndRecentLocations(LocationViewModel viewModel, bool isDarkMode) {
-    return ListView(
-      padding: EdgeInsets.zero,
-      children: [
-        // Saved locations
-        if (viewModel.savedLocations.isNotEmpty) ...[
-          Container(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            color: isDarkMode ? grayColor : Colors.grey[100],
-            child: Text(
-              'Saved Locations',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: isDarkMode ? lightColor : darkColor,
-              ),
-            ),
-          ),
-          ...viewModel.savedLocations.map((location) =>
-              LocationCard(
-                location: location,
-                onTap: () => _selectLocation(location.address),
-                isDarkMode: isDarkMode,
-              )
-          ),
-          const Divider(height: 1, thickness: 1),
-        ],
+  Widget _buildSectionHeader(String title, bool isDarkMode) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: isDarkMode ? Colors.grey[850] : Colors.white,
+      child: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          color: isDarkMode ? Colors.white70 : Colors.black54,
+        ),
+      ),
+    );
+  }
 
-        // Recent locations
-        if (viewModel.recentLocations.isNotEmpty) ...[
-          Container(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            color: isDarkMode ? grayColor : Colors.grey[100],
-            child: Text(
-              'Recent Locations',
+  Widget _buildEmptyState(bool isDarkMode) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.location_off,
+              size: 64,
+              color: isDarkMode ? Colors.white30 : Colors.black26,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No saved locations',
               style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: isDarkMode ? lightColor : darkColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: isDarkMode ? Colors.white : Colors.black,
               ),
             ),
-          ),
-          ...viewModel.recentLocations.map((location) =>
-              LocationCard(
-                location: location,
-                onTap: () => _selectLocation(location.address),
-                isDarkMode: isDarkMode,
-              )
-          ),
-        ],
-      ],
+            const SizedBox(height: 8),
+            Text(
+              'Add a new location or use your current location',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isDarkMode ? Colors.white70 : Colors.black54,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

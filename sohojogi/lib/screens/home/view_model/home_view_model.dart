@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
 import '../models/home_models.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeViewModel extends ChangeNotifier {
-  String _currentLocation = 'Mirpur 10, Dhaka';
+  String _currentLocation = 'Select your location';
   int _currentBannerPage = 0;
+  static const String locationKey = 'user_selected_location';
+
+  HomeViewModel() {
+    _loadSavedLocation();
+  }
+
+  // Load location from SharedPreferences
+  Future<void> _loadSavedLocation() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedLocation = prefs.getString(locationKey);
+    if (savedLocation != null && savedLocation.isNotEmpty) {
+      _currentLocation = savedLocation;
+      notifyListeners();
+    }
+  }
 
   // Getters
   String get currentLocation => _currentLocation;
@@ -95,6 +111,16 @@ class HomeViewModel extends ChangeNotifier {
 
   void updateLocation(String location) {
     _currentLocation = location;
+    _saveLocation(location);
     notifyListeners();
+  }
+
+  Future<void> _saveLocation(String location) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(locationKey, location);
+    } catch (e) {
+      debugPrint('Error saving location: $e');
+    }
   }
 }
