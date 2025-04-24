@@ -8,6 +8,8 @@ import 'package:sohojogi/screens/service_searched/view_model/service_searched_vi
 import 'package:sohojogi/screens/splash/splash_screen.dart';
 import 'package:sohojogi/base/theme/theme_data.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sohojogi/screens/business_profile/view_model/worker_registration_view_model.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +21,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ProfileViewModel()),
         ChangeNotifierProvider(create: (_) => OrderViewModel()),
         ChangeNotifierProvider(create: (_) => ServiceSearchedViewModel()),
+        ChangeNotifierProvider(create: (_) => WorkerRegistrationViewModel()),
       ],
       child: const MyApp(),
     ),
