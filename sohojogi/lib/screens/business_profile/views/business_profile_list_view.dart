@@ -96,6 +96,12 @@ class _RegistrationFormWidgetState extends State<RegistrationFormWidget> {
   @override
   void initState() {
     super.initState();
+
+    // Initialize the view model
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.viewModel.initialize();
+    });
+
     // Pre-fill form if there's existing data
     _nameController.text = widget.viewModel.registrationData.fullName;
     _phoneController.text = widget.viewModel.registrationData.phoneNumber;

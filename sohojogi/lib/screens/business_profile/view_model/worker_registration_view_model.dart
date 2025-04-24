@@ -1,32 +1,19 @@
 import 'package:flutter/material.dart';
+import '../../../base/services/worker_registration_service.dart';
 import '../models/worker_registration_model.dart';
 
 class WorkerRegistrationViewModel extends ChangeNotifier {
   final WorkerRegistrationModel _registrationData = WorkerRegistrationModel();
+  final WorkerRegistrationService _service = WorkerRegistrationService();
+
   bool _isLoading = false;
   String? _errorMessage;
   bool _registrationSuccess = false;
+  bool _isInitialized = false;
 
-  // Available work types
-  final List<WorkTypeModel> _workTypes = [
-    WorkTypeModel(id: '1', name: 'Plumber', icon: 'assets/icons/plumber.png'),
-    WorkTypeModel(id: '2', name: 'Cleaning', icon: 'assets/icons/cleaning.png'),
-    WorkTypeModel(id: '3', name: 'Carpenter', icon: 'assets/icons/carpenter.png'),
-    WorkTypeModel(id: '4', name: 'Electrician', icon: 'assets/icons/electrician.png'),
-    WorkTypeModel(id: '5', name: 'Painter', icon: 'assets/icons/painter.png'),
-    WorkTypeModel(id: '6', name: 'AC Technician', icon: 'assets/icons/ac_technician.png'),
-    WorkTypeModel(id: '7', name: 'Gardener', icon: 'assets/icons/gardener.png'),
-    WorkTypeModel(id: '8', name: 'Driver', icon: 'assets/icons/driver.png'),
-  ];
-
-  // Available countries
-  final List<CountryModel> _countries = [
-    CountryModel(id: '1', name: 'Pakistan', flag: '🇵🇰'),
-    CountryModel(id: '2', name: 'UAE', flag: '🇦🇪'),
-    CountryModel(id: '3', name: 'Gulf', flag: '🇸🇦'),
-    CountryModel(id: '4', name: 'India', flag: '🇮🇳'),
-    CountryModel(id: '5', name: 'Bangladesh', flag: '🇧🇩'),
-  ];
+  // Work types and countries
+  List<WorkTypeModel> _workTypes = [];
+  List<CountryModel> _countries = [];
 
   // Getters
   WorkerRegistrationModel get registrationData => _registrationData;
@@ -36,6 +23,32 @@ class WorkerRegistrationViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get registrationSuccess => _registrationSuccess;
   bool get isFormValid => _registrationData.isValid;
+
+  // Initialize data from Supabase
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      // Load work types and countries from Supabase
+      final workTypesData = await _service.getWorkTypes();
+      final countriesData = await _service.getCountries();
+
+      _workTypes = workTypesData;
+      _countries = countriesData;
+      _isInitialized = true;
+
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = 'Failed to load data. Please try again.';
+      notifyListeners();
+    }
+  }
 
   // Update methods
   void updateFullName(String value) {
@@ -117,11 +130,8 @@ class WorkerRegistrationViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
-
-      // In a real app, you would submit to an API here
-      // final response = await apiService.registerWorker(_registrationData);
+      // Submit to Supabase
+      await _service.registerWorker(_registrationData);
 
       _isLoading = false;
       _registrationSuccess = true;
@@ -129,7 +139,7 @@ class WorkerRegistrationViewModel extends ChangeNotifier {
       return true;
     } catch (e) {
       _isLoading = false;
-      _errorMessage = 'Registration failed. Please try again.';
+      _errorMessage = 'Registration failed: ${e.toString()}';
       notifyListeners();
       return false;
     }
@@ -156,5 +166,4 @@ class WorkerRegistrationViewModel extends ChangeNotifier {
 
     notifyListeners();
   }
-
 }

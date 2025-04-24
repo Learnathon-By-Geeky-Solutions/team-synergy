@@ -1,0 +1,2 @@
+F:/Areas/Development/Projects/Active/Flutter/team-synergy/sohojogi/android/app/.cxx/Debug/414y4w6j/armeabi-v7a/CMakeFiles/edit_cache.dir
+F:/Areas/Development/Projects/Active/Flutter/team-synergy/sohojogi/android/app/.cxx/Debug/414y4w6j/armeabi-v7a/CMakeFiles/rebuild_cache.dir
