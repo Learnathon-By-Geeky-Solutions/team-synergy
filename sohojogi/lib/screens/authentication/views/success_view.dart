@@ -11,7 +11,7 @@ class SuccessView extends StatelessWidget {
 
     return AuthScreenLayout(
       title: 'Success!',
-      subtitle: 'You are all set\nYou can now sign in',
+      subtitle: 'Email sent successfully\nPlease check your email to reset your password',
       children: [
         Center(
           child: Container(

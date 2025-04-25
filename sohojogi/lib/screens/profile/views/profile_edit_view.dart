@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../view_model/profile_view_model.dart';
 import '../widgets/profile_image_selection_modal.dart';
 import '../widgets/profile_save_success_modal.dart';
@@ -17,6 +18,12 @@ class ProfileEditView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<ProfileViewModel>(context);
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+
+    if (userId != null && viewModel.profileData.id.isEmpty) {
+      viewModel.loadProfile(userId);
+    }
+
     final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Scaffold(
@@ -66,7 +73,7 @@ class ProfileEditView extends StatelessWidget {
 
   void _saveProfile(BuildContext context) async {
     final viewModel = Provider.of<ProfileViewModel>(context, listen: false);
-    final success = await viewModel.saveProfile();
+    final success = await viewModel.saveProfile(Supabase.instance.client.auth.currentUser?.id ?? '');
 
     if (success && context.mounted) {
       showDialog(
@@ -289,7 +296,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
       height: 120,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: widget.isDarkMode ? lightGrayColor : grayColor.withValues(alpha:0.3),
+        color: widget.isDarkMode ? lightGrayColor : grayColor.withOpacity(0.3),
         image: profileImageDecoration,
       ),
       child: profileImageDecoration == null
@@ -408,7 +415,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha:0.1),
+                  color: Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -513,7 +520,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
             border: Border.all(
               color: errorText != null
                   ? Colors.red
-                  : (widget.isDarkMode ? grayColor.withValues(alpha:0.3) : grayColor.withValues(alpha:0.3)),
+                  : (widget.isDarkMode ? grayColor.withOpacity(0.3) : grayColor.withOpacity(0.3)),
             ),
           ),
           child: TextField(
@@ -557,7 +564,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
             border: Border.all(
               color: _emailError != null
                   ? Colors.red
-                  : (widget.isDarkMode ? grayColor.withValues(alpha:0.3) : grayColor.withValues(alpha:0.3)),
+                  : (widget.isDarkMode ? grayColor.withOpacity(0.3) : grayColor.withOpacity(0.3)),
             ),
           ),
           child: Row(
@@ -659,25 +666,22 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
               border: Border.all(
                 color: errorText != null
                     ? Colors.red
-                    : (widget.isDarkMode ? grayColor.withValues(alpha: 0.3) : grayColor.withValues(alpha: 0.3)),
+                    : (widget.isDarkMode ? grayColor.withOpacity(0.3) : grayColor.withOpacity(0.3)),
               ),
             ),
             child: Row(
               children: [
                 Expanded(
                   child: Text(
-                    text,
+                    text.isEmpty ? 'Select an option' : text,
                     style: TextStyle(
-                      color: text == 'Select your gender'
+                      color: text.isEmpty
                           ? (widget.isDarkMode ? lightGrayColor : grayColor)
                           : (widget.isDarkMode ? lightColor : darkColor),
                     ),
                   ),
                 ),
-                Icon(
-                  Icons.keyboard_arrow_down,
-                  color: widget.isDarkMode ? lightGrayColor : grayColor,
-                ),
+                const Icon(Icons.arrow_drop_down, color: primaryColor),
               ],
             ),
           ),
