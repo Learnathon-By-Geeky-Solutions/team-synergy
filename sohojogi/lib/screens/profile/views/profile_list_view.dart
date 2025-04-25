@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../view_model/profile_view_model.dart';
 import 'profile_edit_view.dart';
 
@@ -12,6 +13,12 @@ class ProfileListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<ProfileViewModel>(context);
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+
+    if (userId != null && viewModel.profileData.id.isEmpty) {
+      viewModel.loadProfile(userId);
+    }
+
     final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Scaffold(
@@ -72,7 +79,7 @@ class ProfileListView extends StatelessWidget {
             height: 120,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isDarkMode ? darkColor.withValues(alpha: 0.5) : grayColor.withValues(alpha: 0.3),
+              color: isDarkMode ? darkColor.withOpacity(0.5) : grayColor.withOpacity(0.3),
               image: viewModel.profileData.profilePhotoUrl != null
                   ? DecorationImage(
                 image: NetworkImage(viewModel.profileData.profilePhotoUrl!),
@@ -157,7 +164,7 @@ class ProfileListView extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: isDarkMode ? darkColor.withValues(alpha: 0.5) : grayColor.withValues(alpha: 0.1),
+              color: isDarkMode ? darkColor.withOpacity(0.5) : grayColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -225,3 +232,4 @@ class ProfileListView extends StatelessWidget {
     );
   }
 }
+
