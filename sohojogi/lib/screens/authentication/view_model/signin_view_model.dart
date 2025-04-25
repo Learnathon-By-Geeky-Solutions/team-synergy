@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sohojogi/base/services/auth_service.dart';
 import 'package:sohojogi/screens/authentication/view_model/base_auth_view_model.dart';
 
 class SignInViewModel extends BaseAuthViewModel {
-  final TextEditingController phoneController = TextEditingController();
+  final AuthService _authService;
+
+  SignInViewModel({AuthService? authService})
+      : _authService = authService ?? AuthService();
+
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   bool _obscurePassword = true;
@@ -23,25 +28,28 @@ class SignInViewModel extends BaseAuthViewModel {
     setErrorMessage(null);
 
     try {
-      // Check if user exists in the database
-      await Supabase.instance.client
-          .from('user')
-          .select()
-          .eq('phone_number', phoneController.text)
-          .eq('password', passwordController.text)
-          .single();
+      final error = await _authService.signIn(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+
+      if (error != null) {
+        setErrorMessage(error);
+        setLoading(false);
+        return false;
+      }
 
       setLoading(false);
       return true;
     } catch (e) {
       setLoading(false);
-      setErrorMessage('Authentication failed');
+      setErrorMessage('An unexpected error occurred. Please try again.');
       return false;
     }
   }
 
   bool _validateInputs() {
-    if (!validateField(phoneController.text, 'phone number')) {
+    if (!validateField(emailController.text, 'email')) {
       return false;
     }
 
@@ -54,7 +62,7 @@ class SignInViewModel extends BaseAuthViewModel {
 
   @override
   void dispose() {
-    phoneController.dispose();
+    emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }

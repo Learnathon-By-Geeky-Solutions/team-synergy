@@ -3,11 +3,14 @@ import 'package:sohojogi/base/services/auth_service.dart';
 import 'package:sohojogi/screens/authentication/view_model/base_auth_view_model.dart';
 
 class ForgotPasswordViewModel extends BaseAuthViewModel {
-  final AuthService _authService = AuthService();
-  final TextEditingController phoneController = TextEditingController();
+  final AuthService _authService;
 
-  Future<bool> sendOTP() async {
-    if (!validateField(phoneController.text, 'phone number')) {
+  ForgotPasswordViewModel({AuthService? authService})
+      : _authService = authService ?? AuthService();
+  final TextEditingController emailController = TextEditingController();
+
+  Future<bool> sendPasswordResetEmail() async {
+    if (!validateField(emailController.text, 'email')) {
       return false;
     }
 
@@ -15,19 +18,25 @@ class ForgotPasswordViewModel extends BaseAuthViewModel {
     setErrorMessage(null);
 
     try {
-      final success = await _authService.sendOTP(phoneController.text);
+      final error = await _authService.sendPasswordResetEmail(emailController.text);
+      if (error != null) {
+        setErrorMessage(error);
+        setLoading(false);
+        return false;
+      }
+
       setLoading(false);
-      return success;
+      return true;
     } catch (e) {
       setLoading(false);
-      setErrorMessage('Failed to send OTP');
+      setErrorMessage('An unexpected error occurred. Please try again.');
       return false;
     }
   }
 
   @override
   void dispose() {
-    phoneController.dispose();
+    emailController.dispose();
     super.dispose();
   }
 }

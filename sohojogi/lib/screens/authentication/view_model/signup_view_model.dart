@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sohojogi/base/services/auth_service.dart';
 import 'package:sohojogi/screens/authentication/view_model/base_auth_view_model.dart';
 
 class SignUpViewModel extends BaseAuthViewModel {
+  final AuthService _authService;
+
+  SignUpViewModel({AuthService? authService})
+      : _authService = authService ?? AuthService();
+
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   bool _obscurePassword = true;
@@ -32,18 +37,23 @@ class SignUpViewModel extends BaseAuthViewModel {
     setErrorMessage(null);
 
     try {
-      var user = {
-        'phone_number': phoneController.text,
-        'name': nameController.text,
-        'password': passwordController.text
-      };
+      final error = await _authService.signUp(
+        email: emailController.text,
+        password: passwordController.text,
+        displayName: nameController.text,
+      );
 
-      await Supabase.instance.client.from('user').insert(user);
+      if (error != null) {
+        setErrorMessage(error);
+        setLoading(false);
+        return false;
+      }
+
       setLoading(false);
       return true;
     } catch (e) {
       setLoading(false);
-      setErrorMessage('Registration failed');
+      setErrorMessage('An unexpected error occurred. Please try again.');
       return false;
     }
   }
@@ -53,7 +63,7 @@ class SignUpViewModel extends BaseAuthViewModel {
       return false;
     }
 
-    if (!validateField(phoneController.text, 'phone number')) {
+    if (!validateField(emailController.text, 'email')) {
       return false;
     }
 
@@ -62,7 +72,7 @@ class SignUpViewModel extends BaseAuthViewModel {
     }
 
     if (!_termsAccepted) {
-      setErrorMessage('Please accept the terms of service');
+      setErrorMessage('You must accept the terms and conditions');
       return false;
     }
 
@@ -72,7 +82,7 @@ class SignUpViewModel extends BaseAuthViewModel {
   @override
   void dispose() {
     nameController.dispose();
-    phoneController.dispose();
+    emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }

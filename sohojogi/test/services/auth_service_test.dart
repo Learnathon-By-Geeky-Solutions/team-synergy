@@ -1,27 +1,49 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sohojogi/base/services/auth_service.dart';
+import 'package:sohojogi/constants/keys.dart';
 
 void main() {
   late AuthService authService;
+
+  setUpAll(() async {
+    // Mock shared_preferences
+    SharedPreferences.setMockInitialValues({});
+
+    // Initialize Supabase
+    await Supabase.initialize(
+      url: supabaseUrl,
+      anonKey: supabaseKey,
+    );
+  });
 
   setUp(() {
     authService = AuthService();
   });
 
   group('AuthService Tests', () {
-    test('Send OTP successfully', () async {
-      final result = await authService.sendOTP('1234567890');
-      expect(result, true);
+    test('AuthService initializes correctly', () {
+      expect(authService, isNotNull);
     });
 
-    test('Verify OTP successfully', () async {
-      final result = await authService.verifyOTP(phoneNumber: '1234567890', otp: '123456');
-      expect(result, true);
+    test('Sign up returns error for invalid credentials', () async {
+      final result = await authService.signUp(
+        email: 'test@example.com',
+        password: 'short',
+        displayName: 'Test User',
+      );
+
+      expect(result, isNotNull);
     });
 
-    test('Reset password successfully', () async {
-      final result = await authService.resetPassword(phoneNumber: '1234567890', newPassword: 'password123');
-      expect(result, true);
+    test('Sign in returns error for invalid credentials', () async {
+      final result = await authService.signIn(
+        email: 'test@example.com',
+        password: 'wrong',
+      );
+
+      expect(result, isNotNull);
     });
   });
 }

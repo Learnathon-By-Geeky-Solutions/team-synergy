@@ -56,9 +56,9 @@ class _SignInViewContent extends StatelessWidget {
       ),
       children: [
         buildTextField(
-          controller: viewModel.phoneController,
-          hintText: 'Phone Number',
-          keyboardType: TextInputType.phone,
+          controller: viewModel.emailController,
+          hintText: 'Email',
+          keyboardType: TextInputType.emailAddress,
         ),
         const SizedBox(height: 16),
         buildPasswordField(

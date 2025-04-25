@@ -7,7 +7,7 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: SuccessView()));
 
     expect(find.text('Success!'), findsOneWidget);
-    expect(find.text('You are all set\nYou can now sign in'), findsOneWidget);
+    expect(find.text('Email sent successfully\nPlease check your email to reset your password'), findsOneWidget);
     expect(find.text('Continue'), findsOneWidget);
   });
 }

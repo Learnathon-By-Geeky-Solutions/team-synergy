@@ -1,93 +1,80 @@
 import 'package:flutter/material.dart';
-import '../models/profile_model.dart';
 import 'dart:io';
+import '../models/profile_model.dart';
+import '../../../base/services/profile_service.dart';
 
 class ProfileViewModel extends ChangeNotifier {
-  ProfileModel _profileData = ProfileModel(
-    fullName: 'John Doe',
-    email: 'john.doe@example.com',
-    isEmailVerified: true,
-    phoneNumber: '+1234567890',
-    gender: 'Male',
-  );
-
-  ProfileModel _originalProfileData = ProfileModel();
+  final ProfileService _profileService;
+  ProfileModel _profileData = ProfileModel();
+  ProfileModel? _originalData;
   bool _isLoading = false;
   String? _errorMessage;
-  bool _hasChanges = false;
   File? _newProfileImage;
+
+  ProfileViewModel({ProfileService? profileService})
+      : _profileService = profileService ?? ProfileService();
 
   // Getters
   ProfileModel get profileData => _profileData;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
-  bool get hasChanges => _hasChanges;
   File? get newProfileImage => _newProfileImage;
 
-  // Constructor - load initial data
-  ProfileViewModel() {
-    _loadProfile();
-    _originalProfileData = ProfileModel(
-      fullName: _profileData.fullName,
-      email: _profileData.email,
-      isEmailVerified: _profileData.isEmailVerified,
-      phoneNumber: _profileData.phoneNumber,
-      gender: _profileData.gender,
-      profilePhotoUrl: _profileData.profilePhotoUrl,
-    );
+  // Add hasChanges getter to check if profile data has been modified
+  bool get hasChanges {
+    if (_newProfileImage != null) return true;
+    if (_originalData == null) return false;
+
+    return _profileData.fullName != _originalData!.fullName ||
+        _profileData.email != _originalData!.email ||
+        _profileData.phoneNumber != _originalData!.phoneNumber ||
+        _profileData.gender != _originalData!.gender;
   }
 
-  // Mock loading profile data
-  Future<void> _loadProfile() async {
+  Future<void> loadProfile(String userId) async {
     _isLoading = true;
     notifyListeners();
 
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    _isLoading = false;
-    notifyListeners();
+    try {
+      final data = await _profileService.fetchProfile(userId);
+      if (data != null) {
+        _profileData = ProfileModel.fromMap(data);
+        _originalData = ProfileModel.fromMap(data); // Store original data
+      }
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
-  // Update methods
   void updateFullName(String value) {
     _profileData.fullName = value;
-    _checkForChanges();
     notifyListeners();
   }
 
   void updateEmail(String value) {
     _profileData.email = value;
-    _checkForChanges();
     notifyListeners();
   }
 
   void updatePhoneNumber(String value) {
     _profileData.phoneNumber = value;
-    _checkForChanges();
     notifyListeners();
   }
 
   void updateGender(String value) {
     _profileData.gender = value;
-    _checkForChanges();
     notifyListeners();
   }
 
   void setProfileImage(File image) {
     _newProfileImage = image;
-    _hasChanges = true;
     notifyListeners();
   }
 
-  void _checkForChanges() {
-    _hasChanges = _profileData.fullName != _originalProfileData.fullName ||
-        _profileData.email != _originalProfileData.email ||
-        _profileData.phoneNumber != _originalProfileData.phoneNumber ||
-        _profileData.gender != _originalProfileData.gender ||
-        _newProfileImage != null;
-  }
-
-  Future<bool> saveProfile() async {
+  Future<bool> saveProfile([String? userId]) async {
     if (!_profileData.isValid) {
       _errorMessage = 'Please fill all required fields';
       notifyListeners();
@@ -95,48 +82,32 @@ class ProfileViewModel extends ChangeNotifier {
     }
 
     _isLoading = true;
-    _errorMessage = null;
     notifyListeners();
 
     try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 1));
+      if (_newProfileImage != null && userId != null) {
+        print("Uploading image from path: ${_newProfileImage!.path}");
+        final imageUrl = await _profileService.uploadProfilePicture(
+          userId,
+          _newProfileImage!.path,
+        );
+        print("Image uploaded, URL: $imageUrl");
+        _profileData.profilePhotoUrl = imageUrl;
+      }
 
-      // Update the original data after successful save
-      _originalProfileData = ProfileModel(
-        fullName: _profileData.fullName,
-        email: _profileData.email,
-        isEmailVerified: _profileData.isEmailVerified,
-        phoneNumber: _profileData.phoneNumber,
-        gender: _profileData.gender,
-        profilePhotoUrl: _profileData.profilePhotoUrl,
-      );
-
-      _newProfileImage = null;
-      _hasChanges = false;
-      _isLoading = false;
-      notifyListeners();
+      print("Updating profile with data: ${_profileData.toMap()}");
+      await _profileService.updateProfile(userId ?? _profileData.id, _profileData.toMap());
+      _originalData = ProfileModel.fromMap(_profileData.toMap());
+      _errorMessage = null;
       return true;
     } catch (e) {
-      _isLoading = false;
-      _errorMessage = 'Failed to save profile. Please try again.';
-      notifyListeners();
+      print("Error saving profile: $e");
+      _errorMessage = e.toString();
       return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
-  void resetChanges() {
-    _profileData = ProfileModel(
-      fullName: _originalProfileData.fullName,
-      email: _originalProfileData.email,
-      isEmailVerified: _originalProfileData.isEmailVerified,
-      phoneNumber: _originalProfileData.phoneNumber,
-      gender: _originalProfileData.gender,
-      profilePhotoUrl: _originalProfileData.profilePhotoUrl,
-    );
-    _newProfileImage = null;
-    _hasChanges = false;
-    _errorMessage = null;
-    notifyListeners();
-  }
 }
