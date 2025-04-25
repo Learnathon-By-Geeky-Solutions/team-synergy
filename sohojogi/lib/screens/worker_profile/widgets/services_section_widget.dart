@@ -4,15 +4,19 @@ import 'package:sohojogi/screens/worker_profile/models/worker_profile_model.dart
 
 class ServicesSectionWidget extends StatelessWidget {
   final List<WorkerServiceModel> services;
+  final List<WorkerServiceModel> selectedServices;
+  final Function(WorkerServiceModel, bool) onServiceSelected;
 
   const ServicesSectionWidget({
     super.key,
     required this.services,
+    required this.selectedServices,
+    required this.onServiceSelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Container(
       margin: const EdgeInsets.only(top: 8),
@@ -21,144 +25,139 @@ class ServicesSectionWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Services Offered',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isDarkMode ? lightColor : darkColor,
+                ),
+              ),
+              if (selectedServices.isNotEmpty)
+                Text(
+                  '${selectedServices.length} selected',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: primaryColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 4),
           Text(
-            'Services',
+            'Select services you want to hire',
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: isDarkMode ? lightColor : darkColor,
+              fontSize: 14,
+              color: isDarkMode ? lightGrayColor : grayColor,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+
+          // Services list with checkboxes
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: services.length,
             itemBuilder: (context, index) {
               final service = services[index];
+              final isSelected = selectedServices.any((s) => s.id == service.id);
+
               return Card(
+                margin: const EdgeInsets.only(bottom: 8),
                 elevation: 0,
-                margin: const EdgeInsets.only(bottom: 12),
-                color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade50,
+                color: isSelected
+                    ? primaryColor.withOpacity(0.1)
+                    : isDarkMode
+                    ? Colors.black12
+                    : Colors.grey.shade100,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                   side: BorderSide(
-                    color: isDarkMode ? grayColor.withValues(alpha: 0.3) : Colors.grey.shade300,
-                    width: 1,
+                    color: isSelected ? primaryColor : Colors.transparent,
+                    width: 1.5,
                   ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
+                child: CheckboxListTile(
+                  value: isSelected,
+                  onChanged: (value) => onServiceSelected(service, value ?? false),
+                  activeColor: primaryColor,
+                  title: Text(
+                    service.name,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? lightColor : darkColor,
+                    ),
+                  ),
+                  subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        service.name,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: isDarkMode ? lightColor : darkColor,
-                                        ),
-                                      ),
-                                    ),
-                                    if (service.isPopular)
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.orange.withValues(alpha: 0.2),
-                                          borderRadius: BorderRadius.circular(12),
-                                          border: Border.all(
-                                            color: Colors.orange,
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: const Text(
-                                          'Popular',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.orange,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  service.description,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: isDarkMode ? lightGrayColor : grayColor,
-                                  ),
-                                ),
-                              ],
+                      if (service.description.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4, bottom: 4),
+                          child: Text(
+                            service.description,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDarkMode ? lightGrayColor : grayColor,
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: '৳${service.price.toStringAsFixed(0)}',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: isDarkMode ? lightColor : darkColor,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: ' ${service.unit}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: isDarkMode ? lightGrayColor : grayColor,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          OutlinedButton(
-                            onPressed: () {
-                              // Handle service selection
-                            },
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: primaryColor,
-                              side: const BorderSide(color: primaryColor),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                            ),
-                            child: const Text('Select'),
-                          ),
-                        ],
+                        ),
+                      Text(
+                        '৳${service.price.toStringAsFixed(0)} per ${service.unit}',
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  checkboxShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
                   ),
                 ),
               );
             },
           ),
+
+          // Total price indicator if services selected
+          if (selectedServices.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDarkMode ? Colors.black12 : Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: primaryColor.withOpacity(0.3),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Total Price:',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? lightColor : darkColor,
+                    ),
+                  ),
+                  Text(
+                    '৳${selectedServices.fold(0.0, (sum, item) => sum + item.price).toStringAsFixed(0)}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );

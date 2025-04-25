@@ -10,6 +10,7 @@ import 'package:sohojogi/screens/profile/view_model/profile_view_model.dart';
 import 'package:sohojogi/screens/service_searched/view_model/service_searched_view_model.dart';
 import 'package:sohojogi/screens/splash/splash_screen.dart';
 import 'package:sohojogi/base/theme/theme_data.dart';
+import 'package:sohojogi/screens/worker_profile/view_model/worker_profile_view_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sohojogi/screens/business_profile/view_model/worker_registration_view_model.dart';
 
@@ -26,6 +27,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ServiceSearchedViewModel()),
         ChangeNotifierProvider(create: (_) => WorkerRegistrationViewModel()),
         ChangeNotifierProvider(create: (_) => LocationViewModel()),
+        ChangeNotifierProvider(create: (_) => WorkerProfileViewModel()),
       ],
       child: const MyApp(),
     ),
