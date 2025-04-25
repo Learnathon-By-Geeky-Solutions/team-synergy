@@ -14,6 +14,7 @@ import 'package:sohojogi/screens/worker_profile/widgets/reviews_section_widget.d
 import 'package:sohojogi/screens/worker_profile/widgets/services_section_widget.dart';
 import 'package:sohojogi/screens/worker_profile/widgets/skills_section_widget.dart';
 
+import '../../order/view_model/order_view_model.dart';
 import '../../order/views/order_list_view.dart';
 
 class WorkerProfileListView extends StatefulWidget {
@@ -112,25 +113,37 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
 
                   // Hire, call, message buttons
                   ActionButtonsWidget(
-                    worker: worker,
-                    hirePending: viewModel.hirePending,
-                    onHirePressed: () async {
-                      final success = await viewModel.initiateHiring();
-                      if (success && context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Hire request sent successfully!'),
-                            backgroundColor: primaryColor,
-                          ),
-                        );
+                      worker: worker,
+                      hirePending: viewModel.hirePending,
+                      selectedServices: viewModel.selectedServices, // Add this
+                      onHirePressed: () async {
+                        final success = await viewModel.initiateHiring();
+                        if (success && context.mounted) {
+                          // Force refresh the order view model before navigation
+                          await Provider.of<OrderViewModel>(context, listen: false).loadOrders();
 
-                        // Navigate to order list to see the new order
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const OrderListView()),
-                        );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Hire request sent successfully!'),
+                              backgroundColor: primaryColor,
+                            ),
+                          );
+
+                          // Navigate to order list to see the new order
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const OrderListView()),
+                          );
+                        } else if (context.mounted) {
+                          // Show error message if hiring failed
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(viewModel.errorMessage ?? 'Failed to create order. Please try again.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
                       }
-                    },
                   ),
 
                   // About section with bio

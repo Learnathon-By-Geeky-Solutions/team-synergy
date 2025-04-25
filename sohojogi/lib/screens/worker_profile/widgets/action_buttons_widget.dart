@@ -1,138 +1,100 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/worker_profile/models/worker_profile_model.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ActionButtonsWidget extends StatelessWidget {
   final WorkerProfileModel worker;
-  final bool hirePending;
   final VoidCallback onHirePressed;
+  final bool hirePending;
+  final List<WorkerServiceModel> selectedServices;
 
   const ActionButtonsWidget({
     super.key,
     required this.worker,
-    required this.hirePending,
     required this.onHirePressed,
+    required this.hirePending,
+    required this.selectedServices,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final bool canHire = selectedServices.isNotEmpty;
 
     return Container(
       color: isDarkMode ? darkColor : lightColor,
       padding: const EdgeInsets.all(16),
-      child: Column(
+      child: Row(
         children: [
-          // Main Hire Button
-          SizedBox(
-            width: double.infinity,
+          // Hire button
+          Expanded(
+            flex: 2,
             child: ElevatedButton(
-              onPressed: hirePending ? null : onHirePressed,
+              onPressed: canHire ? (hirePending ? null : onHirePressed) : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryColor,
-                foregroundColor: lightColor,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                elevation: 2,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                disabledBackgroundColor: canHire
+                    ? primaryColor.withOpacity(0.6)
+                    : isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300,
               ),
               child: hirePending
                   ? const SizedBox(
                 height: 20,
                 width: 20,
                 child: CircularProgressIndicator(
-                  strokeWidth: 2,
                   color: Colors.white,
+                  strokeWidth: 2,
                 ),
               )
-                  : const Text(
-                'Hire Now',
+                  : Text(
+                canHire ? 'Hire Now' : 'Select Services First',
                 style: TextStyle(
-                  fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: canHire ? Colors.white : (isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600),
                 ),
               ),
             ),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(width: 8),
 
-          // Secondary Action Buttons
-          Row(
-            children: [
-              // Call Button
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => _makePhoneCall(worker.phoneNumber),
-                  icon: const Icon(
-                    Icons.call,
-                    size: 20,
-                  ),
-                  label: const Text('Call'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: primaryColor,
-                    side: const BorderSide(color: primaryColor),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
+          // Call button
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: () {
+                // Handle call action
+              },
+              icon: const Icon(Icons.phone, size: 16),
+              label: const Text('Call'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                side: BorderSide(color: isDarkMode ? lightGrayColor : grayColor),
+                foregroundColor: isDarkMode ? lightColor : darkColor,
               ),
+            ),
+          ),
 
-              const SizedBox(width: 12),
+          const SizedBox(width: 8),
 
-              // Message Button
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => _sendEmail(worker.email),
-                  icon: const Icon(
-                    Icons.email,
-                    size: 20,
-                  ),
-                  label: const Text('Message'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: secondaryColor,
-                    side: const BorderSide(color: secondaryColor),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
+          // Message button
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: () {
+                // Handle message action
+              },
+              icon: const Icon(Icons.message, size: 16),
+              label: const Text('Chat'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                side: BorderSide(color: isDarkMode ? lightGrayColor : grayColor),
+                foregroundColor: isDarkMode ? lightColor : darkColor,
               ),
-            ],
+            ),
           ),
         ],
       ),
     );
-  }
-
-  Future<void> _makePhoneCall(String phoneNumber) async {
-    final Uri uri = Uri(scheme: 'tel', path: phoneNumber);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      // Handle error
-      debugPrint('Could not launch $uri');
-    }
-  }
-
-  Future<void> _sendEmail(String email) async {
-    final Uri uri = Uri(
-      scheme: 'mailto',
-      path: email,
-      queryParameters: {
-        'subject': 'Inquiry about your services',
-      },
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      // Handle error
-      debugPrint('Could not launch $uri');
-    }
   }
 }
