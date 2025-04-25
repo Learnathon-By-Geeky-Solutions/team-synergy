@@ -4,7 +4,10 @@ import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/business_profile/views/business_profile_list_view.dart';
 import 'package:sohojogi/screens/profile/view_model/profile_view_model.dart';
 import 'package:sohojogi/screens/profile/views/profile_edit_view.dart';
+import 'package:sohojogi/screens/profile/views/profile_list_view.dart';
 import '../business_profile/view_model/worker_registration_view_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sohojogi/screens/authentication/views/signin_view.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -143,7 +146,7 @@ class AppDrawer extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProfileEditView(
+        builder: (context) => ProfileListView(
           onBackPressed: () => Navigator.pop(context),
         ),
       ),
@@ -190,7 +193,7 @@ class AppDrawer extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => ChangeNotifierProvider(
                 create: (_) => ProfileViewModel(),
-                child: ProfileEditView(
+                child: ProfileListView(
                   onBackPressed: () => Navigator.pop(context),
                 ),
               ),
@@ -326,20 +329,31 @@ class AppDrawer extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Log Out'),
+        title: const Text('Confirm Logout'),
         content: const Text('Are you sure you want to log out?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context); // Close the dialog
+            },
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
+            onPressed: () async {
+              // Perform logout logic
+              await Supabase.instance.client.auth.signOut();
+
+              // Show a success message
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Logged out successfully')),
               );
-              // Implement actual logout logic
+
+              // Navigate to the SignInView
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const SignInView()),
+                    (route) => false,
+              );
             },
             child: const Text('Log Out'),
           ),
@@ -347,6 +361,7 @@ class AppDrawer extends StatelessWidget {
       ),
     );
   }
+
 }
 
 // Simple Help Center screen

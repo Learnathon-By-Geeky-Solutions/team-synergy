@@ -3,7 +3,7 @@ import 'package:sohojogi/base/services/auth_service.dart';
 import 'package:sohojogi/screens/authentication/view_model/base_auth_view_model.dart';
 
 class ResetPasswordViewModel extends BaseAuthViewModel {
-  final AuthService _authService = AuthService();
+  //final AuthService _authService = AuthService();
 
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
@@ -44,12 +44,8 @@ class ResetPasswordViewModel extends BaseAuthViewModel {
     setErrorMessage(null);
 
     try {
-      final success = await _authService.resetPassword(
-        phoneNumber: '',
-        newPassword: newPasswordController.text,
-      );
       setLoading(false);
-      return success;
+      return true;
     } catch (e) {
       setLoading(false);
       setErrorMessage('Failed to reset password');

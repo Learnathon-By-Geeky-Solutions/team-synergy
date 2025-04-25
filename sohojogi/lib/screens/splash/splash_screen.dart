@@ -1,9 +1,7 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:sohojogi/screens/authentication/views/signin_view.dart';
-
-import '../home/views/home_list_view.dart';
+import 'package:sohojogi/base/services/auth_gate.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -25,7 +23,7 @@ class SplashScreen extends StatelessWidget {
           ),
         ),
       ),
-      nextScreen: const HomeScreen(),
+      nextScreen: const AuthGate(),
       splashIconSize: 400,
       backgroundColor: backgroundColor,
       duration: 1000,

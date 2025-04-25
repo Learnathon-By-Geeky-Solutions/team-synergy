@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sohojogi/screens/authentication/views/success_view.dart';
 import 'package:sohojogi/screens/authentication/view_model/forgot_password_view_model.dart';
-import 'package:sohojogi/screens/authentication/views/otp_verification_view.dart';
 import 'package:sohojogi/screens/authentication/widgets/auth_widgets.dart';
 import 'package:sohojogi/screens/authentication/widgets/auth_screen_layout.dart';
 
@@ -27,13 +27,13 @@ class _ForgotPasswordViewContent extends StatelessWidget {
 
     return AuthScreenLayout(
       title: 'Forgot Password',
-      subtitle: 'Enter your phone number to reset your password',
+      subtitle: 'Enter your email to reset your password',
       showBackButton: true,
       children: [
         buildTextField(
-          controller: viewModel.phoneController,
-          hintText: 'Phone Number',
-          keyboardType: TextInputType.phone,
+          controller: viewModel.emailController,
+          hintText: 'Email',
+          keyboardType: TextInputType.emailAddress,
         ),
         const SizedBox(height: 16),
         if (viewModel.errorMessage != null)
@@ -48,17 +48,17 @@ class _ForgotPasswordViewContent extends StatelessWidget {
         buildAuthButton(
           isLoading: viewModel.isLoading,
           onPressed: () async {
-            final success = await viewModel.sendOTP();
+            final success = await viewModel.sendPasswordResetEmail();
             if (success && context.mounted) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const OTPVerificationView(),
+                  builder: (context) => const SuccessView(),
                 ),
               );
             }
           },
-          text: 'Send OTP',
+          text: 'Send Reset Email',
           theme: theme,
         ),
       ],
