@@ -49,7 +49,7 @@ class WorkerRegistrationService {
     try {
       // First, insert the worker's basic information
       final workerResponse = await supabase
-          .from('workers')
+          .from('workers_registration')
           .insert({
         'full_name': worker.fullName,
         'phone_number': worker.phoneNumber,

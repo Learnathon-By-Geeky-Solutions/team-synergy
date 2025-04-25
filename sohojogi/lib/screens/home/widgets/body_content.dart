@@ -64,45 +64,31 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
             onLocationChanged: viewModel.updateLocation,
           ),
 
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: isDarkMode ? darkColor : lightColor,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search for services',
-                  prefixIcon: Icon(Icons.search, color: isDarkMode ? lightColor : darkColor),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                  hintStyle: TextStyle(color: isDarkMode ? lightGrayColor : grayColor),
+          // Search bar
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
                 ),
-                style: TextStyle(color: isDarkMode ? lightColor : darkColor),
-                textInputAction: TextInputAction.search,
-                onSubmitted: (query) {
-                  if (query.isNotEmpty) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ServiceSearchedListView(
-                          searchQuery: query,
-                          currentLocation: viewModel.currentLocation,
-                        ),
-                      ),
-                    );
-                  }
-                },
+              ],
+            ),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search for services...',
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
+              onSubmitted: (query) {
+                viewModel.performSearch(context, query);
+              },
             ),
           ),
 
@@ -110,66 +96,154 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
 
           // Services Section
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              children: [
-                Center(
-                  child: Text(
-                    'Services',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: isDarkMode ? lightColor : darkColor,
-                    ),
-                  ),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Center(
+              child: Text(
+                'Services',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: isDarkMode ? lightColor : darkColor,
                 ),
-                const SizedBox(height: 16),
+              ),
+            ),
+          ),
+
+          // Larger service cards with better spacing
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // First row
                 SizedBox(
-                  height: 220,
-                  child: GridView.builder(
+                  height: 130,
+                  child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.9,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                    ),
-                    itemCount: viewModel.services.length,
+                    itemCount: (viewModel.services.length / 2).ceil(),
                     itemBuilder: (context, index) {
                       final service = viewModel.services[index];
-                      return InkWell(
-                        onTap: () {
-                          Navigator.push(
+                      return Container(
+                        width: 110,
+                        margin: const EdgeInsets.only(right: 12),
+                        child: InkWell(
+                          onTap: () => viewModel.navigateToServiceCategory(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => ServiceDetailPage(service: service.name),
-                            ),
-                          );
-                        },
-                        child: Card(
-                          elevation: 2,
-                          color: isDarkMode ? darkColor : lightColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            service.name,
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                service.icon,
-                                size: 40,
-                                color: primaryColor,
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                service.name,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: isDarkMode ? lightColor : darkColor,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isDarkMode ? darkColor : lightColor,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: primaryColor.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    service.icon,
+                                    color: primaryColor,
+                                    size: 32,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Text(
+                                    service.name,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: isDarkMode ? lightColor : darkColor,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // Second row
+                SizedBox(
+                  height: 130,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: (viewModel.services.length / 2).floor(),
+                    itemBuilder: (context, index) {
+                      final serviceIndex = index + (viewModel.services.length / 2).ceil();
+                      final service = viewModel.services[serviceIndex.toInt()];
+                      return Container(
+                        width: 110,
+                        margin: const EdgeInsets.only(right: 12),
+                        child: InkWell(
+                          onTap: () => viewModel.navigateToServiceCategory(
+                            context,
+                            service.name,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isDarkMode ? darkColor : lightColor,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: primaryColor.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    service.icon,
+                                    color: primaryColor,
+                                    size: 32,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Text(
+                                    service.name,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: isDarkMode ? lightColor : darkColor,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -179,7 +253,6 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
               ],
             ),
           ),
-
           const SizedBox(height: 32),
 
           // Banner Carousel

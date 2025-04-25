@@ -1,106 +1,98 @@
 import 'package:flutter/material.dart';
-import '../models/service_provider_model.dart';
+import 'package:sohojogi/screens/service_searched/models/service_provider_model.dart';
+import 'package:sohojogi/base/services/home_service.dart';
+
+import '../../../base/services/service_searched_service.dart';
 
 class ServiceSearchedViewModel extends ChangeNotifier {
+  final ServiceSearchedService _service = ServiceSearchedService();
+  final HomeDatabaseService _homeService = HomeDatabaseService();
+
   List<ServiceProviderModel> _serviceProviders = [];
+  List<String> _availableCategories = [];
   bool _isLoading = false;
-  bool _hasMoreData = true;
-  String _currentLocation = '';
-  String _searchQuery = '';
-  Map<String, dynamic> _filters = {
-    'minRating': 0.0,
-    'categories': <String>[],
-    'sortBy': 'Rating',
-    'maxDistance': 10.0,
-  };
+  String _errorMessage = '';
+  Map<String, dynamic>? _currentFilters;
 
+  // Getters
   List<ServiceProviderModel> get serviceProviders => _serviceProviders;
+  List<String> get availableCategories => _availableCategories;
   bool get isLoading => _isLoading;
-  bool get hasMoreData => _hasMoreData;
-  String get currentLocation => _currentLocation;
-  String get searchQuery => _searchQuery;
-  Map<String, dynamic> get filters => _filters;
+  String get errorMessage => _errorMessage;
+  Map<String, dynamic>? get currentFilters => _currentFilters;
 
-  void initialize(String searchQuery, String currentLocation) {
-    _searchQuery = searchQuery;
-    _currentLocation = currentLocation;
-    loadInitialData();
-  }
+  // Initialize and load categories
+  Future<void> init() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
 
-  void setLocation(String location) {
-    _currentLocation = location;
-    resetAndReload();
-  }
+      // Load categories from real data
+      final services = await _homeService.getServiceCategories();
+      _availableCategories = services.map((service) => service.name).toList();
 
-  void setSearchQuery(String query) {
-    if (query.isNotEmpty) {
-      _searchQuery = query;
-      resetAndReload();
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Failed to load categories: $e';
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
-  void applyFilters(Map<String, dynamic> filters) {
-    _filters = filters;
-    resetAndReload();
-  }
+  // Search service providers with optional filters
+  Future<void> searchServiceProviders({
+    required String searchQuery,
+    required double userLatitude,
+    required double userLongitude,
+    Map<String, dynamic>? filters,
+  }) async {
+    try {
+      _isLoading = true;
+      _errorMessage = '';
+      notifyListeners();
 
-  void resetAndReload() {
-    _serviceProviders = [];
-    _isLoading = true;
-    _hasMoreData = true;
-    notifyListeners();
-    loadInitialData();
-  }
+      // Save current filters
+      _currentFilters = filters;
 
-  Future<void> loadInitialData() async {
-    if (_isLoading) return;
+      // Extract filter values
+      final double? minRating = filters?['minRating'];
+      final List<String>? categories = filters?['categories']?.cast<String>();
+      final String? sortBy = filters?['sortBy'];
+      final double? maxDistance = filters?['maxDistance'];
 
-    _isLoading = true;
-    notifyListeners();
+      // Call service to get real data from Supabase
+      _serviceProviders = await _service.searchServiceProviders(
+        searchQuery: searchQuery,
+        userLatitude: userLatitude,
+        userLongitude: userLongitude,
+        minRating: minRating,
+        categories: categories,
+        sortBy: sortBy,
+        maxDistance: maxDistance,
+      );
 
-    // Simulate network request with delay
-    await Future.delayed(const Duration(seconds: 1));
-
-    _serviceProviders = getDummyServiceProviders();
-    _isLoading = false;
-    notifyListeners();
-  }
-
-  Future<void> loadMoreData() async {
-    if (!_hasMoreData || _isLoading) return;
-
-    _isLoading = true;
-    notifyListeners();
-
-    // Simulate network request with delay
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (_serviceProviders.length >= 15) {
-      _hasMoreData = false;
-    } else {
-      _serviceProviders.addAll(getDummyServiceProviders());
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Failed to search service providers: $e';
+      _isLoading = false;
+      notifyListeners();
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 
-  List<ServiceProviderModel> getDummyServiceProviders() {
-    // Generate dummy service providers for testing
-    return List.generate(
-      5,
-          (index) => ServiceProviderModel(
-        id: 'id_${index + _serviceProviders.length}',
-        name: 'Provider ${index + _serviceProviders.length + 1}',
-        profileImage: 'https://randomuser.me/api/portraits/${index % 2 == 0 ? 'men' : 'women'}/${20 + index + _serviceProviders.length}.jpg',
-        location: _currentLocation,
-        serviceCategory: _searchQuery,
-        rating: 3.5 + (index % 3) * 0.5,
-        reviewCount: 50 + (index * 30),
-        email: 'provider${index + _serviceProviders.length + 1}@example.com',
-        phoneNumber: '+880 1${700000000 + (index + _serviceProviders.length) * 11111}',
-        gender: index % 2 == 0 ? Gender.male : Gender.female,
-      ),
+  // Apply filters to existing search
+  Future<void> applyFilters(
+      Map<String, dynamic> filters,
+      String searchQuery,
+      double userLatitude,
+      double userLongitude,
+      ) async {
+    await searchServiceProviders(
+      searchQuery: searchQuery,
+      userLatitude: userLatitude,
+      userLongitude: userLongitude,
+      filters: filters,
     );
   }
 }
