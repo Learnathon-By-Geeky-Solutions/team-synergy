@@ -6,15 +6,18 @@ import '../../utils/date_time_utils.dart';
 class OrderCardWidget extends StatelessWidget {
   final OrderModel order;
   final VoidCallback onTap;
+  final VoidCallback? onCancelPressed;
+  final VoidCallback? onMarkForReviewPressed;
 
   const OrderCardWidget({
     super.key,
     required this.order,
     required this.onTap,
+    this.onCancelPressed,
+    this.onMarkForReviewPressed,
   });
 
   String _formatTimeAgo(DateTime dateTime) {
-    // Don't cast the Duration to DateTime - just pass the original dateTime
     return formatTimeAgo(dateTime);
   }
 
@@ -72,7 +75,7 @@ class OrderCardWidget extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: order.status == OrderStatus.pending ?
-                      Colors.transparent : statusColor.withValues(alpha: 0.15),
+                      Colors.transparent : statusColor.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: statusColor,
@@ -100,7 +103,7 @@ class OrderCardWidget extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: primaryColor.withValues(alpha: 0.1),
+                      color: primaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -166,6 +169,46 @@ class OrderCardWidget extends StatelessWidget {
                   ),
                 ],
               ),
+
+              // Action buttons based on status
+              if (order.status == OrderStatus.pending && onCancelPressed != null) ...[
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: onCancelPressed,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text('Cancel'),
+                  ),
+                ),
+              ],
+
+              // Review button for completed orders
+              if (order.status == OrderStatus.completed && onMarkForReviewPressed != null) ...[
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: onMarkForReviewPressed,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text('Leave Review'),
+                  ),
+                ),
+              ],
 
               // Review button for toReview status
               if (order.status == OrderStatus.toReview) ...[

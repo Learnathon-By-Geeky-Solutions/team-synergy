@@ -2,15 +2,26 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/screens/worker_profile/models/worker_profile_model.dart';
 
+import '../../../base/services/order_service.dart';
 import '../../../base/services/worker_service.dart';
 
 class WorkerProfileViewModel extends ChangeNotifier {
   final WorkerDatabaseService _service = WorkerDatabaseService();
+  final OrderService _orderService = OrderService();
+  final WorkerDatabaseService _workerService = WorkerDatabaseService();
 
+  // Getters
+  WorkerProfileModel? workerProfile;
+  RatingBreakdown? ratingBreakdown;
+  List<WorkerReviewModel> paginatedReviews = [];
   WorkerProfileModel? _workerProfile;
   List<WorkerReviewModel> _reviews = [];
   RatingBreakdown? _ratingBreakdown;
-
+  WorkerProfileModel? worker;
+  List<WorkerServiceModel> selectedServices = [];
+  bool isLoading = true;
+  bool isHiring = false;
+  String? errorMessage;
   bool _isLoading = true;
   bool _hasError = false;
   String _errorMessage = '';
@@ -20,52 +31,102 @@ class WorkerProfileViewModel extends ChangeNotifier {
   bool _hasMoreReviews = true;
   int _currentPage = 0;
   int _selectedPortfolioIndex = 0;
-
-  // Getters
-  WorkerProfileModel? get workerProfile => _workerProfile;
-  List<WorkerReviewModel> get paginatedReviews => _reviews;
-  RatingBreakdown? get ratingBreakdown => _ratingBreakdown;
-  bool get isLoading => _isLoading;
-  bool get hasError => _hasError;
-  String get errorMessage => _errorMessage;
-  bool get isBookmarked => _isBookmarked;
-  bool get hirePending => _hirePending;
-  bool get isLoadingMoreReviews => _isLoadingMoreReviews;
-  bool get hasMoreReviews => _hasMoreReviews;
-  int get selectedPortfolioIndex => _selectedPortfolioIndex;
+  bool hasError = false;
+  bool hirePending = false;
+  bool isBookmarked = false;
+  bool isLoadingMoreReviews = false;
+  bool hasMoreReviews = true;
+  int currentReviewPage = 0;
+  int selectedPortfolioIndex = 0;
 
   // Load worker profile data
   Future<void> loadWorkerProfile(String workerId) async {
-    _isLoading = true;
-    _hasError = false;
+    isLoading = true;
+    hasError = false;
     notifyListeners();
 
     try {
-      final profile = await _service.getWorkerProfile(workerId);
-      if (profile == null) {
-        _hasError = true;
-        _errorMessage = 'Worker profile not found';
-      } else {
-        _workerProfile = profile;
-
-        // Reset reviews pagination
-        _currentPage = 0;
-        _reviews = [];
-        _hasMoreReviews = true;
+      // Load worker profile data
+      final profile = await _workerService.getWorkerProfile(workerId);
+      if (profile != null) {
+        workerProfile = profile;
 
         // Load initial reviews
-        await loadMoreReviews(workerId: workerId);
+        paginatedReviews = await _workerService.getWorkerReviews(workerId, page: 0);
+        hasMoreReviews = paginatedReviews.length >= 10; // Assuming page size of 10
 
         // Load rating breakdown
-        _ratingBreakdown = await _service.getRatingBreakdown(workerId);
+        ratingBreakdown = await _workerService.getRatingBreakdown(workerId);
+      } else {
+        hasError = true;
       }
     } catch (e) {
-      _hasError = true;
-      _errorMessage = 'Failed to load profile: ${e.toString()}';
-      debugPrint('Error in loadWorkerProfile: $e');
+      debugPrint('Error loading worker profile: $e');
+      hasError = true;
     } finally {
-      _isLoading = false;
+      isLoading = false;
       notifyListeners();
+    }
+  }
+
+  void toggleServiceSelection(WorkerServiceModel service, bool isSelected) {
+    if (isSelected) {
+      selectedServices.add(service);
+    } else {
+      selectedServices.removeWhere((s) => s.id == service.id);
+    }
+    notifyListeners();
+  }
+
+  double get totalPrice {
+    return selectedServices.fold(0, (sum, service) => sum + service.price);
+  }
+
+  Future<bool> hireWorker() async {
+    if (selectedServices.isEmpty || worker == null) {
+      errorMessage = 'Please select at least one service';
+      notifyListeners();
+      return false;
+    }
+
+    isHiring = true;
+    notifyListeners();
+
+    try {
+      // Format services for the API
+      final services = selectedServices.map((service) => {
+        'service_id': service.id,
+        'quantity': 1,
+        'price': service.price,
+        'subtotal': service.price,
+      }).toList();
+
+      // Create the order
+      final orderId = await _orderService.createOrder(
+        workerId: worker!.id,
+        title: 'Service from ${worker!.name}',
+        description: 'Services: ${selectedServices.map((s) => s.name).join(", ")}',
+        totalPrice: totalPrice,
+        serviceType: worker!.serviceCategory,
+        location: worker!.location,
+        services: services,
+      );
+
+      isHiring = false;
+      if (orderId != null) {
+        selectedServices.clear();
+        notifyListeners();
+        return true;
+      } else {
+        errorMessage = 'Failed to create order';
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      isHiring = false;
+      errorMessage = 'Error: ${e.toString()}';
+      notifyListeners();
+      return false;
     }
   }
 
@@ -109,16 +170,44 @@ class WorkerProfileViewModel extends ChangeNotifier {
 
   // Initiate hiring process
   Future<bool> initiateHiring() async {
+    if (_workerProfile == null) return false;
+
     _hirePending = true;
     notifyListeners();
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      // Get the first service if available or use default pricing
+      final serviceToOrder = _workerProfile!.services.isNotEmpty
+          ? _workerProfile!.services[0]
+          : null;
 
-    _hirePending = false;
-    notifyListeners();
+      // Create real order in the backend
+      final orderId = await _orderService.createOrder(
+        workerId: _workerProfile!.id,
+        title: "Hire ${_workerProfile!.name} for ${_workerProfile!.serviceCategory}",
+        description: "Service request for ${_workerProfile!.serviceCategory}",
+        totalPrice: serviceToOrder?.price ?? 0,
+        serviceType: _workerProfile!.serviceCategory,
+        location: _workerProfile!.location,
+        services: _workerProfile!.services.isNotEmpty
+            ? [
+          {
+            'service_id': serviceToOrder!.id,
+            'quantity': 1,
+            'price': serviceToOrder.price,
+            'subtotal': serviceToOrder.price,
+          }
+        ]
+            : [],
+      );
 
-    // TODO: Implement actual hiring functionality with database
-    return true;
+      return orderId != null;
+    } catch (e) {
+      debugPrint('Error initiating hiring: $e');
+      return false;
+    } finally {
+      _hirePending = false;
+      notifyListeners();
+    }
   }
 }

@@ -4,10 +4,14 @@ import 'package:sohojogi/screens/worker_profile/models/worker_profile_model.dart
 
 class ServicesSectionWidget extends StatelessWidget {
   final List<WorkerServiceModel> services;
+  final List<WorkerServiceModel> selectedServices;
+  final Function(WorkerServiceModel, bool) onServiceSelected;
 
   const ServicesSectionWidget({
     super.key,
     required this.services,
+    required this.selectedServices,
+    required this.onServiceSelected,
   });
 
   @override
@@ -136,10 +140,12 @@ class ServicesSectionWidget extends StatelessWidget {
                           ),
                           OutlinedButton(
                             onPressed: () {
-                              // Handle service selection
+                              final isSelected = selectedServices.contains(service);
+                              onServiceSelected(service, !isSelected);
                             },
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: primaryColor,
+                              foregroundColor: selectedServices.contains(service) ? Colors.white : primaryColor,
+                              backgroundColor: selectedServices.contains(service) ? primaryColor : Colors.transparent,
                               side: const BorderSide(color: primaryColor),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -149,7 +155,7 @@ class ServicesSectionWidget extends StatelessWidget {
                                 vertical: 8,
                               ),
                             ),
-                            child: const Text('Select'),
+                            child: Text(selectedServices.contains(service) ? 'Selected' : 'Select'),
                           ),
                         ],
                       ),
