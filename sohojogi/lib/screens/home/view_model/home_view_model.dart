@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../base/services/home_database_service.dart';
+import '../../../base/services/home_service.dart';
 import '../../service_searched/views/service_searched_list_view.dart';
 import '../models/home_models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,7 +12,6 @@ class HomeViewModel extends ChangeNotifier {
   static const String locationKey = 'user_selected_location';
 
   bool _isLoading = true;
-  List<ServiceModel> _services = [];
   List<ProviderModel> _topProviders = [];
 
   HomeViewModel() {
@@ -36,9 +35,6 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Load service categories
-      final services = await _databaseService.getServiceCategories();
-      _services = services;
 
       // Load top providers
       final providers = await _databaseService.getTopProviders();
@@ -66,6 +62,20 @@ class HomeViewModel extends ChangeNotifier {
     BannerModel(title: 'Premium Protection', color: const Color(0xFF4CAF50)),
   ];
 
+  final List<ServiceModel> _services = [
+    ServiceModel(name: 'Plumber', icon: Icons.plumbing),
+    ServiceModel(name: 'Electrician', icon: Icons.electrical_services),
+    ServiceModel(name: 'Carpenter', icon: Icons.handyman),
+    ServiceModel(name: 'Painter', icon: Icons.format_paint),
+    ServiceModel(name: 'House Cleaner', icon: Icons.cleaning_services),
+    ServiceModel(name: 'Gardener', icon: Icons.grass),
+    ServiceModel(name: 'Driver', icon: Icons.drive_eta),
+    ServiceModel(name: 'Cook', icon: Icons.restaurant),
+    ServiceModel(name: 'Tutor', icon: Icons.school),
+    ServiceModel(name: 'Beautician', icon: Icons.face),
+    ServiceModel(name: 'Mechanic', icon: Icons.build),
+  ];
+
   // Methods
   void setCurrentBannerPage(int page) {
     _currentBannerPage = page;
@@ -87,6 +97,7 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
+
   // Navigation method for when a service category is selected
   void navigateToServiceCategory(BuildContext context, String category) {
     Navigator.push(
@@ -94,7 +105,9 @@ class HomeViewModel extends ChangeNotifier {
       MaterialPageRoute(
         builder: (context) => ServiceSearchedListView(
           searchQuery: category,
-          currentLocation: _currentLocation,
+          location: _currentLocation,
+          latitude: 0.0, // Replace with actual latitude
+          longitude: 0.0, // Replace with actual longitude
         ),
       ),
     );
@@ -109,7 +122,9 @@ class HomeViewModel extends ChangeNotifier {
       MaterialPageRoute(
         builder: (context) => ServiceSearchedListView(
           searchQuery: query,
-          currentLocation: _currentLocation,
+          location: _currentLocation,
+          latitude: 0.0, // Replace with actual latitude
+          longitude: 0.0, // Replace with actual longitude
         ),
       ),
     );

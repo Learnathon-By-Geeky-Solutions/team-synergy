@@ -96,77 +96,163 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
 
           // Services Section
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Center(
+              child: Text(
+                'Services',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: isDarkMode ? lightColor : darkColor,
+                ),
+              ),
+            ),
+          ),
+
+          // Larger service cards with better spacing
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Services',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        // Navigate to all services page
-                      },
-                      child: const Text('See All'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                viewModel.isLoading
-                    ? const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-                    : GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    childAspectRatio: 0.8,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: viewModel.services.length,
-                  itemBuilder: (context, index) {
-                    final service = viewModel.services[index];
-                    return GestureDetector(
-                      onTap: () {
-                        viewModel.navigateToServiceCategory(context, service.name);
-                      },
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: primaryColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(service.icon, color: primaryColor),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
+                // First row
+                SizedBox(
+                  height: 130,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: (viewModel.services.length / 2).ceil(),
+                    itemBuilder: (context, index) {
+                      final service = viewModel.services[index];
+                      return Container(
+                        width: 110,
+                        margin: const EdgeInsets.only(right: 12),
+                        child: InkWell(
+                          onTap: () => viewModel.navigateToServiceCategory(
+                            context,
                             service.name,
-                            style: const TextStyle(fontSize: 12),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ],
-                      ),
-                    );
-                  },
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isDarkMode ? darkColor : lightColor,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: primaryColor.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    service.icon,
+                                    color: primaryColor,
+                                    size: 32,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Text(
+                                    service.name,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: isDarkMode ? lightColor : darkColor,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // Second row
+                SizedBox(
+                  height: 130,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: (viewModel.services.length / 2).floor(),
+                    itemBuilder: (context, index) {
+                      final serviceIndex = index + (viewModel.services.length / 2).ceil();
+                      final service = viewModel.services[serviceIndex.toInt()];
+                      return Container(
+                        width: 110,
+                        margin: const EdgeInsets.only(right: 12),
+                        child: InkWell(
+                          onTap: () => viewModel.navigateToServiceCategory(
+                            context,
+                            service.name,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isDarkMode ? darkColor : lightColor,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: primaryColor.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    service.icon,
+                                    color: primaryColor,
+                                    size: 32,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Text(
+                                    service.name,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: isDarkMode ? lightColor : darkColor,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
           ),
-
           const SizedBox(height: 32),
 
           // Banner Carousel

@@ -19,6 +19,7 @@ class ServiceProviderModel {
   final int jobsCompleted;
   final int yearsOfExperience;
   final bool isVerified;
+  final double distance;
 
   ServiceProviderModel({
     required this.id,
@@ -38,6 +39,7 @@ class ServiceProviderModel {
     this.jobsCompleted = 0,
     this.yearsOfExperience = 1,
     this.isVerified = false,
+    this.distance = 0.0,
   });
 
   factory ServiceProviderModel.fromJson(Map<String, dynamic> json) {

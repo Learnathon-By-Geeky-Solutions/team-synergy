@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/screens/worker_profile/models/worker_profile_model.dart';
 
-import '../../../base/services/worker_database_service.dart';
+import '../../../base/services/worker_service.dart';
 
 class WorkerProfileViewModel extends ChangeNotifier {
   final WorkerDatabaseService _service = WorkerDatabaseService();

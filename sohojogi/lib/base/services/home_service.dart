@@ -1,4 +1,4 @@
-// lib/screens/home/services/home_database_service.dart
+// lib/screens/home/services/home_service.dart
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../screens/home/models/home_models.dart';

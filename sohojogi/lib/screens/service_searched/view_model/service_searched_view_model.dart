@@ -1,144 +1,98 @@
-// lib/screens/service_searched/view_models/service_searched_view_model.dart
 import 'package:flutter/material.dart';
-import '../../../base/services/worker_database_service.dart';
-import '../models/service_provider_model.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:sohojogi/screens/service_searched/models/service_provider_model.dart';
+import 'package:sohojogi/base/services/home_service.dart';
+
+import '../../../base/services/service_searched_service.dart';
 
 class ServiceSearchedViewModel extends ChangeNotifier {
-  final WorkerDatabaseService _databaseService = WorkerDatabaseService();
+  final ServiceSearchedService _service = ServiceSearchedService();
+  final HomeDatabaseService _homeService = HomeDatabaseService();
 
-  // Search parameters
-  String _searchQuery = '';
-  String _currentLocation = 'Anywhere';
-  double? _latitude;
-  double? _longitude;
-  Map<String, dynamic> _filters = {
-    'minRating': 0.0,
-    'categories': <String>[],
-    'sortBy': 'Distance',
-    'maxDistance': 10.0,
-  };
-
-  // Results state
   List<ServiceProviderModel> _serviceProviders = [];
+  List<String> _availableCategories = [];
   bool _isLoading = false;
-  bool _hasMoreData = true;
-  int _currentPage = 0;
-  final int _itemsPerPage = 10;
+  String _errorMessage = '';
+  Map<String, dynamic>? _currentFilters;
 
   // Getters
-  String get searchQuery => _searchQuery;
-  String get currentLocation => _currentLocation;
-  Map<String, dynamic> get filters => _filters;
   List<ServiceProviderModel> get serviceProviders => _serviceProviders;
+  List<String> get availableCategories => _availableCategories;
   bool get isLoading => _isLoading;
-  bool get hasMoreData => _hasMoreData;
+  String get errorMessage => _errorMessage;
+  Map<String, dynamic>? get currentFilters => _currentFilters;
 
-
-// Update initialize method in ServiceSearchedViewModel
-  Future<void> initialize(String query, String location) async {
-    _searchQuery = query;
-    _currentLocation = location;
-
+  // Initialize and load categories
+  Future<void> init() async {
     try {
-      // Get device location
-      final position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high
-      );
-      _latitude = position.latitude;
-      _longitude = position.longitude;
-    } catch (e) {
-      debugPrint('Error getting location: $e');
-      // Continue without location data
-    }
-
-    // Initial search
-    _resetSearch();
-    _performSearch();
-  }
-
-  // Set search query and re-search
-  void setSearchQuery(String query) {
-    _searchQuery = query;
-    _resetSearch();
-    _performSearch();
-  }
-
-  // Set location and re-search
-  void setLocation(String location) {
-    _currentLocation = location;
-    _resetSearch();
-    _performSearch();
-  }
-
-  // Apply filters and re-search
-  void applyFilters(Map<String, dynamic> filters) {
-    _filters = filters;
-    _resetSearch();
-    _performSearch();
-  }
-
-  // Load more data for pagination
-  Future<void> loadMoreData() async {
-    if (_isLoading || !_hasMoreData) return;
-
-    _currentPage++;
-    _performSearch(isLoadingMore: true);
-  }
-
-  // Reset search parameters
-  void _resetSearch() {
-    _serviceProviders = [];
-    _currentPage = 0;
-    _hasMoreData = true;
-  }
-
-  // Main search function
-  Future<void> _performSearch({bool isLoadingMore = false}) async {
-    if (_isLoading) return;
-
-    _isLoading = true;
-    if (!isLoadingMore) {
+      _isLoading = true;
       notifyListeners();
-    }
 
-    try {
-      // Get providers from database
-      final offset = _currentPage * _itemsPerPage;
-      final newProviders = await _databaseService.searchServiceProviders(
-        query: _searchQuery,
-        location: _currentLocation,
-        userLatitude: _latitude,
-        userLongitude: _longitude,
-        filters: _filters,
-        limit: _itemsPerPage,
-        offset: offset,
-      );
+      // Load categories from real data
+      final services = await _homeService.getServiceCategories();
+      _availableCategories = services.map((service) => service.name).toList();
 
-      // Update providers list
-      if (isLoadingMore) {
-        _serviceProviders.addAll(newProviders);
-      } else {
-        _serviceProviders = newProviders;
-      }
-
-      // Check if more data available
-      _hasMoreData = newProviders.length == _itemsPerPage;
-
-      // Get total count for debugging/informational purposes
-      final totalCount = await _databaseService.getTotalCount(
-        query: _searchQuery,
-        location: _currentLocation,
-        filters: _filters,
-      );
-
-      debugPrint('Total matching service providers: $totalCount');
-
+      _isLoading = false;
+      notifyListeners();
     } catch (e) {
-      debugPrint('Error searching for service providers: $e');
-    } finally {
+      _errorMessage = 'Failed to load categories: $e';
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  // Search service providers with optional filters
+  Future<void> searchServiceProviders({
+    required String searchQuery,
+    required double userLatitude,
+    required double userLongitude,
+    Map<String, dynamic>? filters,
+  }) async {
+    try {
+      _isLoading = true;
+      _errorMessage = '';
+      notifyListeners();
+
+      // Save current filters
+      _currentFilters = filters;
+
+      // Extract filter values
+      final double? minRating = filters?['minRating'];
+      final List<String>? categories = filters?['categories']?.cast<String>();
+      final String? sortBy = filters?['sortBy'];
+      final double? maxDistance = filters?['maxDistance'];
+
+      // Call service to get real data from Supabase
+      _serviceProviders = await _service.searchServiceProviders(
+        searchQuery: searchQuery,
+        userLatitude: userLatitude,
+        userLongitude: userLongitude,
+        minRating: minRating,
+        categories: categories,
+        sortBy: sortBy,
+        maxDistance: maxDistance,
+      );
+
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Failed to search service providers: $e';
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Apply filters to existing search
+  Future<void> applyFilters(
+      Map<String, dynamic> filters,
+      String searchQuery,
+      double userLatitude,
+      double userLongitude,
+      ) async {
+    await searchServiceProviders(
+      searchQuery: searchQuery,
+      userLatitude: userLatitude,
+      userLongitude: userLongitude,
+      filters: filters,
+    );
   }
 }
