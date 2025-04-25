@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/worker_profile/models/worker_profile_model.dart';
+import 'package:intl/intl.dart';
 
 class PortfolioSectionWidget extends StatelessWidget {
   final List<WorkerPortfolioItem> portfolioItems;
@@ -16,14 +17,29 @@ class PortfolioSectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (portfolioItems.isEmpty) return const SizedBox.shrink();
-
     final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final dateFormat = DateFormat('MMM yyyy');
+
+    if (portfolioItems.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        color: isDarkMode ? darkColor : lightColor,
+        child: Center(
+          child: Text(
+            'No portfolio items available',
+            style: TextStyle(
+              fontSize: 14,
+              fontStyle: FontStyle.italic,
+              color: isDarkMode ? lightGrayColor : grayColor,
+            ),
+          ),
+        ),
+      );
+    }
 
     return Container(
-      margin: const EdgeInsets.only(top: 8),
-      color: isDarkMode ? darkColor : lightColor,
       padding: const EdgeInsets.all(16),
+      color: isDarkMode ? darkColor : lightColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -37,112 +53,85 @@ class PortfolioSectionWidget extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Selected portfolio item
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
+          // Selected item preview
+          if (selectedIndex >= 0 && selectedIndex < portfolioItems.length) ...[
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  image: DecorationImage(
+                    image: NetworkImage(portfolioItems[selectedIndex].imageUrl),
+                    fit: BoxFit.cover,
                   ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  portfolioItems[selectedIndex].imageUrl,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: Colors.grey.shade300,
-                      child: const Icon(
-                        Icons.image_not_supported,
-                        size: 50,
-                        color: Colors.grey,
-                      ),
-                    );
-                  },
                 ),
               ),
             ),
-          ),
-
-          const SizedBox(height: 8),
-
-          // Portfolio item details
-          Text(
-            portfolioItems[selectedIndex].title,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isDarkMode ? lightColor : darkColor,
+            const SizedBox(height: 8),
+            Text(
+              portfolioItems[selectedIndex].title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: isDarkMode ? lightColor : darkColor,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            portfolioItems[selectedIndex].description,
-            style: TextStyle(
-              fontSize: 14,
-              color: isDarkMode ? lightGrayColor : grayColor,
+            const SizedBox(height: 4),
+            Text(
+              dateFormat.format(portfolioItems[selectedIndex].date),
+              style: TextStyle(
+                fontSize: 12,
+                color: isDarkMode ? lightGrayColor : grayColor,
+              ),
             ),
-          ),
+            const SizedBox(height: 8),
+            Text(
+              portfolioItems[selectedIndex].description,
+              style: TextStyle(
+                fontSize: 14,
+                color: isDarkMode ? lightColor.withValues(alpha: 0.9) : darkColor.withValues(alpha: 0.9),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
 
-          const SizedBox(height: 16),
+          // Thumbnail grid
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 1,
+            ),
+            itemCount: portfolioItems.length,
+            itemBuilder: (context, index) {
+              final item = portfolioItems[index];
+              final isSelected = index == selectedIndex;
 
-          // Portfolio thumbnails
-          SizedBox(
-            height: 70,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: portfolioItems.length,
-              itemBuilder: (context, index) {
-                final isSelected = index == selectedIndex;
-                return GestureDetector(
-                  onTap: () => onItemSelected(index),
-                  child: Container(
-                    width: 70,
-                    height: 70,
-                    margin: const EdgeInsets.only(right: 8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: isSelected
-                          ? Border.all(color: primaryColor, width: 2)
-                          : null,
-                      boxShadow: [
-                        if (isSelected)
-                          BoxShadow(
-                            color: primaryColor.withValues(alpha: 0.3),
-                            blurRadius: 4,
-                            spreadRadius: 1,
-                          ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: Image.network(
-                        portfolioItems[index].imageUrl,
-                        fit: BoxFit.cover,
+              return GestureDetector(
+                onTap: () => onItemSelected(index),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: isSelected
+                        ? Border.all(color: primaryColor, width: 2)
+                        : null,
+                    image: DecorationImage(
+                      image: NetworkImage(item.imageUrl),
+                      fit: BoxFit.cover,
+                      colorFilter: isSelected
+                          ? null
+                          : ColorFilter.mode(
+                        Colors.black.withOpacity(0.2),
+                        BlendMode.darken,
                       ),
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ],
       ),

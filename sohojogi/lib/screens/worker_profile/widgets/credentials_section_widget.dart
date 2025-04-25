@@ -156,26 +156,6 @@ class CredentialsSectionWidget extends StatelessWidget {
                           ],
                         ],
                       ),
-                      if (qualification.certificateUrl != null) ...[
-                        const SizedBox(height: 12),
-                        OutlinedButton.icon(
-                          onPressed: () {
-                            // Handle viewing certificate
-                          },
-                          icon: const Icon(Icons.visibility, size: 16),
-                          label: const Text('View Certificate'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: primaryColor,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ),

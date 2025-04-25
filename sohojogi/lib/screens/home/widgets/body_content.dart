@@ -64,45 +64,31 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
             onLocationChanged: viewModel.updateLocation,
           ),
 
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: isDarkMode ? darkColor : lightColor,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search for services',
-                  prefixIcon: Icon(Icons.search, color: isDarkMode ? lightColor : darkColor),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                  hintStyle: TextStyle(color: isDarkMode ? lightGrayColor : grayColor),
+          // Search bar
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
                 ),
-                style: TextStyle(color: isDarkMode ? lightColor : darkColor),
-                textInputAction: TextInputAction.search,
-                onSubmitted: (query) {
-                  if (query.isNotEmpty) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ServiceSearchedListView(
-                          searchQuery: query,
-                          currentLocation: viewModel.currentLocation,
-                        ),
-                      ),
-                    );
-                  }
-                },
+              ],
+            ),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search for services...',
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
+              onSubmitted: (query) {
+                viewModel.performSearch(context, query);
+              },
             ),
           ),
 
@@ -110,71 +96,72 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
 
           // Services Section
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Text(
-                    'Services',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: isDarkMode ? lightColor : darkColor,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Services',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                  ),
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to all services page
+                      },
+                      child: const Text('See All'),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 220,
-                  child: GridView.builder(
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.9,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                    ),
-                    itemCount: viewModel.services.length,
-                    itemBuilder: (context, index) {
-                      final service = viewModel.services[index];
-                      return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ServiceDetailPage(service: service.name),
-                            ),
-                          );
-                        },
-                        child: Card(
-                          elevation: 2,
-                          color: isDarkMode ? darkColor : lightColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                service.icon,
-                                size: 40,
-                                color: primaryColor,
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                service.name,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: isDarkMode ? lightColor : darkColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
+                const SizedBox(height: 8),
+                viewModel.isLoading
+                    ? const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: CircularProgressIndicator(),
                   ),
+                )
+                    : GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    childAspectRatio: 0.8,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: viewModel.services.length,
+                  itemBuilder: (context, index) {
+                    final service = viewModel.services[index];
+                    return GestureDetector(
+                      onTap: () {
+                        viewModel.navigateToServiceCategory(context, service.name);
+                      },
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(service.icon, color: primaryColor),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            service.name,
+                            style: const TextStyle(fontSize: 12),
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
