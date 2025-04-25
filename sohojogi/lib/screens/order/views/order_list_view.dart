@@ -5,6 +5,7 @@ import '../view_model/order_view_model.dart';
 import '../widgets/order_card_widget.dart';
 import '../../../constants/colors.dart';
 import '../../navigation/app_navbar.dart';
+import 'OrderDetailView.dart';
 
 class OrderListView extends StatefulWidget {
   const OrderListView({super.key});
@@ -93,7 +94,7 @@ class _OrderListViewState extends State<OrderListView> with SingleTickerProvider
     );
   }
 
-  Widget _buildOrderList(List<OrderModel> orders, String emptyMessage, bool isDarkMode) {
+  _buildOrderList(List<OrderModel> orders, String emptyMessage, bool isDarkMode) {
     if (orders.isEmpty) {
       return Center(
         child: Text(
@@ -116,6 +117,14 @@ class _OrderListViewState extends State<OrderListView> with SingleTickerProvider
             order: orders[index],
             onTap: () {
               // Navigate to order details
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OrderDetailView(
+                    order: orders[index],
+                  ),
+                ),
+              );
             },
           ),
         );

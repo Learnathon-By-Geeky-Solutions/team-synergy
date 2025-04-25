@@ -14,6 +14,8 @@ import 'package:sohojogi/screens/worker_profile/widgets/reviews_section_widget.d
 import 'package:sohojogi/screens/worker_profile/widgets/services_section_widget.dart';
 import 'package:sohojogi/screens/worker_profile/widgets/skills_section_widget.dart';
 
+import '../../order/views/order_list_view.dart';
+
 class WorkerProfileListView extends StatefulWidget {
   final String workerId;
   final VoidCallback onBackPressed;
@@ -77,12 +79,12 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
     final viewModel = context.watch<WorkerProfileViewModel>();
     final worker = viewModel.workerProfile;
 
-    if (viewModel.isLoading) {
+    if (_isLoadingState(viewModel)) {
       return _buildLoadingState(isDarkMode);
     }
 
     if (viewModel.hasError) {
-      return _buildErrorState(isDarkMode, viewModel.errorMessage);
+      return _buildErrorState(isDarkMode, viewModel._errorMessage);
     }
 
     if (worker == null) {
@@ -99,11 +101,9 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
           controller: _scrollController,
           slivers: [
             // Main content
-
             const SliverPadding(
               padding: EdgeInsets.only(top: 80), // Adjust this value based on your header height
             ),
-
             SliverToBoxAdapter(
               child: Column(
                 children: [
@@ -123,6 +123,12 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
                             backgroundColor: primaryColor,
                           ),
                         );
+
+                        // Navigate to order list to see the new order
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const OrderListView()),
+                        );
                       }
                     },
                   ),
@@ -131,7 +137,11 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
                   AboutSectionWidget(bio: worker.bio),
 
                   // Services offered section
-                  ServicesSectionWidget(services: worker.services),
+                  ServicesSectionWidget(
+                    services: worker.services,
+                    selectedServices: viewModel.selectedServices,
+                    onServiceSelected: viewModel.toggleServiceSelection,
+                  ),
 
                   // Skills section
                   SkillsSectionWidget(skills: worker.skills),
@@ -219,19 +229,23 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
     );
   }
 
+  bool _isLoadingState(WorkerProfileViewModel viewModel) {
+    return viewModel._isLoading;
+  }
+
   Widget _buildFloatingHeader(
-      worker,
+      dynamic worker,
       bool isDarkMode,
       WorkerProfileViewModel viewModel
       ) {
     // Extracted color logic
     final Color headerColor = isDarkMode
-        ? darkColor.withValues(alpha: 0.95)
-        : lightColor.withValues(alpha: 0.95);
+        ? darkColor.withOpacity(0.95)
+        : lightColor.withOpacity(0.95);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: headerColor, // Use the extracted variable
+      color: headerColor,
       child: SafeArea(
         bottom: false,
         child: Row(
@@ -309,7 +323,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
   Widget _buildLoadingState(bool isDarkMode) {
     // Extracted color logic
     final Color backButtonColor = isDarkMode
-        ? grayColor.withValues(alpha: 0.2)
+        ? grayColor.withOpacity(0.2)
         : Colors.grey.shade200;
 
     return Column(
@@ -334,7 +348,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: backButtonColor, // Use the extracted variable
+                          color: backButtonColor,
                         ),
                         child: Icon(
                           Icons.arrow_back,
@@ -410,7 +424,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDarkMode ? grayColor.withValues(alpha: 0.2) : Colors.grey.shade200,
+                          color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
                         ),
                         child: Icon(
                           Icons.arrow_back,
@@ -481,4 +495,12 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
       ],
     );
   }
+}
+
+extension on WorkerProfileViewModel {
+  String get _errorMessage =>
+      'An error occurred while loading the worker profile. Please try again.';
+
+  bool get _isLoading =>
+      isLoading || workerProfile == null;
 }
