@@ -144,7 +144,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
                     PortfolioSectionWidget(
                       portfolioItems: worker.portfolioItems,
                       selectedIndex: viewModel.selectedPortfolioIndex,
-                      onItemSelected: viewModel.selectPortfolioItem,
+                      onItemSelected: (int index) => viewModel.selectPortfolioItem(index),
                     ),
 
                   // Credentials section
