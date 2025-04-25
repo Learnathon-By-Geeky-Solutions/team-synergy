@@ -35,40 +35,50 @@ class AppDrawer extends StatelessWidget {
                           children: [
                             _buildProfileAvatar(profileViewModel, isDarkMode),
                             const SizedBox(width: 10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  profileViewModel.profileData.fullName.isEmpty
-                                      ? 'Set up profile'
-                                      : profileViewModel.profileData.fullName,
-                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: isDarkMode ? lightColor : darkColor,
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    profileViewModel.profileData.fullName.isEmpty
+                                        ? 'Set up profile'
+                                        : profileViewModel.profileData.fullName,
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: isDarkMode ? lightColor : darkColor,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                                Text(
-                                  '135 Credits',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: isDarkMode ? lightColor : lightGrayColor,
+                                  Text(
+                                    '135 Credits',
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: isDarkMode ? lightColor : lightGrayColor,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                            const Spacer(),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.star, color: isDarkMode ? lightColor : lightGrayColor),
-                                Text(
-                                  'Expire in 21 days',
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.star, 
                                     color: isDarkMode ? lightColor : lightGrayColor,
+                                    size: 20,
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    'Expire in 21d',
+                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                      color: isDarkMode ? lightColor : lightGrayColor,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -452,3 +462,4 @@ class HelpCenterScreen extends StatelessWidget {
     );
   }
 }
+
