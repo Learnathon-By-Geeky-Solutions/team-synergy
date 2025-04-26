@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/business_profile/views/business_profile_list_view.dart';
 import 'package:sohojogi/screens/profile/view_model/profile_view_model.dart';
-import 'package:sohojogi/screens/profile/views/profile_edit_view.dart';
 import 'package:sohojogi/screens/profile/views/profile_list_view.dart';
 import '../business_profile/view_model/worker_registration_view_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

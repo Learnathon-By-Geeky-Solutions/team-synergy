@@ -365,6 +365,13 @@ class _PaginationDot extends StatelessWidget {
 
   const _PaginationDot({required this.isActive, required this.isDarkMode});
 
+  Color _getDotColor() {
+    if (isActive) {
+      return primaryColor;
+    }
+    return isDarkMode ? lightGrayColor : Colors.grey[300]!;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -373,7 +380,7 @@ class _PaginationDot extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isActive ? primaryColor : (isDarkMode ? lightGrayColor : Colors.grey[300]),
+        color: _getDotColor(),
       ),
     );
   }

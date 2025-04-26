@@ -2,21 +2,45 @@ class ProfileModel {
   String id;
   String fullName;
   String email;
-  bool isEmailVerified;
   String phoneNumber;
   String gender;
   String? profilePhotoUrl;
+  bool isEmailVerified;
 
+  // Constructor
   ProfileModel({
     this.id = '',
     this.fullName = '',
     this.email = '',
-    this.isEmailVerified = false,
     this.phoneNumber = '',
     this.gender = '',
     this.profilePhotoUrl,
+    this.isEmailVerified = false,
   });
 
+  // Copy method
+  ProfileModel copy() {
+    return ProfileModel(
+      id: id,
+      fullName: fullName,
+      email: email,
+      phoneNumber: phoneNumber,
+      gender: gender,
+      profilePhotoUrl: profilePhotoUrl,
+      isEmailVerified: isEmailVerified,
+    );
+  }
+
+  // Equality check
+  bool equals(ProfileModel other) {
+    return id == other.id &&
+        fullName == other.fullName &&
+        email == other.email &&
+        phoneNumber == other.phoneNumber &&
+        gender == other.gender &&
+        profilePhotoUrl == other.profilePhotoUrl &&
+        isEmailVerified == other.isEmailVerified;
+  }
   factory ProfileModel.fromMap(Map<String, dynamic> map) {
     return ProfileModel(
       id: map['id'] ?? '',
