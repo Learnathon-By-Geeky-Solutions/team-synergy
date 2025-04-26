@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/order_model.dart';
 import '../view_model/order_view_model.dart';
 import '../../../constants/colors.dart';
+import 'order_list_view.dart';
 
 class OrderDetailView extends StatefulWidget {
   final OrderModel order;
@@ -61,7 +62,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(widget.order.description),
+                    Text(
+                        widget.order.description,
+                        maxLines: null,
+                    ),
                     const SizedBox(height: 16),
                     _buildInfoRow('Status', widget.order.statusText, widget.order.getStatusColor(isDarkMode)),
                     _buildInfoRow('Date', _formatDate(widget.order.createdAt), null),
@@ -185,11 +189,16 @@ class _OrderDetailViewState extends State<OrderDetailView> {
               color: Colors.grey[600],
             ),
           ),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              color: valueColor,
+          Flexible(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: valueColor,
+              ),
+              overflow: TextOverflow.ellipsis, // Prevent overflow
+              maxLines: 1, // Limit to one line
+              textAlign: TextAlign.right, // Align text to the right
             ),
           ),
         ],
@@ -265,7 +274,11 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 });
 
                 if (success) {
-                  Navigator.pop(context); // Navigate back to the order list
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const OrderListView()),
+                        (route) => false, // Clear navigation stack
+                  );
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Order cancelled successfully')),
                   );

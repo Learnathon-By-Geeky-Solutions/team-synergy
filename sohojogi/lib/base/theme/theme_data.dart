@@ -40,7 +40,7 @@ ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: primaryColor,
   hintColor: secondaryColor,
-  scaffoldBackgroundColor: lightColor,
+  scaffoldBackgroundColor: bgLightColor,
   colorScheme: const ColorScheme.light(
     primary: primaryColor,
     secondary: secondaryColor,

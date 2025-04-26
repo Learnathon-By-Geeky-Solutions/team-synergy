@@ -12,7 +12,7 @@ class InboxListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
-    final bgColor = isDarkMode ? grayColor : const Color(0xFFF9F5F0);
+    final bgColor = isDarkMode ? grayColor : bgLightColor;
 
     return ChangeNotifierProvider(
       create: (_) => ChatViewModel(),
