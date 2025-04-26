@@ -1,4 +1,3 @@
-import 'package:sohojogi/base/services/auth_service.dart';
 import 'package:sohojogi/screens/authentication/view_model/base_auth_view_model.dart';
 
 class OTPVerificationViewModel extends BaseAuthViewModel {
