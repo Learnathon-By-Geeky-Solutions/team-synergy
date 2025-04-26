@@ -1,40 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/colors.dart';
+import 'package:sohojogi/screens/profile/models/profile_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../view_model/profile_view_model.dart';
+import '../view_model/profile_edit_view_model.dart';
 import '../widgets/profile_image_selection_modal.dart';
 import '../widgets/profile_save_success_modal.dart';
 import 'dart:io';
 
+
 class ProfileEditView extends StatelessWidget {
   final VoidCallback onBackPressed;
+  final ProfileModel profileData;
 
   const ProfileEditView({
     super.key,
     required this.onBackPressed,
+    required this.profileData,
   });
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = Provider.of<ProfileViewModel>(context);
-    final userId = Supabase.instance.client.auth.currentUser?.id;
+    return ChangeNotifierProvider(
+      create: (context) => ProfileEditViewModel(initialData: profileData),
+      child: _ProfileEditContent(onBackPressed: onBackPressed),
+    );
+  }
+}
 
-    if (userId != null && viewModel.profileData.id.isEmpty) {
-      viewModel.loadProfile(userId);
-    }
+class _ProfileEditContent extends StatelessWidget {
+  final VoidCallback onBackPressed;
 
+  const _ProfileEditContent({required this.onBackPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = Provider.of<ProfileEditViewModel>(context);
     final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final backgroundColor = isDarkMode ? darkColor : const Color(0xFFFFF8EC);
+    final textColor = isDarkMode ? lightColor : darkColor;
 
     return Scaffold(
-      backgroundColor: isDarkMode ? darkColor : const Color(0xFFFFF8EC),
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: isDarkMode ? darkColor : const Color(0xFFFFF8EC),
+        backgroundColor: backgroundColor,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: isDarkMode ? lightColor : darkColor,
+            color: textColor,
           ),
           onPressed: onBackPressed,
         ),
@@ -42,13 +56,24 @@ class ProfileEditView extends StatelessWidget {
           'Edit Profile',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: isDarkMode ? lightColor : darkColor,
+            color: textColor,
           ),
         ),
         actions: [
-          if (viewModel.hasChanges)
+          if (viewModel.isLoading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.only(right: 16.0),
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            )
+          else
             TextButton(
-              onPressed: viewModel.isLoading ? null : () => _saveProfile(context),
+              onPressed: () => _saveProfile(context),
               child: const Text(
                 'Save',
                 style: TextStyle(
@@ -59,21 +84,18 @@ class ProfileEditView extends StatelessWidget {
             ),
         ],
       ),
-      body: _buildProfileForm(context, viewModel, isDarkMode),
-    );
-  }
-
-  Widget _buildProfileForm(BuildContext context, ProfileViewModel viewModel, bool isDarkMode) {
-    return ProfileFormWidget(
-      viewModel: viewModel,
-      isDarkMode: isDarkMode,
-      onBackPressed: onBackPressed,
+      body: ProfileFormWidget(
+        viewModel: viewModel,
+        isDarkMode: isDarkMode,
+        onBackPressed: onBackPressed,
+      ),
     );
   }
 
   void _saveProfile(BuildContext context) async {
-    final viewModel = Provider.of<ProfileViewModel>(context, listen: false);
-    final success = await viewModel.saveProfile(Supabase.instance.client.auth.currentUser?.id ?? '');
+    final viewModel = Provider.of<ProfileEditViewModel>(context, listen: false);
+    final userId = Supabase.instance.client.auth.currentUser?.id ?? '';
+    final success = await viewModel.saveProfile(userId);
 
     if (success && context.mounted) {
       showDialog(
@@ -81,9 +103,7 @@ class ProfileEditView extends StatelessWidget {
         barrierDismissible: false,
         builder: (context) => ProfileSaveSuccessModal(
           onOkPressed: () {
-            // Close the success modal
             Navigator.pop(context);
-            // Navigate back to profile view
             onBackPressed();
           },
         ),
@@ -93,7 +113,7 @@ class ProfileEditView extends StatelessWidget {
 }
 
 class ProfileFormWidget extends StatefulWidget {
-  final ProfileViewModel viewModel;
+  final ProfileEditViewModel viewModel;
   final bool isDarkMode;
   final VoidCallback onBackPressed;
 
@@ -225,9 +245,12 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
   }
 
   void _showGenderSelectionModal() {
+    final backgroundColor = widget.isDarkMode ? darkColor : lightColor;
+    final textColor = widget.isDarkMode ? lightColor : darkColor;
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: widget.isDarkMode ? darkColor : lightColor,
+      backgroundColor: backgroundColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -241,7 +264,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: widget.isDarkMode ? lightColor : darkColor,
+                color: textColor,
               ),
             ),
           ),
@@ -258,16 +281,17 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
   }
 
   Widget _buildGenderOption(String gender) {
+    final textColor = widget.isDarkMode ? lightColor : darkColor;
+    final isSelected = widget.viewModel.profileData.gender == gender;
+
     return ListTile(
       title: Text(
         gender,
         style: TextStyle(
-          color: widget.isDarkMode ? lightColor : darkColor,
+          color: textColor,
         ),
       ),
-      trailing: widget.viewModel.profileData.gender == gender
-          ? const Icon(Icons.check, color: primaryColor)
-          : null,
+      trailing: isSelected ? const Icon(Icons.check, color: primaryColor) : null,
       onTap: () {
         widget.viewModel.updateGender(gender);
         setState(() => _genderError = null);
@@ -277,6 +301,11 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
   }
 
   Widget _buildProfileImage() {
+    final containerColor = widget.isDarkMode
+        ? lightGrayColor
+        : grayColor.withAlpha((0.3 * 255).toInt());
+    final iconColor = widget.isDarkMode ? lightGrayColor : grayColor;
+
     DecorationImage? profileImageDecoration;
 
     if (_profileImageFile != null) {
@@ -296,21 +325,23 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
       height: 120,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: widget.isDarkMode ? lightGrayColor : grayColor.withOpacity(0.3),
+        color: containerColor,
         image: profileImageDecoration,
       ),
       child: profileImageDecoration == null
           ? Icon(
-              Icons.person,
-              size: 60,
-              color: widget.isDarkMode ? lightGrayColor : grayColor,
-            )
+        Icons.person,
+        size: 60,
+        color: iconColor,
+      )
           : null,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final textColor = widget.isDarkMode ? lightColor : darkColor;
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -369,7 +400,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: widget.isDarkMode ? lightColor : darkColor,
+                color: textColor,
               ),
             ),
             const SizedBox(height: 16),
@@ -415,7 +446,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withAlpha((0.1 * 255).toInt()),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -435,10 +466,10 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
                 onPressed: widget.viewModel.isLoading || !widget.viewModel.hasChanges
                     ? null
                     : () {
-                        if (_validateForm()) {
-                          _saveProfile(context);
-                        }
-                      },
+                  if (_validateForm()) {
+                    _saveProfile(context);
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: darkColor,
                   foregroundColor: Colors.amber,
@@ -450,20 +481,20 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
                 ),
                 child: widget.viewModel.isLoading
                     ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
                     : const Text(
-                        'Save Changes',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                  'Save Changes',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],
@@ -473,7 +504,8 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
   }
 
   void _saveProfile(BuildContext context) async {
-    final success = await widget.viewModel.saveProfile();
+    final userId = Supabase.instance.client.auth.currentUser?.id ?? '';
+    final success = await widget.viewModel.saveProfile(userId);
 
     if (success && context.mounted) {
       showDialog(
@@ -481,9 +513,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
         barrierDismissible: false,
         builder: (context) => ProfileSaveSuccessModal(
           onOkPressed: () {
-            // Close the success modal
             Navigator.pop(context);
-            // Navigate back to profile view
             widget.onBackPressed();
           },
         ),
@@ -492,6 +522,8 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
   }
 
   Widget _buildLabeledField(String label) {
+    final textColor = widget.isDarkMode ? lightColor : darkColor;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Text(
@@ -499,7 +531,7 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          color: widget.isDarkMode ? lightColor : darkColor,
+          color: textColor,
         ),
       ),
     );
@@ -511,30 +543,28 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
     TextInputType keyboardType = TextInputType.text,
     String? errorText,
   }) {
+    final textColor = widget.isDarkMode ? lightColor : darkColor;
+    final hintColor = widget.isDarkMode ? lightGrayColor : grayColor;
+    final borderColor = errorText != null
+        ? Colors.red
+        : grayColor.withAlpha((0.3 * 255).toInt());
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: errorText != null
-                  ? Colors.red
-                  : (widget.isDarkMode ? grayColor.withOpacity(0.3) : grayColor.withOpacity(0.3)),
-            ),
+            border: Border.all(color: borderColor),
           ),
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
-            style: TextStyle(
-              color: widget.isDarkMode ? lightColor : darkColor,
-            ),
+            style: TextStyle(color: textColor),
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               hintText: hintText,
-              hintStyle: TextStyle(
-                color: widget.isDarkMode ? lightGrayColor : grayColor,
-              ),
+              hintStyle: TextStyle(color: hintColor),
               border: InputBorder.none,
             ),
           ),
@@ -555,17 +585,20 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
   }
 
   Widget _buildEmailField() {
+    final textColor = widget.isDarkMode ? lightColor : darkColor;
+    final hintColor = widget.isDarkMode ? lightGrayColor : grayColor;
+    final borderColor = _emailError != null
+        ? Colors.red
+        : grayColor.withAlpha((0.3 * 255).toInt());
+    final isVerified = widget.viewModel.profileData.isEmailVerified;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: _emailError != null
-                  ? Colors.red
-                  : (widget.isDarkMode ? grayColor.withOpacity(0.3) : grayColor.withOpacity(0.3)),
-            ),
+            border: Border.all(color: borderColor),
           ),
           child: Row(
             children: [
@@ -573,20 +606,16 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
                 child: TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  style: TextStyle(
-                    color: widget.isDarkMode ? lightColor : darkColor,
-                  ),
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     hintText: 'Enter your email address',
-                    hintStyle: TextStyle(
-                      color: widget.isDarkMode ? lightGrayColor : grayColor,
-                    ),
+                    hintStyle: TextStyle(color: hintColor),
                     border: InputBorder.none,
                   ),
                 ),
               ),
-              if (widget.viewModel.profileData.isEmailVerified)
+              if (isVerified)
                 const Padding(
                   padding: EdgeInsets.only(right: 16.0),
                   child: Row(
@@ -654,6 +683,13 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
     required VoidCallback onTap,
     String? errorText,
   }) {
+    final textColor = widget.isDarkMode ? lightColor : darkColor;
+    final hintColor = widget.isDarkMode ? lightGrayColor : grayColor;
+    final borderColor = errorText != null
+        ? Colors.red
+        : grayColor.withAlpha((0.3 * 255).toInt());
+    final isEmpty = text.isEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -663,21 +699,15 @@ class _ProfileFormWidgetState extends State<ProfileFormWidget> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: errorText != null
-                    ? Colors.red
-                    : (widget.isDarkMode ? grayColor.withOpacity(0.3) : grayColor.withOpacity(0.3)),
-              ),
+              border: Border.all(color: borderColor),
             ),
             child: Row(
               children: [
                 Expanded(
                   child: Text(
-                    text.isEmpty ? 'Select an option' : text,
+                    isEmpty ? 'Select an option' : text,
                     style: TextStyle(
-                      color: text.isEmpty
-                          ? (widget.isDarkMode ? lightGrayColor : grayColor)
-                          : (widget.isDarkMode ? lightColor : darkColor),
+                      color: isEmpty ? hintColor : textColor,
                     ),
                   ),
                 ),
