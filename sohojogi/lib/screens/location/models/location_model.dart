@@ -132,6 +132,7 @@ class UserLocationModel {
   final String? stateName;
   final String? cityName;
   final String? areaName;
+  final DateTime createdAt;
 
   UserLocationModel({
     this.id,
@@ -150,8 +151,9 @@ class UserLocationModel {
     this.countryName,
     this.stateName,
     this.cityName,
-    this.areaName, required DateTime createdAt,
-  });
+    this.areaName,
+    DateTime? createdAt,
+  }) : createdAt = createdAt ?? DateTime.now();
 
   factory UserLocationModel.fromJson(Map<String, dynamic> json) {
     return UserLocationModel(

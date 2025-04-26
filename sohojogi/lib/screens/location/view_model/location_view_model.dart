@@ -122,8 +122,10 @@ class LocationViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Use country.id directly as it is already an int
       _states = await _locationService.getStates(country.id);
+      if (!_states.contains(_selectedState)) {
+        _selectedState = null; // Reset if the selected state is not in the new list
+      }
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -248,7 +250,7 @@ class LocationViewModel extends ChangeNotifier {
         name: location.name ?? 'Saved Location',
         countryId: _selectedCountry?.id ?? 0,
         stateId: _selectedState?.id ?? 0,
-        cityId: _selectedCity?.id ?? 0,
+        cityId: _selectedCity?.id ?? 0, // Default to 0 if no city is selected
         areaId: _selectedArea?.id,
         streetAddress: _streetAddress,
         latitude: location.latitude ?? 0,
@@ -259,7 +261,7 @@ class LocationViewModel extends ChangeNotifier {
         icon: location.icon,
         countryName: _selectedCountry?.name,
         stateName: _selectedState?.name,
-        cityName: _selectedCity?.name,
+        cityName: _selectedCity?.name ?? 'N/A', // Default to 'N/A' if no city is selected
         areaName: _selectedArea?.name,
       );
 

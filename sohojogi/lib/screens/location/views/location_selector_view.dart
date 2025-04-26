@@ -186,7 +186,9 @@ class _LocationSelectorViewState extends State<LocationSelectorView> {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<CountryModel>(
           isExpanded: true,
-          value: viewModel.selectedCountry,
+          value: viewModel.countries.contains(viewModel.selectedCountry)
+              ? viewModel.selectedCountry
+              : null, // Ensure the selected value is in the list
           hint: Text(
             'Select Country',
             style: TextStyle(color: isDarkMode ? lightGrayColor : grayColor),
@@ -214,7 +216,7 @@ class _LocationSelectorViewState extends State<LocationSelectorView> {
               ),
             );
           }).toList(),
-        ),
+        )
       ),
     );
   }
@@ -421,8 +423,7 @@ class _LocationSelectorViewState extends State<LocationSelectorView> {
 
   Widget _buildConfirmButton(LocationViewModel viewModel, bool isDarkMode) {
     final bool isFormValid = viewModel.selectedCountry != null &&
-        viewModel.selectedState != null &&
-        viewModel.selectedCity != null;
+        viewModel.selectedState != null;
 
     final String address = _buildFormattedAddress(viewModel);
 
