@@ -8,9 +8,24 @@ class OrderViewModel extends ChangeNotifier {
   bool isLoading = true;
   bool hasError = false;
   String errorMessage = '';
-  List<OrderModel> pendingOrders = [];
-  List<OrderModel> reviewOrders = [];
-  List<OrderModel> historyOrders = [];
+  List<OrderModel> _allOrders = [];
+
+  // Filtered lists
+  List<OrderModel> get pendingOrders => _allOrders.where((order) =>
+  order.status == OrderStatus.pending ||
+      order.status == OrderStatus.confirmed ||
+      order.status == OrderStatus.assigned ||
+      order.status == OrderStatus.accepted
+  ).toList();
+
+  List<OrderModel> get reviewOrders => _allOrders.where((order) =>
+  order.status == OrderStatus.toReview
+  ).toList();
+
+  List<OrderModel> get historyOrders => _allOrders.where((order) =>
+  order.status == OrderStatus.completed ||
+      order.status == OrderStatus.cancelled
+  ).toList();
 
   Future<void> loadOrders() async {
     isLoading = true;
@@ -18,10 +33,8 @@ class OrderViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Load orders from backend only
-      pendingOrders = await _orderService.getPendingOrders();
-      reviewOrders = await _orderService.getToReviewOrders();
-      historyOrders = await _orderService.getHistoryOrders();
+      // Load all orders from backend
+      _allOrders = await _orderService.getUserOrders();
     } catch (e) {
       hasError = true;
       errorMessage = 'Failed to load orders: ${e.toString()}';
@@ -31,6 +44,8 @@ class OrderViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // Other methods remain the same - accept, complete, review, etc.
 
   // Accept an order (for worker)
   Future<bool> acceptOrder(String orderId) async {

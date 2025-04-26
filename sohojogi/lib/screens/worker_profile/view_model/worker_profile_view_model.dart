@@ -170,43 +170,51 @@ class WorkerProfileViewModel extends ChangeNotifier {
 
   // Initiate hiring process
   Future<bool> initiateHiring() async {
-    if (_workerProfile == null) return false;
+    if (workerProfile == null) return false;
 
-    _hirePending = true;
+    // Check if services are selected
+    if (selectedServices.isEmpty) {
+      errorMessage = 'Please select at least one service';
+      notifyListeners();
+      return false;
+    }
+
+    hirePending = true;
     notifyListeners();
 
     try {
-      // Get the first service if available or use default pricing
-      final serviceToOrder = _workerProfile!.services.isNotEmpty
-          ? _workerProfile!.services[0]
-          : null;
+      // Get the selected services and calculate total price
+      final totalPrice = selectedServices.fold(0.0, (sum, service) => sum + service.price);
 
-      // Create real order in the backend
+      // Create order with selected services
+      final services = selectedServices.map((service) => {
+        'service_id': service.id,
+        'quantity': 1,
+        'price': service.price,
+        'subtotal': service.price,
+      }).toList();
+
       final orderId = await _orderService.createOrder(
-        workerId: _workerProfile!.id,
-        title: "Hire ${_workerProfile!.name} for ${_workerProfile!.serviceCategory}",
-        description: "Service request for ${_workerProfile!.serviceCategory}",
-        totalPrice: serviceToOrder?.price ?? 0,
-        serviceType: _workerProfile!.serviceCategory,
-        location: _workerProfile!.location,
-        services: _workerProfile!.services.isNotEmpty
-            ? [
-          {
-            'service_id': serviceToOrder!.id,
-            'quantity': 1,
-            'price': serviceToOrder.price,
-            'subtotal': serviceToOrder.price,
-          }
-        ]
-            : [],
+        workerId: workerProfile!.id,
+        title: "Hire ${workerProfile!.name} for ${workerProfile!.serviceCategory}",
+        description: "Services: ${selectedServices.map((s) => s.name).join(", ")}",
+        totalPrice: totalPrice,
+        serviceType: workerProfile!.serviceCategory,
+        location: workerProfile!.location,
+        services: services,
       );
+
+      // Clear selected services after successful order
+      if (orderId != null) {
+        selectedServices.clear();
+      }
 
       return orderId != null;
     } catch (e) {
       debugPrint('Error initiating hiring: $e');
       return false;
     } finally {
-      _hirePending = false;
+      hirePending = false;
       notifyListeners();
     }
   }
