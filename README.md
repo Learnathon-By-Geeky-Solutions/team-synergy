@@ -72,7 +72,7 @@
     <a href="resources/DevLog.md">
       <img src="https://img.shields.io/badge/Dev%20Log-22ADF6?style=for-the-badge&logo=markdown&logoColor=white" alt="Dev Log" />
     </a>
-    <a href="https://github.com/Learnathon-By-Geeky-Solutions/team-synergy/blob/resources-setup/resources/Wireframe%200.pdf">
+    <a href="resources/Wireframe.pdf">
       <img src="https://img.shields.io/badge/Wireframe-4B0082?style=for-the-badge&logo=figma&logoColor=white" alt="Wireframe" />
     </a>
     <a href="https://www.figma.com/proto/WzVr7zvjiAiGrVoSkEglZE/Sohojogi-App-UI?node-id=125-186&starting-point-node-id=125%3A186&t=BygQA84Hiw98dmrB-1">
