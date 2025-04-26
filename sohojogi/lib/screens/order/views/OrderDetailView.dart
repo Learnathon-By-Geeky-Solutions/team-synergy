@@ -249,7 +249,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 return;
               }
 
-              Navigator.pop(context);
+              Navigator.pop(context); // Close the dialog
               setState(() {
                 isLoading = true;
               });
@@ -265,7 +265,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 });
 
                 if (success) {
-                  Navigator.pop(context); // Return to order list
+                  Navigator.pop(context); // Navigate back to the order list
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Order cancelled successfully')),
                   );

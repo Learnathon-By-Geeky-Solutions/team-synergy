@@ -177,13 +177,23 @@ class ReviewsSectionWidget extends StatelessWidget {
                       child: Image.network(
                         review.photos![index],
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey.shade300,
+                            child: const Icon(
+                              Icons.broken_image,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   );
                 },
               ),
             ),
-          ],
+          ]
         ],
       ),
     );

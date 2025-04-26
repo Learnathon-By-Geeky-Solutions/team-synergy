@@ -23,13 +23,11 @@ class _FilterBottomSheetWidgetState extends State<FilterBottomSheetWidget> {
   late String _sortBy;
   late double _maxDistance;
 
-  // Available sort options
   final List<String> _sortOptions = ['Rating', 'Distance', 'Price: Low to High', 'Price: High to Low'];
 
   @override
   void initState() {
     super.initState();
-    // Initialize filter values from initialFilters or defaults
     _minRating = widget.initialFilters?['minRating'] ?? 0.0;
     _selectedCategories = Set<String>.from(widget.initialFilters?['categories'] ?? []);
     _sortBy = widget.initialFilters?['sortBy'] ?? 'Rating';
@@ -50,16 +48,13 @@ class _FilterBottomSheetWidgetState extends State<FilterBottomSheetWidget> {
         ),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Filter',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+              Text('Filters', style: Theme.of(context).textTheme.titleLarge),
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () => Navigator.pop(context),
@@ -70,128 +65,83 @@ class _FilterBottomSheetWidgetState extends State<FilterBottomSheetWidget> {
 
           // Minimum Rating
           const SizedBox(height: 16),
-          Text(
-            'Minimum Rating',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: Slider(
-                  value: _minRating,
-                  min: 0,
-                  max: 5,
-                  divisions: 10,
-                  label: _minRating.toString(),
-                  activeColor: primaryColor,
-                  onChanged: (value) {
-                    setState(() {
-                      _minRating = value;
-                    });
-                  },
-                ),
-              ),
-              Container(
-                width: 40,
-                alignment: Alignment.center,
-                child: Text(
-                  _minRating.toStringAsFixed(1),
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
+          Text('Minimum Rating', style: Theme.of(context).textTheme.titleMedium),
+          Slider(
+            value: _minRating,
+            min: 0,
+            max: 5,
+            divisions: 10,
+            label: _minRating.toString(),
+            activeColor: primaryColor,
+            onChanged: (value) {
+              setState(() {
+                _minRating = value;
+              });
+            },
           ),
 
           // Categories
-          const SizedBox(height: 24),
-          Text(
-            'Categories',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
+          Text('Categories', style: Theme.of(context).textTheme.titleMedium),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: widget.availableCategories.map((category) {
               final isSelected = _selectedCategories.contains(category);
-              return FilterChip(
-                label: Text(category),
-                selected: isSelected,
-                onSelected: (selected) {
+              return GestureDetector(
+                onTap: () {
                   setState(() {
-                    if (selected) {
-                      _selectedCategories.add(category);
-                    } else {
+                    if (isSelected) {
                       _selectedCategories.remove(category);
+                    } else {
+                      _selectedCategories.add(category);
                     }
                   });
                 },
-                selectedColor: primaryColor.withOpacity(0.2),
-                checkmarkColor: primaryColor,
-                backgroundColor: isDarkMode ? darkColor : Colors.grey.shade200,
-                labelStyle: TextStyle(
-                  color: isSelected ? primaryColor : (isDarkMode ? lightColor : darkColor),
+                child: Chip(
+                  label: Text(category),
+                  backgroundColor: isSelected ? primaryColor : Colors.grey.shade200,
+                  labelStyle: TextStyle(
+                    color: isSelected ? lightColor : darkColor,
+                  ),
                 ),
               );
             }).toList(),
           ),
 
           // Sort By
-          const SizedBox(height: 24),
-          Text(
-            'Sort By',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
+          Text('Sort By', style: Theme.of(context).textTheme.titleMedium),
           Wrap(
             spacing: 8,
-            runSpacing: 8,
             children: _sortOptions.map((option) {
               final isSelected = _sortBy == option;
-              return ChoiceChip(
-                label: Text(option),
-                selected: isSelected,
-                onSelected: (selected) {
-                  if (selected) {
-                    setState(() {
-                      _sortBy = option;
-                    });
-                  }
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _sortBy = option;
+                  });
                 },
-                selectedColor: primaryColor.withOpacity(0.2),
-                backgroundColor: isDarkMode ? darkColor : Colors.grey.shade200,
-                labelStyle: TextStyle(
-                  color: isSelected ? primaryColor : (isDarkMode ? lightColor : darkColor),
+                child: Chip(
+                  label: Text(option),
+                  backgroundColor: isSelected ? primaryColor : Colors.grey.shade200,
+                  labelStyle: TextStyle(
+                    color: isSelected ? lightColor : darkColor,
+                  ),
                 ),
               );
             }).toList(),
           ),
 
           // Maximum Distance
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Maximum Distance',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              Text(
-                '${_maxDistance.toStringAsFixed(1)} km',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: isDarkMode ? lightColor : darkColor,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
+          Text('Maximum Distance', style: Theme.of(context).textTheme.titleMedium),
           Slider(
             value: _maxDistance,
             min: 1,
             max: 50,
             divisions: 49,
+            label: '${_maxDistance.toStringAsFixed(1)} km',
             activeColor: primaryColor,
             onChanged: (value) {
               setState(() {
@@ -200,7 +150,8 @@ class _FilterBottomSheetWidgetState extends State<FilterBottomSheetWidget> {
             },
           ),
 
-          const SizedBox(height: 32),
+          // Apply Filters Button
+          const Spacer(),
           ElevatedButton(
             onPressed: () {
               final filters = {
@@ -222,10 +173,7 @@ class _FilterBottomSheetWidgetState extends State<FilterBottomSheetWidget> {
             ),
             child: const Text(
               'Apply Filters',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
         ],

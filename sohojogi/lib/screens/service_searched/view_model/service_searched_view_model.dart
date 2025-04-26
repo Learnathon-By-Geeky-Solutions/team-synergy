@@ -57,7 +57,9 @@ class ServiceSearchedViewModel extends ChangeNotifier {
 
       // Extract filter values
       final double? minRating = filters?['minRating'];
-      final List<String>? categories = filters?['categories']?.cast<String>();
+      final List<String>? categories = (filters?['categories'] as List<dynamic>?)
+          ?.map((e) => e.toString())
+          .toList();
       final String? sortBy = filters?['sortBy'];
       final double? maxDistance = filters?['maxDistance'];
 

@@ -122,7 +122,18 @@ class ProfileOverviewWidget extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // Location
+          Text(
+            worker.name,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: isDarkMode ? lightColor : darkColor,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+
+          // Worker Location
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -132,13 +143,16 @@ class ProfileOverviewWidget extends StatelessWidget {
                 color: isDarkMode ? lightGrayColor : grayColor,
               ),
               const SizedBox(width: 4),
-              Text(
-                worker.location,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: isDarkMode ? lightGrayColor : grayColor,
+                Text(
+                  worker.location,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDarkMode ? lightGrayColor : grayColor,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: null, // Allow multi-line overflow
+                  overflow: TextOverflow.visible,
                 ),
-              ),
             ],
           ),
 

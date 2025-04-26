@@ -54,6 +54,7 @@ class OrderCardWidget extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? lightColor : darkColor,
                           ),
+                          maxLines: null,
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -62,7 +63,7 @@ class OrderCardWidget extends StatelessWidget {
                             fontSize: 14,
                             color: isDarkMode ? lightGrayColor : grayColor,
                           ),
-                          maxLines: 2,
+                          maxLines: null,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],

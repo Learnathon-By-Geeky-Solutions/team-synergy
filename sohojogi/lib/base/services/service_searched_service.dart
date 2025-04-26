@@ -33,7 +33,8 @@ class ServiceSearchedService {
 
       // Apply category filter
       if (categories != null && categories.isNotEmpty) {
-        supabaseQuery = supabaseQuery.contains('service_category', categories);      }
+        supabaseQuery = supabaseQuery.contains('service_category', categories);
+      }
 
       // Execute the query
       final response = await supabaseQuery;
