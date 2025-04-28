@@ -112,6 +112,24 @@ flutter doctor
    flutter run
    ```
 
+## 🌿 Git Branching Strategy
+
+We follow a simple and organized Git workflow to ensure smooth collaboration and code management:
+
+### Branch Structure
+- **`features/*` branches**  
+  Used for developing individual features, bug fixes, or improvements.  
+  Feature branches are created from `dev`.
+
+- **`dev` branch**  
+  The main development branch where all completed features are merged.  
+  This branch contains the latest code under development and testing.
+
+- **`main` branch**  
+  The production-ready branch.  
+  Once the `dev` branch is stable and fully tested, changes are merged into `main`.
+
+  
 ## 🏗️ Technical Architecture
 
 | Category | Technology/Pattern |
@@ -395,7 +413,6 @@ erDiagram
         INTEGER work_type_id PK,FK
     }
 ```
-
 
 ## 👥 Team
 
