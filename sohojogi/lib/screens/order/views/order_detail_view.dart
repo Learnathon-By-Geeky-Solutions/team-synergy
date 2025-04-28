@@ -292,7 +292,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 );
               }
             },
-            child: Text(OrderDetailView.cancelOrder, style: const TextStyle(color: Colors.red)),
+            child: const Text(OrderDetailView.cancelOrder, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),

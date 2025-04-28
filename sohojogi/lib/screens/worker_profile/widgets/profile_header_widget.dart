@@ -22,7 +22,13 @@ class ProfileHeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
-    // Extracted color logic
+    Color getBookmarkIconColor(bool isBookmarked, bool isDarkMode) {
+      if (isBookmarked) {
+        return primaryColor;
+      }
+      return isDarkMode ? lightColor : darkColor;
+    }
+
     final Color backButtonColor = isDarkMode
         ? grayColor.withValues(alpha: 0.3)
         : Colors.grey.shade200;
@@ -84,7 +90,7 @@ class ProfileHeaderWidget extends StatelessWidget {
                         child: Icon(
                           isBookmarked ? Icons.bookmark : Icons.bookmark_border,
                           size: 20,
-                          color: isBookmarked ? primaryColor : (isDarkMode ? lightColor : darkColor),
+                          color: getBookmarkIconColor(isBookmarked, isDarkMode),
                         ),
                       ),
                     ),

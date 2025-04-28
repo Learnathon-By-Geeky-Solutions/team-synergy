@@ -40,6 +40,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
   @override
   void initState() {
     super.initState();
+
     // Load worker profile data
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<WorkerProfileViewModel>().loadWorkerProfile(widget.workerId);
@@ -116,34 +117,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
                       worker: worker,
                       hirePending: viewModel.hirePending,
                       selectedServices: viewModel.selectedServices, // Add this
-                      onHirePressed: () async {
-                        final success = await viewModel.initiateHiring();
-                        if (success && context.mounted) {
-                          // Force refresh the order view model before navigation
-                          await Provider.of<OrderViewModel>(context, listen: false).loadOrders();
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Hire request sent successfully!'),
-                              backgroundColor: primaryColor,
-                            ),
-                          );
-
-                          // Navigate to order list to see the new order
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => const OrderListView()),
-                          );
-                        } else if (context.mounted) {
-                          // Show error message if hiring failed
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(viewModel.errorMessage ?? 'Failed to create order. Please try again.'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      }
+                      onHirePressed: _handleHirePressed,
                   ),
 
                   // About section with bio
@@ -246,15 +220,63 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
     return viewModel._isLoading;
   }
 
+  void _handleHirePressed() async {
+    if (!mounted) return;
+
+    final viewModel = Provider.of<WorkerProfileViewModel>(context, listen: false);
+    final orderViewModel = Provider.of<OrderViewModel>(context, listen: false);
+
+    final success = await viewModel.initiateHiring();
+
+    if (!mounted) return;
+
+    if (success) {
+      await orderViewModel.loadOrders();
+
+      if (!mounted) return;
+
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const OrderListView()),
+        ).then((_) {
+          _showMessage('Hire request sent successfully!', isError: false);
+        });
+      }
+    } else {
+      if (context.mounted) {
+        _showMessage(
+          viewModel.errorMessage ?? 'Failed to create order. Please try again.',
+          isError: true,
+        );
+      }
+    }
+  }
+
+  void _showMessage(String message, {bool isError = false}) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : primaryColor,
+      ),
+    );
+  }
+
   Widget _buildFloatingHeader(
       dynamic worker,
       bool isDarkMode,
       WorkerProfileViewModel viewModel
       ) {
-    // Extracted color logic
-    final Color headerColor = isDarkMode
-        ? darkColor.withOpacity(0.95)
-        : lightColor.withOpacity(0.95);
+
+    final headerColor = isDarkMode
+        ? darkColor.withValues(alpha: 0.95)
+        : lightColor.withValues(alpha: 0.95);
+
+    final bookmarkIconColor = viewModel.isBookmarked
+        ? primaryColor
+        : (isDarkMode ? lightColor : darkColor);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -314,9 +336,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
             IconButton(
               icon: Icon(
                 viewModel.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                color: viewModel.isBookmarked
-                    ? primaryColor
-                    : (isDarkMode ? lightColor : darkColor),
+                color: bookmarkIconColor,
               ),
               onPressed: viewModel.toggleBookmark,
             ),
@@ -336,7 +356,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
   Widget _buildLoadingState(bool isDarkMode) {
     // Extracted color logic
     final Color backButtonColor = isDarkMode
-        ? grayColor.withOpacity(0.2)
+        ? grayColor.withValues(alpha:0.2)
         : Colors.grey.shade200;
 
     return Column(
@@ -437,7 +457,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDarkMode ? grayColor.withOpacity(0.2) : Colors.grey.shade200,
+                          color: isDarkMode ? grayColor.withValues(alpha:0.2) : Colors.grey.shade200,
                         ),
                         child: Icon(
                           Icons.arrow_back,

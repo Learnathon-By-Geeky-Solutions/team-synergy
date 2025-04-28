@@ -121,6 +121,8 @@ class WorkerDatabaseService {
         name: workerResponse['name'],
         profileImage: workerResponse['profile_image_url'] ?? 'https://via.placeholder.com/150',
         location: workerResponse['location'],
+        latitude: workerResponse['latitude']?.toDouble() ?? 0.0,
+        longitude: workerResponse['longitude']?.toDouble() ?? 0.0,
         serviceCategory: workerResponse['service_category'],
         rating: workerResponse['average_rating'].toDouble(),
         reviewCount: workerResponse['review_count'],
@@ -131,15 +133,14 @@ class WorkerDatabaseService {
         services: services,
         skills: skills,
         availability: availability,
-        reviews: [], // Will be loaded separately with pagination
+        reviews: [],
         portfolioItems: portfolioItems,
         qualifications: qualifications,
         completionRate: workerResponse['completion_rate'].toDouble(),
         jobsCompleted: workerResponse['jobs_completed'],
         yearsOfExperience: workerResponse['years_of_experience'],
         isVerified: workerResponse['is_verified'] ?? false,
-      );
-    } catch (e) {
+      );    } catch (e) {
       debugPrint('Error fetching worker profile: $e');
       return null;
     }

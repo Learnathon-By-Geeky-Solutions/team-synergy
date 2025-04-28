@@ -19,109 +19,128 @@ class AppDrawer extends StatelessWidget {
 
 
   @override
+  @override
   Widget build(BuildContext context) {
     final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
-    // Create a local provider if none is found above
     return Consumer<ProfileViewModel>(
         builder: (context, profileViewModel, _) {
           return Drawer(
-              child: Container(
-                color: isDarkMode ? darkColor : lightColor,
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: <Widget>[
-                    DrawerHeader(
-                      decoration: const BoxDecoration(
-                        color: Colors.transparent,
-                      ),
-                      child: InkWell(
-                        onTap: () => _navigateToProfile(context),
-                        child: Row(
-                          children: [
-                            _buildProfileAvatar(profileViewModel, isDarkMode),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              flex: 2,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    profileViewModel.profileData.fullName.isEmpty
-                                        ? 'Set up profile'
-                                        : profileViewModel.profileData.fullName,
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: isDarkMode ? lightColor : darkColor,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    '135 Credits',
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: isDarkMode ? lightColor : lightGrayColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.star, 
-                                    color: isDarkMode ? lightColor : lightGrayColor,
-                                    size: 20,
-                                  ),
-                                  Text(
-                                    'Expire in 21d',
-                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                      color: isDarkMode ? lightColor : lightGrayColor,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    _buildSection(context, 'Account', [
-                      'Profile',
-                      'Business Profile',
-                      'Payment Methods',
-                      'Saved Address',
-                      'Bookmark',
-                      'Membership',
-                    ], isDarkMode),
-                    Divider(color: isDarkMode ? lightColor : lightGrayColor),
-                    _buildSection(context, 'Offers', [
-                      'Offers & Promos',
-                      'Refer & Discount',
-                    ], isDarkMode),
-                    Divider(color: isDarkMode ? lightColor : lightGrayColor),
-                    _buildSection(context, 'Settings', [
-                      'Theme',
-                      'Language',
-                      'Account Security',
-                      'Terms & Privacy',
-                      'Permissions',
-                    ], isDarkMode),
-                    Divider(color: isDarkMode ? lightColor : lightGrayColor),
-                    _buildSection(context, 'More', [
-                      'Help Center',
-                      'Log Out',
-                    ], isDarkMode),
-                  ],
-                ),
-              ),
+            child: Container(
+              color: isDarkMode ? darkColor : lightColor,
+              child: _buildDrawerContent(context, profileViewModel, isDarkMode),
+            ),
           );
         }
     );
+  }
+
+  Widget _buildDrawerContent(BuildContext context, ProfileViewModel profileViewModel, bool isDarkMode) {
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: <Widget>[
+        _buildDrawerHeader(context, profileViewModel, isDarkMode),
+        _buildSection(context, 'Account', [
+          'Profile',
+          'Business Profile',
+          paymentMethods,
+          savedAddress,
+          'Bookmark',
+          'Membership',
+        ], isDarkMode),
+        _buildDivider(isDarkMode),
+        _buildSection(context, 'Offers', [
+          'Offers & Promos',
+          'Refer & Discount',
+        ], isDarkMode),
+        _buildDivider(isDarkMode),
+        _buildSection(context, 'Settings', [
+          'Theme',
+          'Language',
+          accountSecurity,
+          'Terms & Privacy',
+          'Permissions',
+        ], isDarkMode),
+        _buildDivider(isDarkMode),
+        _buildSection(context, 'More', [
+          helpCenter,
+          logOut,
+        ], isDarkMode),
+      ],
+    );
+  }
+
+  Widget _buildDrawerHeader(BuildContext context, ProfileViewModel profileViewModel, bool isDarkMode) {
+    return DrawerHeader(
+      decoration: const BoxDecoration(color: Colors.transparent),
+      child: InkWell(
+        onTap: () => _navigateToProfile(context),
+        child: Row(
+          children: [
+            _buildProfileAvatar(profileViewModel, isDarkMode),
+            const SizedBox(width: 10),
+            _buildUserInfo(context, profileViewModel, isDarkMode),
+            _buildCreditsInfo(context, isDarkMode),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUserInfo(BuildContext context, ProfileViewModel profileViewModel, bool isDarkMode) {
+    return Expanded(
+      flex: 2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            profileViewModel.profileData.fullName.isEmpty
+                ? 'Set up profile'
+                : profileViewModel.profileData.fullName,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: isDarkMode ? lightColor : darkColor,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            '135 Credits',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: isDarkMode ? lightColor : lightGrayColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCreditsInfo(BuildContext context, bool isDarkMode) {
+    return Expanded(
+      flex: 1,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.star,
+            color: isDarkMode ? lightColor : lightGrayColor,
+            size: 20,
+          ),
+          Text(
+            'Expire in 21d',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: isDarkMode ? lightColor : lightGrayColor,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDivider(bool isDarkMode) {
+    return Divider(color: isDarkMode ? lightColor : lightGrayColor);
   }
 
   Widget _buildProfileAvatar(ProfileViewModel viewModel, bool isDarkMode) {
@@ -191,7 +210,6 @@ class AppDrawer extends StatelessWidget {
       ],
     );
   }
-
 
   void _handleNavigation(BuildContext context, String item) {
     // Close drawer first
