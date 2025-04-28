@@ -274,9 +274,12 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
         ? darkColor.withValues(alpha: 0.95)
         : lightColor.withValues(alpha: 0.95);
 
-    final bookmarkIconColor = viewModel.isBookmarked
-        ? primaryColor
-        : (isDarkMode ? lightColor : darkColor);
+    Color getBookmarkIconColor(bool isBookmarked, bool isDarkMode) {
+      if (isBookmarked) {
+        return primaryColor;
+      }
+      return isDarkMode ? lightColor : darkColor;
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -336,7 +339,7 @@ class _WorkerProfileListViewState extends State<WorkerProfileListView> {
             IconButton(
               icon: Icon(
                 viewModel.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                color: bookmarkIconColor,
+                color: getBookmarkIconColor(viewModel.isBookmarked, isDarkMode),
               ),
               onPressed: viewModel.toggleBookmark,
             ),

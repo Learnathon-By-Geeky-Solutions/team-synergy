@@ -127,8 +127,15 @@ class ActionButtonsWidget extends StatelessWidget {
     return hirePending ? primaryColor.withValues(alpha: 0.6) : primaryColor;
   }
 
+  Color _getButtonTextColor(bool canHire, bool isDarkMode) {
+    if (canHire) {
+      return Colors.white;
+    }
+    return isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600;
+  }
+
   Color _getHireButtonTextColor(bool isDarkMode, bool canHire) {
-    return canHire ? Colors.white : (isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600);
+    return _getButtonTextColor(canHire, isDarkMode);
   }
 
 }
