@@ -4,6 +4,7 @@ import 'package:sohojogi/screens/order/models/order_model.dart';
 
 class OrderService {
   final _supabase = Supabase.instance.client;
+  static const _unauthenticatedError = "User not authenticated";
 
   // Create a new order
   Future<String?> createOrder({
@@ -20,7 +21,7 @@ class OrderService {
       // Get the current user ID
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) {
-        throw Exception("User not authenticated");
+        throw Exception(_unauthenticatedError);
       }
 
       // Insert the order
@@ -83,7 +84,7 @@ class OrderService {
     try {
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) {
-        throw Exception("User not authenticated");
+        throw Exception(_unauthenticatedError);
       }
 
       // Update order status
@@ -161,7 +162,7 @@ class OrderService {
     try {
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) {
-        throw Exception("User not authenticated");
+        throw Exception(_unauthenticatedError);
       }
 
       var query = _supabase
@@ -199,7 +200,7 @@ class OrderService {
     try {
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) {
-        throw Exception("User not authenticated");
+        throw Exception(_unauthenticatedError);
       }
 
       // Get order details to determine the worker
