@@ -40,6 +40,46 @@ class _LocationSelectorViewState extends State<LocationSelectorView> {
     super.dispose();
   }
 
+  void _handleCurrentLocation(BuildContext context, LocationViewModel viewModel) {
+    // Capture navigator before async gap
+    final navigator = Navigator.of(context);
+
+    viewModel.useCurrentLocation().then((location) {
+      if (location != null && mounted) {
+        navigator.pop(location.address);
+      }
+    });
+  }
+
+  void _handleConfirmLocation(BuildContext context, LocationViewModel viewModel, String address) {
+    // Capture navigator before potential async operation
+    final navigator = Navigator.of(context);
+
+    if (_isSaving) {
+      if (_nameController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter a name for this location')),
+        );
+        return;
+      }
+
+      final location = LocationModel(
+        address: address,
+        name: _nameController.text,
+        icon: _selectedIconKey,
+        isSaved: true,
+      );
+
+      viewModel.saveLocation(location).then((_) {
+        if (mounted) {
+          navigator.pop(address);
+        }
+      });
+    } else {
+      navigator.pop(address);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<LocationViewModel>(context);
@@ -47,85 +87,82 @@ class _LocationSelectorViewState extends State<LocationSelectorView> {
 
     return Scaffold(
       backgroundColor: isDarkMode ? grayColor : Colors.grey[100],
-      appBar: AppBar(
-        title: Text(
-          'Select Location',
-          style: TextStyle(
-            color: isDarkMode ? lightColor : darkColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: isDarkMode ? darkColor : lightColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: isDarkMode ? lightColor : darkColor,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        centerTitle: true,
-      ),
-      body: viewModel.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Quick actions
-              _buildQuickActions(context, viewModel, isDarkMode),
+      appBar: _buildAppBar(context, isDarkMode),
+      body: _buildBody(context, viewModel, isDarkMode),
+    );
+  }
 
-              const SizedBox(height: 24),
-
-              // Country selection
-              _buildSectionTitle('Country', isDarkMode),
-              _buildCountryDropdown(viewModel, isDarkMode),
-
-              const SizedBox(height: 16),
-
-              // State selection (only if country is selected)
-              if (viewModel.selectedCountry != null) ...[
-                _buildSectionTitle('State/Province', isDarkMode),
-                _buildStateDropdown(viewModel, isDarkMode),
-
-                const SizedBox(height: 16),
-              ],
-
-              // City selection (only if state is selected)
-              if (viewModel.selectedState != null) ...[
-                _buildSectionTitle('City/District', isDarkMode),
-                _buildCityDropdown(viewModel, isDarkMode),
-
-                const SizedBox(height: 16),
-              ],
-
-              // Area selection (only if city is selected)
-              if (viewModel.selectedCity != null && viewModel.areas.isNotEmpty) ...[
-                _buildSectionTitle('Area/Locality', isDarkMode),
-                _buildAreaDropdown(viewModel, isDarkMode),
-
-                const SizedBox(height: 16),
-              ],
-
-              // Street address
-              _buildSectionTitle('Street Address', isDarkMode),
-              _buildStreetAddressField(viewModel, isDarkMode),
-
-              const SizedBox(height: 24),
-
-              // Save location option
-              _buildSaveLocationSection(viewModel, isDarkMode),
-
-              const SizedBox(height: 32),
-
-              // Confirm button
-              _buildConfirmButton(viewModel, isDarkMode),
-            ],
-          ),
+  PreferredSizeWidget _buildAppBar(BuildContext context, bool isDarkMode) {
+    return AppBar(
+      title: Text(
+        'Select Location',
+        style: TextStyle(
+          color: isDarkMode ? lightColor : darkColor,
+          fontWeight: FontWeight.bold,
         ),
       ),
+      backgroundColor: isDarkMode ? darkColor : lightColor,
+      elevation: 0,
+      leading: IconButton(
+        icon: Icon(
+          Icons.arrow_back,
+          color: isDarkMode ? lightColor : darkColor,
+        ),
+        onPressed: () => Navigator.pop(context),
+      ),
+      centerTitle: true,
+    );
+  }
+
+  Widget _buildBody(BuildContext context, LocationViewModel viewModel, bool isDarkMode) {
+    if (viewModel.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildQuickActions(context, viewModel, isDarkMode),
+            const SizedBox(height: 24),
+            _buildLocationSelectors(viewModel, isDarkMode),
+            const SizedBox(height: 24),
+            _buildSaveLocationSection(viewModel, isDarkMode),
+            const SizedBox(height: 32),
+            _buildConfirmButton(context, viewModel, isDarkMode),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLocationSelectors(LocationViewModel viewModel, bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle('Country', isDarkMode),
+        _buildCountryDropdown(viewModel, isDarkMode),
+        if (viewModel.selectedCountry != null) ...[
+          const SizedBox(height: 16),
+          _buildSectionTitle('State/Province', isDarkMode),
+          _buildStateDropdown(viewModel, isDarkMode),
+        ],
+        if (viewModel.selectedState != null) ...[
+          const SizedBox(height: 16),
+          _buildSectionTitle('City/District', isDarkMode),
+          _buildCityDropdown(viewModel, isDarkMode),
+        ],
+        if (viewModel.selectedCity != null && viewModel.areas.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          _buildSectionTitle('Area/Locality', isDarkMode),
+          _buildAreaDropdown(viewModel, isDarkMode),
+        ],
+        const SizedBox(height: 16),
+        _buildSectionTitle('Street Address', isDarkMode),
+        _buildStreetAddressField(viewModel, isDarkMode),
+      ],
     );
   }
 
@@ -139,12 +176,7 @@ class _LocationSelectorViewState extends State<LocationSelectorView> {
           children: [
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: () async {
-                  final location = await viewModel.useCurrentLocation();
-                  if (location != null) {
-                    Navigator.pop(context, location.address);
-                  }
-                },
+                onPressed: () => _handleCurrentLocation(context, viewModel),
                 icon: const Icon(Icons.my_location, size: 18),
                 label: const Text('Use Current Location'),
                 style: ElevatedButton.styleFrom(
@@ -421,36 +453,16 @@ class _LocationSelectorViewState extends State<LocationSelectorView> {
     );
   }
 
-  Widget _buildConfirmButton(LocationViewModel viewModel, bool isDarkMode) {
+  Widget _buildConfirmButton(BuildContext context, LocationViewModel viewModel, bool isDarkMode) {
     final bool isFormValid = viewModel.selectedCountry != null &&
         viewModel.selectedState != null;
 
     final String address = _buildFormattedAddress(viewModel);
 
     return ElevatedButton(
-      onPressed: isFormValid ? () {
-        if (_isSaving) {
-          if (_nameController.text.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please enter a name for this location')),
-            );
-            return;
-          }
-
-          final location = LocationModel(
-            address: address,
-            name: _nameController.text,
-            icon: _selectedIconKey,
-            isSaved: true,
-          );
-
-          viewModel.saveLocation(location).then((_) {
-            Navigator.pop(context, address);
-          });
-        } else {
-          Navigator.pop(context, address);
-        }
-      } : null,
+      onPressed: isFormValid
+          ? () => _handleConfirmLocation(context, viewModel, address)
+          : null,
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,

@@ -24,15 +24,24 @@ class LocationCard extends StatelessWidget {
       'location': Icons.location_on,
     };
 
-    return iconMap[iconKey] ?? (location.isSaved ? Icons.bookmark : Icons.history);
+    return iconMap[iconKey] ?? _getDefaultIcon();
+  }
+
+  IconData _getDefaultIcon() {
+    return location.isSaved ? Icons.bookmark : Icons.history;
+  }
+
+  Color _getBackgroundColor() {
+    if (isDarkMode) {
+      return primaryColor.withValues(alpha: 0.2);
+    }
+    return primaryColor.withValues(alpha: 0.1);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Create the leading icon based on location data
     Widget leadingIcon = Icon(
-      location.icon != null ? _getIconData(location.icon as String) :
-      (location.isSaved ? Icons.bookmark : Icons.history),
+      _getIconForLocation(),
       color: location.isSaved ? primaryColor : Colors.grey,
       size: 24,
     );
@@ -44,9 +53,7 @@ class LocationCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: isDarkMode
-              ? primaryColor.withOpacity(0.2)
-              : primaryColor.withOpacity(0.1),
+          backgroundColor: _getBackgroundColor(),
           child: leadingIcon,
         ),
         title: Text(
@@ -72,5 +79,12 @@ class LocationCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  IconData _getIconForLocation() {
+    if (location.icon != null) {
+      return _getIconData(location.icon as String);
+    }
+    return _getDefaultIcon();
   }
 }

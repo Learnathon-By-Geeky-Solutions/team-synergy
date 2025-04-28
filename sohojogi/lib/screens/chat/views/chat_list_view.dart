@@ -167,12 +167,33 @@ class _ChatListViewState extends State<ChatListView> {
   }
 
   BorderRadius _getBubbleBorderRadius(bool isMe, bool showAvatar) {
-    Radius topLeftRadius = isMe ? Radius.circular(16) : (showAvatar ? Radius.zero : Radius.circular(16));
-    Radius topRightRadius = isMe ? (showAvatar ? Radius.zero : Radius.circular(16)) : Radius.circular(16);
+    Radius getTopLeftRadius(bool isMe, bool showAvatar) {
+      if (isMe) {
+        return const Radius.circular(16);
+      }
+
+      if (showAvatar) {
+        return Radius.zero;
+      }
+
+      return const Radius.circular(16);
+    }
+
+    Radius getTopRightRadius(bool isMe, bool showAvatar) {
+      if (!isMe) {
+        return const Radius.circular(16);
+      }
+
+      if (showAvatar) {
+        return Radius.zero;
+      }
+
+      return const Radius.circular(16);
+    }
 
     return BorderRadius.only(
-      topLeft: topLeftRadius,
-      topRight: topRightRadius,
+      topLeft: getTopLeftRadius(isMe, showAvatar),
+      topRight: getTopRightRadius(isMe, showAvatar),
       bottomLeft: const Radius.circular(16),
       bottomRight: const Radius.circular(16),
     );

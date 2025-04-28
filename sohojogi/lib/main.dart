@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sohojogi/constants/keys.dart';
-import 'package:sohojogi/screens/admin/views/database_seeder_view.dart';
 import 'package:sohojogi/screens/location/view_model/location_view_model.dart';
 import 'package:sohojogi/screens/notification/view_model/notification_view_model.dart';
 import 'package:sohojogi/screens/order/view_model/order_view_model.dart';
