@@ -5,7 +5,7 @@ import '../view_model/order_view_model.dart';
 import '../widgets/order_card_widget.dart';
 import '../../../constants/colors.dart';
 import '../../navigation/app_navbar.dart';
-import 'OrderDetailView.dart';
+import 'order_detail_view.dart';
 
 class OrderListView extends StatefulWidget {
   const OrderListView({super.key});

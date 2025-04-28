@@ -142,23 +142,70 @@ class _LocationSelectorViewState extends State<LocationSelectorView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _buildCountrySection(viewModel, isDarkMode),
+        _buildStateSection(viewModel, isDarkMode),
+        _buildCitySection(viewModel, isDarkMode),
+        _buildAreaSection(viewModel, isDarkMode),
+        _buildStreetSection(viewModel, isDarkMode),
+      ],
+    );
+  }
+
+  Widget _buildCountrySection(LocationViewModel viewModel, bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         _buildSectionTitle('Country', isDarkMode),
         _buildCountryDropdown(viewModel, isDarkMode),
-        if (viewModel.selectedCountry != null) ...[
-          const SizedBox(height: 16),
-          _buildSectionTitle('State/Province', isDarkMode),
-          _buildStateDropdown(viewModel, isDarkMode),
-        ],
-        if (viewModel.selectedState != null) ...[
-          const SizedBox(height: 16),
-          _buildSectionTitle('City/District', isDarkMode),
-          _buildCityDropdown(viewModel, isDarkMode),
-        ],
-        if (viewModel.selectedCity != null && viewModel.areas.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          _buildSectionTitle('Area/Locality', isDarkMode),
-          _buildAreaDropdown(viewModel, isDarkMode),
-        ],
+      ],
+    );
+  }
+
+  Widget _buildStateSection(LocationViewModel viewModel, bool isDarkMode) {
+    if (viewModel.selectedCountry == null) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        _buildSectionTitle('State/Province', isDarkMode),
+        _buildStateDropdown(viewModel, isDarkMode),
+      ],
+    );
+  }
+
+  Widget _buildCitySection(LocationViewModel viewModel, bool isDarkMode) {
+    if (viewModel.selectedState == null) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        _buildSectionTitle('City/District', isDarkMode),
+        _buildCityDropdown(viewModel, isDarkMode),
+      ],
+    );
+  }
+
+  Widget _buildAreaSection(LocationViewModel viewModel, bool isDarkMode) {
+    if (viewModel.selectedCity == null || viewModel.areas.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        _buildSectionTitle('Area/Locality', isDarkMode),
+        _buildAreaDropdown(viewModel, isDarkMode),
+      ],
+    );
+  }
+
+  Widget _buildStreetSection(LocationViewModel viewModel, bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         const SizedBox(height: 16),
         _buildSectionTitle('Street Address', isDarkMode),
         _buildStreetAddressField(viewModel, isDarkMode),

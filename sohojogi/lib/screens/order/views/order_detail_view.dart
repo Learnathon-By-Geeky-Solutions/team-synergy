@@ -7,6 +7,7 @@ import 'order_list_view.dart';
 
 class OrderDetailView extends StatefulWidget {
   final OrderModel order;
+  static const String cancelOrder = "Cancel Order";
 
   const OrderDetailView({
     super.key,
@@ -224,11 +225,14 @@ class _OrderDetailViewState extends State<OrderDetailView> {
 
   void _showCancelOrderDialog(BuildContext context, OrderViewModel viewModel) {
     final TextEditingController reasonController = TextEditingController();
+    // Store references before async gap
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Cancel Order'),
+      builder: (dialogContext) => AlertDialog(
+        title: const Text(OrderDetailView.cancelOrder),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -246,19 +250,19 @@ class _OrderDetailViewState extends State<OrderDetailView> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Back'),
           ),
           TextButton(
             onPressed: () async {
               if (reasonController.text.trim().isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                scaffoldMessenger.showSnackBar(
                   const SnackBar(content: Text('Please provide a reason')),
                 );
                 return;
               }
 
-              Navigator.pop(context); // Close the dialog
+              navigator.pop(); // Close dialog
               setState(() {
                 isLoading = true;
               });
@@ -268,28 +272,27 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 reasonController.text.trim(),
               );
 
-              if (mounted) {
-                setState(() {
-                  isLoading = false;
-                });
+              if (!mounted) return;
 
-                if (success) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const OrderListView()),
-                        (route) => false, // Clear navigation stack
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Order cancelled successfully')),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Failed to cancel order')),
-                  );
-                }
+              setState(() {
+                isLoading = false;
+              });
+
+              if (success) {
+                navigator.pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const OrderListView()),
+                      (route) => false,
+                );
+                scaffoldMessenger.showSnackBar(
+                  const SnackBar(content: Text('Order cancelled successfully')),
+                );
+              } else {
+                scaffoldMessenger.showSnackBar(
+                  const SnackBar(content: Text('Failed to cancel order')),
+                );
               }
             },
-            child: const Text('Cancel Order', style: TextStyle(color: Colors.red)),
+            child: Text(OrderDetailView.cancelOrder, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -297,8 +300,12 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   }
 
   Future<void> _submitReview(BuildContext context, OrderViewModel viewModel) async {
+    // Store references before async gap
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     if (_reviewController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text('Please enter a review')),
       );
       return;
@@ -314,27 +321,27 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       _reviewController.text.trim(),
     );
 
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-      });
+    if (!mounted) return;
 
-      if (success) {
-        Navigator.pop(context); // Return to order list
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Review submitted successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to submit review'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+    setState(() {
+      isLoading = false;
+    });
+
+    if (success) {
+      navigator.pop();
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(
+          content: Text('Review submitted successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(
+          content: Text('Failed to submit review'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

@@ -81,7 +81,7 @@ class _MapLocationSelectorState extends State<MapLocationSelector> {
   Widget build(BuildContext context) {
     final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
-    Widget _buildLocationStatusWidget(bool isDarkMode) {
+    Widget buildLocationStatusWidget(bool isDarkMode) {
       if (_isLoading) {
         return const LinearProgressIndicator();
       }
@@ -196,7 +196,7 @@ class _MapLocationSelectorState extends State<MapLocationSelector> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  _buildLocationStatusWidget(isDarkMode),
+                  buildLocationStatusWidget(isDarkMode),
                   const SizedBox(height: 16),
                   Row(
                     children: [

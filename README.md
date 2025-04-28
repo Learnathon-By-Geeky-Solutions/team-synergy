@@ -150,7 +150,6 @@ The structure follows clean architecture principles with:
 - `lib/`: Main source code
   - `base/`: Core services and utilities
   - `constants/`: App-wide constants
-  - `data/`: Data layer (models, repositories)
   - `screens/`: Feature modules following MVVM
   - `utils/`: Helper functions and utilities
 - `test/`: Test files
