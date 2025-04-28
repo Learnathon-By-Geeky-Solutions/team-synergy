@@ -1,7 +1,5 @@
-// lib/screens/location/views/map_location_selector.dart
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
 import '../../../base/services/location_service.dart';
 import '../../../constants/colors.dart';
 import '../models/location_model.dart';
@@ -83,6 +81,26 @@ class _MapLocationSelectorState extends State<MapLocationSelector> {
   Widget build(BuildContext context) {
     final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
+    Widget _buildLocationStatusWidget(bool isDarkMode) {
+      if (_isLoading) {
+        return const LinearProgressIndicator();
+      }
+
+      if (_errorMessage != null) {
+        return Text(
+          _errorMessage!,
+          style: const TextStyle(color: Colors.red),
+        );
+      }
+
+      return Text(
+        _currentAddress?.address ?? 'Address not found',
+        style: TextStyle(
+          color: isDarkMode ? lightGrayColor : grayColor,
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -129,7 +147,7 @@ class _MapLocationSelectorState extends State<MapLocationSelector> {
           ),
 
           // Center marker
-          Center(
+          const Center(
             child: Icon(
               Icons.location_pin,
               color: Colors.red,
@@ -161,7 +179,7 @@ class _MapLocationSelectorState extends State<MapLocationSelector> {
                 children: [
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.location_on,
                         color: primaryColor,
                         size: 20,
@@ -178,19 +196,7 @@ class _MapLocationSelectorState extends State<MapLocationSelector> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  _isLoading
-                      ? const LinearProgressIndicator()
-                      : _errorMessage != null
-                      ? Text(
-                    _errorMessage!,
-                    style: const TextStyle(color: Colors.red),
-                  )
-                      : Text(
-                    _currentAddress?.address ?? 'Address not found',
-                    style: TextStyle(
-                      color: isDarkMode ? lightGrayColor : grayColor,
-                    ),
-                  ),
+                  _buildLocationStatusWidget(isDarkMode),
                   const SizedBox(height: 16),
                   Row(
                     children: [

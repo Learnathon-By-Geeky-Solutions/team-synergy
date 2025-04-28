@@ -2,45 +2,55 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sohojogi/screens/order/models/order_model.dart';
 
+class OrderRequest {
+  final String workerId;
+  final String title;
+  final String description;
+  final double totalPrice;
+  final String serviceType;
+  final String location;
+  final List<Map<String, dynamic>> services;
+  final DateTime? scheduledAt;
+
+  OrderRequest({
+    required this.workerId,
+    required this.title,
+    required this.description,
+    required this.totalPrice,
+    required this.serviceType,
+    required this.location,
+    required this.services,
+    this.scheduledAt,
+  });
+}
+
 class OrderService {
   final _supabase = Supabase.instance.client;
   static const _unauthenticatedError = "User not authenticated";
 
   // Create a new order
-  Future<String?> createOrder({
-    required String workerId,
-    required String title,
-    required String description,
-    required double totalPrice,
-    required String serviceType,
-    required String location,
-    required List<Map<String, dynamic>> services,
-    DateTime? scheduledAt,
-  }) async {
+  Future<String?> createOrder(OrderRequest request) async {
     try {
-      // Get the current user ID
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) {
         throw Exception(_unauthenticatedError);
       }
 
-      // Insert the order
       final orderResponse = await _supabase.from('orders').insert({
         'user_id': userId,
-        'worker_id': workerId,
-        'title': title,
-        'description': description,
+        'worker_id': request.workerId,
+        'title': request.title,
+        'description': request.description,
         'status': 'pending',
-        'total_price': totalPrice,
-        'service_type': serviceType,
-        'location': location,
-        'scheduled_at': scheduledAt?.toIso8601String(),
+        'total_price': request.totalPrice,
+        'service_type': request.serviceType,
+        'location': request.location,
+        'scheduled_at': request.scheduledAt?.toIso8601String(),
       }).select('id').single();
 
       final orderId = orderResponse['id'];
 
-      // Insert order services
-      for (var service in services) {
+      for (var service in request.services) {
         await _supabase.from('order_services').insert({
           'order_id': orderId,
           'service_id': service['service_id'],
@@ -50,7 +60,6 @@ class OrderService {
         });
       }
 
-      // Add initial status entry
       await _supabase.from('order_statuses').insert({
         'order_id': orderId,
         'status': 'pending',
@@ -58,12 +67,11 @@ class OrderService {
         'notes': 'Order created',
       });
 
-      // Create notification for worker
       await _createNotification(
-        userId: workerId,
+        userId: request.workerId,
         type: 'newOrder',
         title: 'New Order Request',
-        message: 'You have a new order request: $title',
+        message: 'You have a new order request: ${request.title}',
         relatedId: orderId,
         actionUrl: '/order/$orderId',
       );

@@ -16,21 +16,15 @@ class WorkerProfileViewModel extends ChangeNotifier {
   List<WorkerReviewModel> paginatedReviews = [];
   WorkerProfileModel? _workerProfile;
   List<WorkerReviewModel> _reviews = [];
-  RatingBreakdown? _ratingBreakdown;
   WorkerProfileModel? worker;
   List<WorkerServiceModel> selectedServices = [];
   bool isLoading = true;
   bool isHiring = false;
   String? errorMessage;
-  bool _isLoading = true;
-  bool _hasError = false;
-  String _errorMessage = '';
   bool _isBookmarked = false;
-  bool _hirePending = false;
   bool _isLoadingMoreReviews = false;
   bool _hasMoreReviews = true;
   int _currentPage = 0;
-  int _selectedPortfolioIndex = 0;
   bool hasError = false;
   bool hirePending = false;
   bool isBookmarked = false;
@@ -103,13 +97,15 @@ class WorkerProfileViewModel extends ChangeNotifier {
 
       // Create the order
       final orderId = await _orderService.createOrder(
-        workerId: worker!.id,
-        title: 'Service from ${worker!.name}',
-        description: 'Services: ${selectedServices.map((s) => s.name).join(", ")}',
-        totalPrice: totalPrice,
-        serviceType: worker!.serviceCategory,
-        location: worker!.location,
-        services: services,
+          OrderRequest(
+            workerId: worker!.id,
+            title: 'Service from ${worker!.name}',
+            description: 'Services: ${selectedServices.map((s) => s.name).join(", ")}',
+            totalPrice: totalPrice,
+            serviceType: worker!.serviceCategory,
+            location: worker!.location,
+            services: services,
+          )
       );
 
       isHiring = false;
@@ -164,7 +160,7 @@ class WorkerProfileViewModel extends ChangeNotifier {
 
   // Select portfolio item
   void selectPortfolioItem(int index) {
-    _selectedPortfolioIndex = index;
+    selectedPortfolioIndex = index;
     notifyListeners();
   }
 
@@ -195,13 +191,15 @@ class WorkerProfileViewModel extends ChangeNotifier {
       }).toList();
 
       final orderId = await _orderService.createOrder(
-        workerId: workerProfile!.id,
-        title: "Hire ${workerProfile!.name} for ${workerProfile!.serviceCategory}",
-        description: "Services: ${selectedServices.map((s) => s.name).join(", ")}",
-        totalPrice: totalPrice,
-        serviceType: workerProfile!.serviceCategory,
-        location: workerProfile!.location,
-        services: services,
+          OrderRequest(
+            workerId: workerProfile!.id,
+            title: "Hire ${workerProfile!.name} for ${workerProfile!.serviceCategory}",
+            description: "Services: ${selectedServices.map((s) => s.name).join(", ")}",
+            totalPrice: totalPrice,
+            serviceType: workerProfile!.serviceCategory,
+            location: workerProfile!.location,
+            services: services,
+          )
       );
 
       // Clear selected services after successful order

@@ -4,7 +4,6 @@ import '../../../constants/colors.dart';
 import '../view_model/location_view_model.dart';
 import '../widgets/location_card.dart';
 import '../widgets/location_search_header.dart';
-import '../models/location_model.dart';
 import 'location_selector_view.dart';
 
 class LocationListView extends StatefulWidget {
@@ -41,6 +40,8 @@ class _LocationListViewState extends State<LocationListView> {
     final viewModel = Provider.of<LocationViewModel>(context);
     final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
+    final navigator = Navigator.of(context);
+
     return Scaffold(
       backgroundColor: isDarkMode ? Colors.grey[900] : Colors.grey[100],
       appBar: AppBar(
@@ -64,13 +65,12 @@ class _LocationListViewState extends State<LocationListView> {
       ),
       body: Column(
         children: [
-          // Search header with options to use current location or select on map
           LocationSearchHeader(
             searchController: _searchController,
             useCurrentLocation: () async {
               final location = await viewModel.useCurrentLocation();
-              if (location != null) {
-                Navigator.pop(context, location.address);
+              if (location != null && mounted) {
+                navigator.pop(location.address);
               }
             },
             chooseOnMap: () {},
@@ -90,14 +90,16 @@ class _LocationListViewState extends State<LocationListView> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton.icon(
-              onPressed: () async {
-                final result = await Navigator.push(
+              onPressed: () {
+                final navigator = Navigator.of(context);
+                Navigator.push<String>(
                   context,
                   MaterialPageRoute(builder: (context) => const LocationSelectorView()),
-                );
-                if (result != null) {
-                  Navigator.pop(context, result);
-                }
+                ).then((result) {
+                  if (result != null && mounted) {
+                    navigator.pop(result);
+                  }
+                });
               },
               icon: const Icon(Icons.add_location_alt, size: 18),
               label: const Text('Add New Location'),

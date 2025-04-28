@@ -15,7 +15,7 @@ class ProfileService {
           .eq('id', userId)
           .single();
 
-      return response as Map<String, dynamic>;
+      return response;
     } catch (e) {
       throw Exception('Failed to fetch profile: ${e.toString()}');
     }
@@ -42,7 +42,6 @@ class ProfileService {
         throw Exception('File does not exist at path: $filePath');
       }
 
-      print("File exists and size is: ${file.lengthSync()} bytes");
 
       try {
         // Upload the file to the Supabase storage bucket
@@ -55,14 +54,11 @@ class ProfileService {
             .from('profile-pictures')
             .getPublicUrl(fileName);
 
-        print("File uploaded successfully, URL: $publicUrl");
         return publicUrl;
       } catch (uploadError) {
-        print("Specific upload error: $uploadError");
         throw Exception('Failed to upload: $uploadError');
       }
     } catch (e) {
-      print("General error during upload process: $e");
       throw Exception('Failed to upload profile picture: ${e.toString()}');
     }
   }

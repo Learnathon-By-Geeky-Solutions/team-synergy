@@ -1,7 +1,5 @@
-// lib/base/services/database_helper.dart
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sohojogi/screens/location/models/location_model.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
