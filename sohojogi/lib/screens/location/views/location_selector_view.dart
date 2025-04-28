@@ -300,7 +300,6 @@ class _LocationSelectorViewState extends State<LocationSelectorView> {
     );
   }
 
-// Completing the _buildStateDropdown() function and adding remaining widgets
   Widget _buildStateDropdown(LocationViewModel viewModel, bool isDarkMode) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -432,72 +431,113 @@ class _LocationSelectorViewState extends State<LocationSelectorView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Checkbox(
-              value: _isSaving,
-              onChanged: (value) {
-                setState(() {
-                  _isSaving = value ?? false;
-                });
-              },
-              activeColor: primaryColor,
-            ),
-            const Text('Save this location'),
-          ],
-        ),
+        _buildSaveLocationCheckbox(),
         if (_isSaving) ...[
           const SizedBox(height: 8),
-          _buildSectionTitle('Location Name', isDarkMode),
-          TextField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              hintText: 'e.g. Home, Work, etc.',
-              hintStyle: TextStyle(color: isDarkMode ? lightGrayColor : grayColor),
-              filled: true,
-              fillColor: isDarkMode ? darkColor : lightColor,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: isDarkMode ? grayColor : Colors.grey[300]!),
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            style: TextStyle(color: isDarkMode ? lightColor : darkColor),
-          ),
+          _buildLocationNameField(isDarkMode),
           const SizedBox(height: 16),
-          _buildSectionTitle('Icon', isDarkMode),
-          Wrap(
-            spacing: 12,
-            children: _iconOptions.entries.map((entry) {
-              final isSelected = _selectedIconKey == entry.key;
-              return InkWell(
-                onTap: () {
-                  setState(() {
-                    _selectedIconKey = entry.key;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isSelected ? primaryColor.withValues(alpha: 0.2) : Colors.transparent,
-                    border: Border.all(
-                      color: isSelected ? primaryColor : Colors.grey[400]!,
-                      width: isSelected ? 2 : 1,
-                    ),
-                  ),
-                  child: Icon(
-                    entry.value,
-                    color: isSelected ? primaryColor : (isDarkMode ? lightGrayColor : grayColor),
-                    size: 24,
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
+          _buildIconSelector(isDarkMode),
         ],
       ],
     );
+  }
+
+  Widget _buildSaveLocationCheckbox() {
+    return Row(
+      children: [
+        Checkbox(
+          value: _isSaving,
+          onChanged: (value) {
+            setState(() {
+              _isSaving = value ?? false;
+            });
+          },
+          activeColor: primaryColor,
+        ),
+        const Text('Save this location'),
+      ],
+    );
+  }
+
+  Widget _buildLocationNameField(bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle('Location Name', isDarkMode),
+        TextField(
+          controller: _nameController,
+          decoration: InputDecoration(
+            hintText: 'e.g. Home, Work, etc.',
+            hintStyle: TextStyle(color: isDarkMode ? lightGrayColor : grayColor),
+            filled: true,
+            fillColor: isDarkMode ? darkColor : lightColor,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: isDarkMode ? grayColor : Colors.grey[300]!),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
+          style: TextStyle(color: isDarkMode ? lightColor : darkColor),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIconSelector(bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle('Icon', isDarkMode),
+        Wrap(
+          spacing: 12,
+          children: _buildIconOptions(isDarkMode),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _buildIconOptions(bool isDarkMode) {
+    return _iconOptions.entries.map((entry) {
+      final bool isSelected = _selectedIconKey == entry.key;
+      final Color iconColor = _getIconColor(isSelected, isDarkMode);
+
+      return InkWell(
+        onTap: () => _handleIconSelection(entry.key),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: _buildIconDecoration(isSelected),
+          child: Icon(
+            entry.value,
+            color: iconColor,
+            size: 24,
+          ),
+        ),
+      );
+    }).toList();
+  }
+
+  void _handleIconSelection(String key) {
+    setState(() {
+      _selectedIconKey = key;
+    });
+  }
+
+  BoxDecoration _buildIconDecoration(bool isSelected) {
+    return BoxDecoration(
+      shape: BoxShape.circle,
+      color: isSelected ? primaryColor.withValues(alpha: 0.2) : Colors.transparent,
+      border: Border.all(
+        color: isSelected ? primaryColor : Colors.grey[400]!,
+        width: isSelected ? 2 : 1,
+      ),
+    );
+  }
+
+  Color _getIconColor(bool isSelected, bool isDarkMode) {
+    if (isSelected) {
+      return primaryColor;
+    }
+    return isDarkMode ? lightGrayColor : grayColor;
   }
 
   Widget _buildConfirmButton(BuildContext context, LocationViewModel viewModel, bool isDarkMode) {

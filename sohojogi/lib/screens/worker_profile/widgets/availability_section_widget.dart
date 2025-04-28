@@ -123,7 +123,7 @@ class AvailabilitySectionWidget extends StatelessWidget {
                   : Text(
                       'Closed',
                       style: TextStyle(
-                        color: isDarkMode ? Colors.red.shade300 : Colors.red.shade700,
+                        color: _getRedShadeColor(isDarkMode),
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -132,6 +132,10 @@ class AvailabilitySectionWidget extends StatelessWidget {
         ),
       );
     }).toList();
+  }
+
+  Color _getRedShadeColor(bool isDarkMode) {
+    return isDarkMode ? Colors.red.shade300 : Colors.red.shade700;
   }
 
   Color _getBackgroundColor(WorkerAvailabilityDay day, bool isDarkMode) {

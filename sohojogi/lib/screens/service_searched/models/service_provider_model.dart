@@ -20,6 +20,8 @@ class ServiceProviderModel {
   final int yearsOfExperience;
   final bool isVerified;
   final double distance;
+  final List<String> categories;
+
 
   ServiceProviderModel({
     required this.id,
@@ -40,6 +42,7 @@ class ServiceProviderModel {
     this.yearsOfExperience = 1,
     this.isVerified = false,
     this.distance = 0.0,
+    this.categories = const [],
   });
 
   factory ServiceProviderModel.fromJson(Map<String, dynamic> json) {
@@ -72,6 +75,7 @@ class ServiceProviderModel {
       jobsCompleted: json['jobs_completed'] ?? 0,
       yearsOfExperience: json['years_of_experience'] ?? 1,
       isVerified: json['is_verified'] ?? false,
+      categories: List<String>.from(json['categories'] ?? []),
     );
   }
 }

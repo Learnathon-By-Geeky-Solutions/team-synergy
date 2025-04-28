@@ -15,7 +15,7 @@ class WorkerProfileViewModel extends ChangeNotifier {
   RatingBreakdown? ratingBreakdown;
   List<WorkerReviewModel> paginatedReviews = [];
   WorkerProfileModel? _workerProfile;
-  List<WorkerReviewModel> _reviews = [];
+  final List<WorkerReviewModel> _reviews = [];
   WorkerProfileModel? worker;
   List<WorkerServiceModel> selectedServices = [];
   bool isLoading = true;
@@ -155,7 +155,7 @@ class WorkerProfileViewModel extends ChangeNotifier {
   void toggleBookmark() {
     _isBookmarked = !_isBookmarked;
     notifyListeners();
-    // TODO: Implement actual bookmark functionality with database
+    // implement actual bookmark functionality with database
   }
 
   // Select portfolio item

@@ -16,25 +16,12 @@ class PortfolioSectionWidget extends StatelessWidget {
   });
 
   @override
+  @override
   Widget build(BuildContext context) {
     final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
-    final dateFormat = DateFormat('MMM yyyy');
 
     if (portfolioItems.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        color: isDarkMode ? darkColor : lightColor,
-        child: Center(
-          child: Text(
-            'No portfolio items available',
-            style: TextStyle(
-              fontSize: 14,
-              fontStyle: FontStyle.italic,
-              color: isDarkMode ? lightGrayColor : grayColor,
-            ),
-          ),
-        ),
-      );
+      return _buildEmptyState(isDarkMode);
     }
 
     return Container(
@@ -43,97 +30,145 @@ class PortfolioSectionWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Portfolio',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: isDarkMode ? lightColor : darkColor,
-            ),
-          ),
+          _buildHeader(isDarkMode),
           const SizedBox(height: 16),
-
-          // Selected item preview
-          if (selectedIndex >= 0 && selectedIndex < portfolioItems.length) ...[
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                    image: NetworkImage(portfolioItems[selectedIndex].imageUrl),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              portfolioItems[selectedIndex].title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: isDarkMode ? lightColor : darkColor,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              dateFormat.format(portfolioItems[selectedIndex].date),
-              style: TextStyle(
-                fontSize: 12,
-                color: isDarkMode ? lightGrayColor : grayColor,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              portfolioItems[selectedIndex].description,
-              style: TextStyle(
-                fontSize: 14,
-                color: isDarkMode ? lightColor.withValues(alpha: 0.9) : darkColor.withValues(alpha: 0.9),
-              ),
-            ),
+          if (_hasValidSelectedIndex()) ...[
+            _buildSelectedItemPreview(isDarkMode),
             const SizedBox(height: 16),
           ],
-
-          // Thumbnail grid
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              childAspectRatio: 1,
-            ),
-            itemCount: portfolioItems.length,
-            itemBuilder: (context, index) {
-              final item = portfolioItems[index];
-              final isSelected = index == selectedIndex;
-
-              return GestureDetector(
-                onTap: () => onItemSelected(index),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: isSelected
-                        ? Border.all(color: primaryColor, width: 2)
-                        : null,
-                    image: DecorationImage(
-                      image: NetworkImage(item.imageUrl),
-                      fit: BoxFit.cover,
-                      colorFilter: isSelected
-                          ? null
-                          : ColorFilter.mode(
-                        Colors.black.withOpacity(0.2),
-                        BlendMode.darken,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
+          _buildThumbnailGrid(isDarkMode),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(bool isDarkMode) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      color: isDarkMode ? darkColor : lightColor,
+      child: Center(
+        child: Text(
+          'No portfolio items available',
+          style: TextStyle(
+            fontSize: 14,
+            fontStyle: FontStyle.italic,
+            color: isDarkMode ? lightGrayColor : grayColor,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(bool isDarkMode) {
+    return Text(
+      'Portfolio',
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: isDarkMode ? lightColor : darkColor,
+      ),
+    );
+  }
+
+  bool _hasValidSelectedIndex() {
+    return selectedIndex >= 0 && selectedIndex < portfolioItems.length;
+  }
+
+  Widget _buildSelectedItemPreview(bool isDarkMode) {
+    final item = portfolioItems[selectedIndex];
+    final dateFormat = DateFormat('MMM yyyy');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildPreviewImage(item.imageUrl),
+        const SizedBox(height: 8),
+        _buildPreviewDetails(item, dateFormat, isDarkMode),
+      ],
+    );
+  }
+
+  Widget _buildPreviewImage(String imageUrl) {
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          image: DecorationImage(
+            image: NetworkImage(imageUrl),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreviewDetails(WorkerPortfolioItem item, DateFormat dateFormat, bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          item.title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: isDarkMode ? lightColor : darkColor,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          dateFormat.format(item.date),
+          style: TextStyle(
+            fontSize: 12,
+            color: isDarkMode ? lightGrayColor : grayColor,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          item.description,
+          style: TextStyle(
+            fontSize: 14,
+            color: isDarkMode ? lightColor.withValues(alpha: 0.9) : darkColor.withValues(alpha: 0.9),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildThumbnailGrid(bool isDarkMode) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        childAspectRatio: 1,
+      ),
+      itemCount: portfolioItems.length,
+      itemBuilder: (context, index) => _buildThumbnailItem(index),
+    );
+  }
+
+  Widget _buildThumbnailItem(int index) {
+    final item = portfolioItems[index];
+    final isSelected = index == selectedIndex;
+
+    return GestureDetector(
+      onTap: () => onItemSelected(index),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: isSelected ? Border.all(color: primaryColor, width: 2) : null,
+          image: DecorationImage(
+            image: NetworkImage(item.imageUrl),
+            fit: BoxFit.cover,
+            colorFilter: isSelected ? null : ColorFilter.mode(
+              Colors.black.withValues(alpha: 0.2),
+              BlendMode.darken,
+            ),
+          ),
+        ),
       ),
     );
   }

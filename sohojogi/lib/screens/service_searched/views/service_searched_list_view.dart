@@ -30,7 +30,7 @@ class ServiceSearchedListView extends StatefulWidget {
 class _ServiceSearchedListViewState extends State<ServiceSearchedListView> {
   late TextEditingController _searchController;
 
-  @override
+
   void _clearFilters(BuildContext context) {
     final viewModel = Provider.of<ServiceSearchedViewModel>(context, listen: false);
 
@@ -117,109 +117,126 @@ class _ServiceSearchedListViewState extends State<ServiceSearchedListView> {
     final viewModel = Provider.of<ServiceSearchedViewModel>(context);
 
     if (viewModel.isLoading && viewModel.serviceProviders.isEmpty) {
-      return const Center(
-        child: CircularProgressIndicator(color: primaryColor),
-      );
+      return _buildLoadingIndicator();
     }
 
     if (viewModel.errorMessage.isNotEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 60,
-              color: isDarkMode ? lightGrayColor : grayColor,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              viewModel.errorMessage,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: isDarkMode ? lightColor : darkColor,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _initializeData,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: lightColor,
-              ),
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      );
+      return _buildErrorView(isDarkMode);
     }
 
     if (viewModel.serviceProviders.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.search_off,
-              size: 64,
-              color: isDarkMode ? lightGrayColor : grayColor,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No service providers found',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: isDarkMode ? lightColor : darkColor,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Try adjusting your search or filters',
-              style: TextStyle(
-                color: isDarkMode ? lightGrayColor : grayColor,
-              ),
-            ),
-          ],
-        ),
-      );
+      return _buildEmptyStateView(isDarkMode);
     }
 
-    return NotificationListener<ScrollNotification>(
-      onNotification: (ScrollNotification scrollInfo) {
-        // Remove pagination since hasMoreData and loadMoreData aren't implemented
-        if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
-            !viewModel.isLoading) {
-          // Could add refreshing functionality here if needed
-        }
-        return true;
-      },
-      child: ListView.builder(
-        itemCount: viewModel.serviceProviders.length,
-        padding: const EdgeInsets.all(16),
-        itemBuilder: (context, index) {
-          final provider = viewModel.serviceProviders[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: ServiceProviderCardWidget(
-              serviceProvider: provider,
-              onCardTap: () {
-                // Navigate to provider detail
-              },
-              onCallTap: () {
-                // Handle call action
-              },
-              onMailTap: () {
-                // Handle mail action
-              },
-              onMenuTap: () => _showOptionsMenu(context, provider),
+    return _buildProvidersList(viewModel);
+  }
+
+  Widget _buildLoadingIndicator() {
+    return const Center(
+      child: CircularProgressIndicator(color: primaryColor),
+    );
+  }
+
+  Widget _buildErrorView(bool isDarkMode) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 60,
+            color: isDarkMode ? lightGrayColor : grayColor,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            Provider.of<ServiceSearchedViewModel>(context).errorMessage,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: isDarkMode ? lightColor : darkColor,
             ),
-          );
-        },
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _initializeData,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor,
+              foregroundColor: lightColor,
+            ),
+            child: const Text('Retry'),
+          ),
+        ],
       ),
     );
   }
 
+  Widget _buildEmptyStateView(bool isDarkMode) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.search_off,
+            size: 64,
+            color: isDarkMode ? lightGrayColor : grayColor,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No service providers found',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: isDarkMode ? lightColor : darkColor,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Try adjusting your search or filters',
+            style: TextStyle(
+              color: isDarkMode ? lightGrayColor : grayColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProvidersList(ServiceSearchedViewModel viewModel) {
+    return NotificationListener<ScrollNotification>(
+      onNotification: _handleScrollNotification,
+      child: ListView.builder(
+        itemCount: viewModel.serviceProviders.length,
+        padding: const EdgeInsets.all(16),
+        itemBuilder: (context, index) => _buildProviderCard(viewModel.serviceProviders[index]),
+      ),
+    );
+  }
+
+  Widget _buildProviderCard(ServiceProviderModel provider) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: ServiceProviderCardWidget(
+        serviceProvider: provider,
+        onCardTap: () {
+          // Navigate to provider detail
+        },
+        onCallTap: () {
+          // Handle call action
+        },
+        onMailTap: () {
+          // Handle mail action
+        },
+        onMenuTap: () => _showOptionsMenu(context, provider),
+      ),
+    );
+  }
+
+  bool _handleScrollNotification(ScrollNotification scrollInfo) {
+    if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
+        !Provider.of<ServiceSearchedViewModel>(context, listen: false).isLoading) {
+      // Could add refreshing functionality here if needed
+    }
+    return true;
+  }
   void _showFilterBottomSheet(BuildContext context) {
     final viewModel = Provider.of<ServiceSearchedViewModel>(context, listen: false);
 
