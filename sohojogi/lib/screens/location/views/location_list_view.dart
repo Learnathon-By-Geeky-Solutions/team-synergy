@@ -79,11 +79,7 @@ class _LocationListViewState extends State<LocationListView> {
 
           // Main content (search results or locations list)
           Expanded(
-            child: viewModel.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : viewModel.errorMessage != null
-                ? Center(child: Text(viewModel.errorMessage!))
-                : _buildLocationsList(viewModel, isDarkMode),
+            child: _buildMainContent(viewModel, isDarkMode),
           ),
 
           // Add new location button at bottom
@@ -114,6 +110,18 @@ class _LocationListViewState extends State<LocationListView> {
         ],
       ),
     );
+  }
+
+  Widget _buildMainContent(LocationViewModel viewModel, bool isDarkMode) {
+    if (viewModel.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (viewModel.errorMessage != null) {
+      return Center(child: Text(viewModel.errorMessage!));
+    }
+
+    return _buildLocationsList(viewModel, isDarkMode);
   }
 
   Widget _buildLocationsList(LocationViewModel viewModel, bool isDarkMode) {

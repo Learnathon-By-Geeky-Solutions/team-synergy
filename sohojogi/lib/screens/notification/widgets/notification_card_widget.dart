@@ -13,17 +13,21 @@ class NotificationCardWidget extends StatelessWidget {
     required this.onTap,
   });
 
+  Color _getCardBackgroundColor(bool isRead, bool isDarkMode) {
+    if (isRead) {
+      return isDarkMode ? darkColor : lightColor;
+    }
+
+    return isDarkMode
+        ? darkColor.withValues(alpha: 0.8)
+        : primaryColor.withValues(alpha: 0.05);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final bool isDarkMode = MediaQuery
-        .of(context)
-        .platformBrightness == Brightness.dark;
+    final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final Color cardColor = _getCardBackgroundColor(notification.isRead, isDarkMode);
 
-    // Extracted color logic
-    final Color cardColor = notification.isRead
-        ? (isDarkMode ? darkColor : lightColor)
-        : (isDarkMode ? darkColor.withValues(alpha: 0.8) : primaryColor
-        .withValues(alpha: 0.05));
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

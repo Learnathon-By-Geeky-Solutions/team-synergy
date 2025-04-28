@@ -46,12 +46,17 @@ class AppNavBarState extends State<AppNavBar> {
       return isDarkMode ? lightColor : primaryColor;
     }
 
+    Color getIconColor(int index, bool isDarkMode) {
+      if (_selectedIndex == index) {
+        return isDarkMode ? lightColor : darkColor;
+      }
+      return getUnselectedColor();
+    }
+
     return CurvedNavigationBar(
       items: List<Widget>.generate(_iconData.length, (index) {
         // Extracted color logic
-        final Color iconColor = _selectedIndex == index
-            ? (isDarkMode ? lightColor : darkColor)
-            : getUnselectedColor();
+        final Color iconColor = getIconColor(index, isDarkMode);
 
         return Column(
           mainAxisSize: MainAxisSize.min,

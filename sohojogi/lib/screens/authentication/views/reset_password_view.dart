@@ -18,7 +18,7 @@ class ResetPasswordView extends StatelessWidget {
 }
 
 class _ResetPasswordViewContent extends StatelessWidget {
-  const _ResetPasswordViewContent({super.key});
+  const _ResetPasswordViewContent();
 
   @override
   Widget build(BuildContext context) {

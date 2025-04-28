@@ -11,6 +11,13 @@ import 'package:sohojogi/screens/authentication/views/signin_view.dart';
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
 
+  static const String paymentMethods = "Payment Methods";
+  static const String savedAddress = "Saved Address";
+  static const String accountSecurity = "Account Security";
+  static const String helpCenter = "Help Center";
+  static const String logOut = "Log Out";
+
+
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
@@ -185,40 +192,19 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  static const String paymentMethods = "Payment Methods";
-  static const String savedAddress = "Saved Address";
-  static const String accountSecurity = "Account Security";
-  static const String helpCenter = "Help Center";
-  static const String logOut = "Log Out";
 
   void _handleNavigation(BuildContext context, String item) {
     // Close drawer first
     Navigator.pop(context);
 
-    // Map item to actions
-    final navigationActions = {
-      'Profile': () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChangeNotifierProvider(
-                create: (_) => ProfileViewModel(),
-                child: ProfileListView(
-                  onBackPressed: () => Navigator.pop(context),
-                ),
-              ),
-            ),
-          ),
-      'Business Profile': () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChangeNotifierProvider(
-                create: (_) => WorkerRegistrationViewModel(),
-                child: BusinessProfileListView(
-                  onBackPressed: () => Navigator.pop(context),
-                ),
-              ),
-            ),
-          ),
+    final action = _getNavigationAction(context, item);
+    action?.call();
+  }
+
+  Function? _getNavigationAction(BuildContext context, String item) {
+    return {
+      'Profile': () => _navigateToProfileScreen(context),
+      'Business Profile': () => _navigateToBusinessProfile(context),
       paymentMethods: () => _showComingSoonSnackBar(context, paymentMethods),
       savedAddress: () => _showComingSoonSnackBar(context, savedAddress),
       'Bookmark': () => _showComingSoonSnackBar(context, 'Bookmarks'),
@@ -230,17 +216,46 @@ class AppDrawer extends StatelessWidget {
       accountSecurity: () => _showComingSoonSnackBar(context, accountSecurity),
       'Terms & Privacy': () => _showComingSoonSnackBar(context, 'Terms and Privacy Policy'),
       'Permissions': () => _showComingSoonSnackBar(context, 'App Permissions'),
-      helpCenter: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const HelpCenterScreen(),
-            ),
-          ),
+      helpCenter: () => _navigateToHelpCenter(context),
       logOut: () => _showLogoutConfirmationDialog(context),
-    };
+    }[item];
+  }
 
-    // Execute the corresponding action if it exists
-    navigationActions[item]?.call();
+  void _navigateToProfileScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChangeNotifierProvider(
+          create: (_) => ProfileViewModel(),
+          child: ProfileListView(
+            onBackPressed: () => Navigator.pop(context),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _navigateToBusinessProfile(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChangeNotifierProvider(
+          create: (_) => WorkerRegistrationViewModel(),
+          child: BusinessProfileListView(
+            onBackPressed: () => Navigator.pop(context),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _navigateToHelpCenter(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HelpCenterScreen(),
+      ),
+    );
   }
 
   void _showComingSoonSnackBar(BuildContext context, String feature) {
@@ -337,37 +352,37 @@ class AppDrawer extends StatelessWidget {
   void _showLogoutConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirm Logout'),
+      builder: (dialogContext) => AlertDialog(
+        title: const Text(logOut),
         content: const Text('Are you sure you want to log out?'),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Close the dialog
-            },
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () async {
-              // Perform logout logic
-              await Supabase.instance.client.auth.signOut();
-
-              // Show a success message
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Logged out successfully')),
-              );
-
-              // Navigate to the SignInView
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const SignInView()),
-                    (route) => false,
-              );
-            },
-            child: const Text('Log Out'),
+            onPressed: () => _handleLogout(dialogContext),
+            child: const Text(logOut),
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _handleLogout(BuildContext context) async {
+    // Store navigator before async gap
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    await Supabase.instance.client.auth.signOut();
+
+    scaffoldMessenger.showSnackBar(
+      const SnackBar(content: Text('Logged out successfully')),
+    );
+
+    navigator.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const SignInView()),
+          (route) => false,
     );
   }
 
