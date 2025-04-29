@@ -8,10 +8,7 @@ void main() {
   late AuthService authService;
 
   setUpAll(() async {
-    // Mock shared_preferences
     SharedPreferences.setMockInitialValues({});
-
-    // Initialize Supabase
     await Supabase.initialize(
       url: supabaseUrl,
       anonKey: supabaseKey,
@@ -33,7 +30,6 @@ void main() {
         password: 'short',
         displayName: 'Test User',
       );
-
       expect(result, isNotNull);
     });
 
@@ -42,7 +38,6 @@ void main() {
         email: 'test@example.com',
         password: 'wrong',
       );
-
       expect(result, isNotNull);
     });
   });
