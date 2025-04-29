@@ -52,6 +52,7 @@ dependencies:
   mockito: ^5.4.5
   build_runner: ^2.4.8
   sqflite_common_ffi: ^2.3.2+1
+  network_image_mock: ^2.1.1
 
 dev_dependencies:
   flutter_test:
