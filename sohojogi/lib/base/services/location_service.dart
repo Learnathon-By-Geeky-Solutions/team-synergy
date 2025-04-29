@@ -10,6 +10,7 @@ class LocationService {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
   final SupabaseClient? _supabaseClient = Supabase.instance.client;
 
+  // Supabase Query Methods
   Future<List<T>> _executeSupabaseQuery<T>({
     required String table,
     required T Function(dynamic) fromJson,
@@ -63,23 +64,35 @@ class LocationService {
     );
   }
 
+  // Location Permission Methods
   Future<void> _checkLocationPermission() async {
+    await _checkLocationService();
+    await _checkAndRequestPermission();
+  }
+
+  Future<void> _checkLocationService() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       throw Exception('Location services are disabled.');
     }
+  }
 
+  Future<void> _checkAndRequestPermission() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        throw Exception('Location permissions are denied.');
-      }
+      permission = await _requestLocationPermission();
     }
-
     if (permission == LocationPermission.deniedForever) {
       throw Exception('Location permissions are permanently denied.');
     }
+  }
+
+  Future<LocationPermission> _requestLocationPermission() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      throw Exception('Location permissions are denied.');
+    }
+    return permission;
   }
 
   Future<Position> getCurrentPosition() async {
@@ -87,6 +100,7 @@ class LocationService {
     return await Geolocator.getCurrentPosition();
   }
 
+  // Address Methods
   String _formatAddress(List<String?> components) {
     return components
         .where((element) => element != null && element.isNotEmpty)
@@ -96,42 +110,47 @@ class LocationService {
   Future<LocationModel> getAddressFromCoordinates(
       double latitude, double longitude) async {
     try {
-      List<Placemark> placemarks =
-      await placemarkFromCoordinates(latitude, longitude);
-
-      if (placemarks.isEmpty) {
-        throw Exception('No address found for these coordinates');
-      }
-
-      Placemark place = placemarks.first;
-      String address = _formatAddress([
-        place.street,
-        place.subLocality,
-        place.locality,
-        place.administrativeArea,
-        place.country
-      ]);
-
-      String subAddress = _formatAddress([place.subLocality, place.locality]);
-
-      return LocationModel(
-        address: address,
-        subAddress: subAddress,
-        latitude: latitude,
-        longitude: longitude,
-      );
+      final placemarks = await _getPlacemarks(latitude, longitude);
+      return _createLocationFromPlacemark(placemarks.first, latitude, longitude);
     } catch (e) {
       debugPrint('Error getting address from coordinates: $e');
       throw Exception('Failed to get address: $e');
     }
   }
 
+  Future<List<Placemark>> _getPlacemarks(double latitude, double longitude) async {
+    List<Placemark> placemarks =
+    await placemarkFromCoordinates(latitude, longitude);
+    if (placemarks.isEmpty) {
+      throw Exception('No address found for these coordinates');
+    }
+    return placemarks;
+  }
+
+  LocationModel _createLocationFromPlacemark(
+      Placemark place, double latitude, double longitude) {
+    String address = _formatAddress([
+      place.street,
+      place.subLocality,
+      place.locality,
+      place.administrativeArea,
+      place.country
+    ]);
+
+    String subAddress = _formatAddress([place.subLocality, place.locality]);
+
+    return LocationModel(
+      address: address,
+      subAddress: subAddress,
+      latitude: latitude,
+      longitude: longitude,
+    );
+  }
+
+  // Save Location Methods
   Future<void> saveLocation(UserLocationModel location) async {
     try {
-      final user = _supabaseClient?.auth.currentUser;
-      if (user != null) {
-        await _saveLocationToSupabase(location, user.id);
-      }
+      await _saveToSupabaseIfAuthenticated(location);
       await _saveLocationToLocal(location);
     } catch (e) {
       debugPrint('Error saving location: $e');
@@ -139,25 +158,37 @@ class LocationService {
     }
   }
 
+  Future<void> _saveToSupabaseIfAuthenticated(UserLocationModel location) async {
+    final user = _supabaseClient?.auth.currentUser;
+    if (user != null) {
+      await _saveLocationToSupabase(location, user.id);
+    }
+  }
+
   Future<void> _saveLocationToSupabase(
       UserLocationModel location, String userId) async {
     try {
-      final locationData = {
-        'user_id': userId,
-        'name': location.name,
-        'country_id': location.countryId,
-        'state_id': location.stateId,
-        'city_id': location.cityId,
-        'area_id': location.areaId,
-        'street_address': location.streetAddress,
-        'latitude': location.latitude,
-        'longitude': location.longitude,
-        'is_default': location.isDefault,
-      };
+      final locationData = _createSupabaseLocationData(location, userId);
       await _supabaseClient?.from('user_locations').insert(locationData);
     } catch (e) {
       debugPrint('Error saving to Supabase: $e');
     }
+  }
+
+  Map<String, dynamic> _createSupabaseLocationData(
+      UserLocationModel location, String userId) {
+    return {
+      'user_id': userId,
+      'name': location.name,
+      'country_id': location.countryId,
+      'state_id': location.stateId,
+      'city_id': location.cityId,
+      'area_id': location.areaId,
+      'street_address': location.streetAddress,
+      'latitude': location.latitude,
+      'longitude': location.longitude,
+      'is_default': location.isDefault,
+    };
   }
 
   Future<void> _saveLocationToLocal(UserLocationModel location) async {
@@ -172,20 +203,26 @@ class LocationService {
 
     await db.insert(
       'saved_locations',
-      {
-        'name': location.name,
-        'address': address,
-        'sub_address': location.streetAddress ?? '',
-        'icon': location.icon,
-        'latitude': location.latitude,
-        'longitude': location.longitude,
-        'is_saved': 1,
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-      },
+      _createLocalLocationData(location, address),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
+  Map<String, dynamic> _createLocalLocationData(
+      UserLocationModel location, String address) {
+    return {
+      'name': location.name,
+      'address': address,
+      'sub_address': location.streetAddress ?? '',
+      'icon': location.icon,
+      'latitude': location.latitude,
+      'longitude': location.longitude,
+      'is_saved': 1,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    };
+  }
+
+  // Get Saved Locations Methods
   Future<List<LocationModel>> getSavedLocations() async {
     final supabaseLocations = await _getSupabaseLocations();
     final localLocations = await _getSavedLocationsFromLocal();
@@ -201,24 +238,28 @@ class LocationService {
           .select('*, countries(*), states(*), cities(*), areas(*)')
           .eq('user_id', user.id);
 
-      if (response == null) return [];
-
-      return (response as List).map((json) {
-        final userLocation = UserLocationModel.fromJson(json);
-        return LocationModel(
-          address: userLocation.formattedAddress,
-          subAddress: userLocation.streetAddress ?? '',
-          name: userLocation.name,
-          icon: userLocation.icon,
-          isSaved: true,
-          latitude: userLocation.latitude,
-          longitude: userLocation.longitude,
-        );
-      }).toList();
+      return _parseSupabaseLocations(response);
     } catch (e) {
       debugPrint('Error fetching locations from Supabase: $e');
       return [];
     }
+  }
+
+  List<LocationModel> _parseSupabaseLocations(dynamic response) {
+    if (response == null) return [];
+
+    return (response as List).map((json) {
+      final userLocation = UserLocationModel.fromJson(json);
+      return LocationModel(
+        address: userLocation.formattedAddress,
+        subAddress: userLocation.streetAddress ?? '',
+        name: userLocation.name,
+        icon: userLocation.icon,
+        isSaved: true,
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+      );
+    }).toList();
   }
 
   List<LocationModel> _combineLocations(
@@ -232,25 +273,20 @@ class LocationService {
 
   Future<List<LocationModel>> _getSavedLocationsFromLocal() async {
     try {
-      final db = await _databaseHelper.database;
-      final List<Map<String, dynamic>> maps =
-      await db.query('saved_locations', orderBy: 'timestamp DESC');
-
-      return List.generate(maps.length, (i) => LocationModel(
-        address: maps[i]['address'],
-        subAddress: maps[i]['sub_address'],
-        name: maps[i]['name'],
-        icon: maps[i]['icon'],
-        isSaved: maps[i]['is_saved'] == 1,
-        latitude: maps[i]['latitude'],
-        longitude: maps[i]['longitude'],
-      ));
+      final maps = await _queryLocalSavedLocations();
+      return _mapToLocationModels(maps, isSaved: true);
     } catch (e) {
       debugPrint('Error getting saved locations from local: $e');
       return [];
     }
   }
 
+  Future<List<Map<String, dynamic>>> _queryLocalSavedLocations() async {
+    final db = await _databaseHelper.database;
+    return db.query('saved_locations', orderBy: 'timestamp DESC');
+  }
+
+  // Recent Locations Methods
   Future<void> addRecentLocation(LocationModel location) async {
     final db = await _databaseHelper.database;
     await _updateExistingLocation(db, location);
@@ -258,60 +294,104 @@ class LocationService {
   }
 
   Future<void> _updateExistingLocation(Database db, LocationModel location) async {
-    final List<Map<String, dynamic>> existingLocations = await db.query(
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final locationData = _createLocationData(location, timestamp);
+
+    final existingLocation = await _findExistingLocation(db, location.address);
+    if (existingLocation != null) {
+      await _updateLocation(db, existingLocation['id'], timestamp);
+    } else {
+      await _insertLocation(db, locationData);
+    }
+  }
+
+  Future<Map<String, dynamic>?> _findExistingLocation(
+      Database db, String address) async {
+    final locations = await db.query(
       'recent_locations',
       where: 'address = ?',
-      whereArgs: [location.address],
+      whereArgs: [address],
     );
+    return locations.isNotEmpty ? locations.first : null;
+  }
 
-    if (existingLocations.isNotEmpty) {
-      await db.update(
-        'recent_locations',
-        {'timestamp': DateTime.now().millisecondsSinceEpoch},
-        where: 'id = ?',
-        whereArgs: [existingLocations.first['id']],
-      );
-    } else {
-      await db.insert('recent_locations', {
-        'address': location.address,
-        'sub_address': location.subAddress,
-        'latitude': location.latitude,
-        'longitude': location.longitude,
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-      });
-    }
+  Map<String, dynamic> _createLocationData(LocationModel location, int timestamp) {
+    return {
+      'address': location.address,
+      'sub_address': location.subAddress,
+      'latitude': location.latitude,
+      'longitude': location.longitude,
+      'timestamp': timestamp,
+    };
+  }
+
+  Future<void> _updateLocation(Database db, int id, int timestamp) async {
+    await db.update(
+      'recent_locations',
+      {'timestamp': timestamp},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<void> _insertLocation(
+      Database db, Map<String, dynamic> locationData) async {
+    await db.insert('recent_locations', locationData);
   }
 
   Future<void> _cleanupOldLocations(Database db) async {
-    final count = Sqflite.firstIntValue(
-        await db.rawQuery('SELECT COUNT(*) FROM recent_locations'));
+    final count = await _getLocationCount(db);
     if (count != null && count > 10) {
-      await db.execute(
-        'DELETE FROM recent_locations WHERE id NOT IN '
-            '(SELECT id FROM recent_locations ORDER BY timestamp DESC LIMIT 10)',
-      );
+      await _deleteOldLocations(db);
     }
   }
 
+  Future<int?> _getLocationCount(Database db) async {
+    return Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(*) FROM recent_locations'));
+  }
+
+  Future<void> _deleteOldLocations(Database db) async {
+    await db.execute(
+      'DELETE FROM recent_locations WHERE id NOT IN '
+          '(SELECT id FROM recent_locations ORDER BY timestamp DESC LIMIT 10)',
+    );
+  }
+
   Future<List<LocationModel>> getRecentLocations() async {
+    final maps = await _queryRecentLocations();
+    return _mapToLocationModels(maps);
+  }
+
+  Future<List<Map<String, dynamic>>> _queryRecentLocations() async {
     try {
       final db = await _databaseHelper.database;
-      final List<Map<String, dynamic>> maps = await db.query(
+      return await db.query(
         'recent_locations',
         orderBy: 'timestamp DESC',
         limit: 10,
       );
-
-      return List.generate(maps.length, (i) => LocationModel(
-        address: maps[i]['address'],
-        subAddress: maps[i]['sub_address'] ?? '',
-        latitude: maps[i]['latitude'],
-        longitude: maps[i]['longitude'],
-        isSaved: false,
-      ));
     } catch (e) {
       debugPrint('Error getting recent locations: $e');
       return [];
     }
+  }
+
+  List<LocationModel> _mapToLocationModels(
+      List<Map<String, dynamic>> maps, {
+        bool isSaved = false,
+      }) {
+    return List.generate(
+      maps.length,
+          (i) => LocationModel(
+        address: maps[i]['address'],
+        subAddress: maps[i]['sub_address'] ?? '',
+        name: maps[i]['name'],
+        icon: maps[i]['icon'],
+        isSaved: maps[i]['is_saved'] == 1 || isSaved,
+        latitude: maps[i]['latitude'],
+        longitude: maps[i]['longitude'],
+      ),
+    );
   }
 }
