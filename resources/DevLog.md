@@ -74,3 +74,45 @@ This week, we established a final project template to start development. We revi
 **Dates: March 14, 2025 – March 20, 2025**  
 
 We officially began the development phase of our project, implementing the login/signup pages and dashboard according to our UI prototype. We adhered to MVVM architecture principles to maintain a clean and scalable codebase.
+
+---
+
+## Week 13: Database Design and Feature Planning Revisions
+**Dates: March 21, 2025 – March 27, 2025**
+
+This week was dedicated to designing the entire database structure for our application. We also explored phone OTP services for user authentication and revised some of our planned features.
+
+---
+
+## Week 14: Eid ul Fitr Break
+**Dates: March 28, 2025 – April 3, 2025**
+
+Development was paused for the Eid ul Fitr holidays. Team members took this time to rest and prepare for the upcoming intensive development phases.
+
+---
+
+## Week 15: Frontend Implementation of Key Features
+**Dates: April 4, 2025 – April 10, 2025**
+
+We resumed work by implementing the frontend components for our most important features. This included creating UI components, ensuring responsive design, and establishing the visual flow according to our previously created prototypes.
+
+---
+
+## Week 16: Resolving SonarCloud Analysis and Code Quality Issues
+**Dates: April 11, 2025 – April 17, 2025**
+
+This week focused on addressing code quality concerns. We explored SonarCloud analysis failures and worked on fixing identified issues. We also explored why sonarcloud is not fetching data properly and fixed it.
+
+---
+
+## Week 17: Backend Implementation and Database Integration
+**Dates: April 18, 2025 – April 24, 2025**
+
+During this period, we focused on implementing all critical features with proper backend functionality and database integration. We connected our frontend components to the backend services and ensured data persistence and retrieval was working correctly.
+
+---
+
+## Week 18: Final Product Preparation and Presentation Development
+**Dates: April 25, 2025 – April 30, 2025**
+
+In the final week of our project timeline, we polished the application for the Learnathon project submission. We fixed remaining bugs, optimized performance, and prepared comprehensive presentations to showcase our work, process, and the final product.
