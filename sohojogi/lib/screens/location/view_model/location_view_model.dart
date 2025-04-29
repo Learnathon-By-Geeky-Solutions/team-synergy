@@ -192,6 +192,27 @@ class LocationViewModel extends ChangeNotifier {
     _streetAddress = address;
   }
 
+
+  void setLoadingState(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
+
+  void setSavedLocations(List<LocationModel> locations) {
+    _savedLocations = locations;
+    notifyListeners();
+  }
+
+  void setCountries(List<CountryModel> countries) {
+    _countries = countries;
+    notifyListeners();
+  }
+
+  void setStates(List<StateModel> states) {
+    _states = states;
+    notifyListeners();
+  }
+
   // Use current location
   Future<LocationModel?> useCurrentLocation() async {
     _isLoading = true;
