@@ -56,27 +56,29 @@ class _HomeBodyContentState extends State<HomeBodyContent> {
 
     return Container(
       color: isDarkMode ? grayColor : Colors.grey[100],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          LocationBar(
-            currentLocation: viewModel.currentLocation,
-            onLocationChanged: viewModel.updateLocation,
-          ),
-          _buildSearchBar(context, viewModel),
-          const SizedBox(height: 16),
-          _buildServiceHeader(context, isDarkMode),
-          _ServiceRows(
-            services: viewModel.services,
-            isDarkMode: isDarkMode,
-            onTap: viewModel.navigateToServiceCategory,
-          ),
-          const SizedBox(height: 32),
-          _buildBannerSection(viewModel, isDarkMode),
-          const SizedBox(height: 32),
-          _buildTopProvidersSection(context, viewModel, isDarkMode),
-          const SizedBox(height: 24),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            LocationBar(
+              currentLocation: viewModel.currentLocation,
+              onLocationChanged: viewModel.updateLocation,
+            ),
+            _buildSearchBar(context, viewModel),
+            const SizedBox(height: 16),
+            _buildServiceHeader(context, isDarkMode),
+            _ServiceRows(
+              services: viewModel.services,
+              isDarkMode: isDarkMode,
+              onTap: viewModel.navigateToServiceCategory,
+            ),
+            const SizedBox(height: 32),
+            _buildBannerSection(viewModel, isDarkMode),
+            const SizedBox(height: 32),
+            _buildTopProvidersSection(context, viewModel, isDarkMode),
+            const SizedBox(height: 24),
+          ],
+        ),
       ),
     );
   }
