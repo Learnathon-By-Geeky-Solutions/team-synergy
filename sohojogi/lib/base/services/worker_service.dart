@@ -1,4 +1,3 @@
-// lib/screens/worker_profile/services/worker_profile_service.dart
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sohojogi/screens/service_searched/models/service_provider_model.dart';

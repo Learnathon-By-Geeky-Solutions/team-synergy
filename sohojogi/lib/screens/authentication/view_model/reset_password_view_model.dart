@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sohojogi/screens/authentication/view_model/base_auth_view_model.dart';
 
 class ResetPasswordViewModel extends BaseAuthViewModel {
-  //final AuthService _authService = AuthService();
 
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();

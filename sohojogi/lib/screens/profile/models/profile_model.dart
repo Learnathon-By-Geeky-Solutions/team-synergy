@@ -7,7 +7,6 @@ class ProfileModel {
   String? profilePhotoUrl;
   bool isEmailVerified;
 
-  // Constructor
   ProfileModel({
     this.id = '',
     this.fullName = '',

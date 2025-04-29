@@ -25,7 +25,6 @@ class BusinessProfileListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Access the view model to verify it exists
     final viewModel = Provider.of<WorkerRegistrationViewModel>(context);
     final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 

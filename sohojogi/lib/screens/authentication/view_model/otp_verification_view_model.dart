@@ -1,7 +1,6 @@
 import 'package:sohojogi/screens/authentication/view_model/base_auth_view_model.dart';
 
 class OTPVerificationViewModel extends BaseAuthViewModel {
-  //final AuthService _authService = AuthService();
 
   String phoneNumber = '';
   String otpCode = '';

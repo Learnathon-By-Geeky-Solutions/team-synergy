@@ -137,22 +137,19 @@ class ProfileOverviewWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.location_on,
-                size: 16,
-                color: isDarkMode ? lightGrayColor : grayColor,
-              ),
               const SizedBox(width: 4),
-                Text(
-                  worker.location,
+              Expanded(  // Add this Expanded widget
+                child: Text(
+                  "Location: ${worker.location}",
                   style: TextStyle(
                     fontSize: 14,
                     color: isDarkMode ? lightGrayColor : grayColor,
                   ),
                   textAlign: TextAlign.center,
-                  maxLines: null, // Allow multi-line overflow
+                  maxLines: null,
                   overflow: TextOverflow.visible,
                 ),
+              ),
             ],
           ),
 
