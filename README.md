@@ -68,6 +68,9 @@
 ## 📚 Project Resources
 
 <div align="center">
+  <a href="https://learnathonproducts.geeky.solutions/products/fb6dd65c-a967-4ef7-941d-9053ac121cd0">
+    <img src="https://img.shields.io/badge/Product%20Link-FF1493?style=for-the-badge&logo=rocket&logoColor=white" alt="Product Link" style="margin-bottom: 10px;"/>
+  </a>
   <p>
     <a href="resources/pitch-deck.pdf">
       <img src="https://img.shields.io/badge/Pitch%20Deck-FF4500?style=for-the-badge&logo=adobe-acrobat-reader&logoColor=white" alt="Pitch Deck" />
