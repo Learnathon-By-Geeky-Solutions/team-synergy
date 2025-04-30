@@ -81,6 +81,9 @@
     <a href="resources/Wireframe.pdf">
       <img src="https://img.shields.io/badge/Wireframe-4B0082?style=for-the-badge&logo=figma&logoColor=white" alt="Wireframe" />
     </a>
+    <a href="https://trello.com/b/qnQoFcjw/sohojogi">
+      <img src="https://img.shields.io/badge/Trello%20Board-0079BF?style=for-the-badge&logo=trello&logoColor=white" alt="Trello Board" />
+    </a>
     <a href="https://www.figma.com/proto/WzVr7zvjiAiGrVoSkEglZE/Sohojogi-App-UI?node-id=125-186&starting-point-node-id=125%3A186&t=BygQA84Hiw98dmrB-1">
       <img src="https://img.shields.io/badge/UI%2FUX%20Design-F24E1E?style=for-the-badge&logo=figma&logoColor=white" alt="UI/UX Design" />
     </a>
@@ -155,9 +158,8 @@ We follow a simple and organized Git workflow to ensure smooth collaboration and
 | **Authentication** | Supabase Auth |
 | **UI Framework** | Flutter Material Design |
 | **Language** | Dart |
-| **Backend Services** | • User Management<br>• Worker Management<br>• Order Management<br>• Review System<br>• Notifications |
-| **Key Features** | • Dark/Light Theme<br>• Multi-language Support<br>• Profile Management<br>• Business Profiles<br>• Location Services |
-| **Database Structure** | • User Profiles<br>• Worker Profiles<br>• Service Listings<br>• Orders<br>• Reviews<br>• Locations |
+| **Key Features** | • Dark/Light Theme<br>• Multi-language Support<br>• Profile Management<br>• Business Profiles<br>• Location Services<br>• Review System<br>• Notifications |
+
 
 ## 📁 Project Structure
 
@@ -430,12 +432,13 @@ erDiagram
 
 ## 👥 Team
 
-| Role | Name |
-|------|------|
-| **Team Leader** | Afnan Rakib |
-| **Team Member** | Md. Rubayet Islam |
-| **Team Member** | Rajiun Nabi |
-| **Mentor** | Shahriar Rahman Shaon |
+| Role            | Name                  | GitHub                                |
+|-----------------|-----------------------|----------------------------------------|
+| **Team Leader** | Md. Rakib Hasan       | [@AfnanRakib](https://github.com/AfnanRakib) |
+| **Team Member** | Md. Rubayet Islam     | [@feedofmri](https://github.com/feedofmri)   |
+| **Team Member** | Rajiun Salihan Nabi   | [@Rajiunnabi](https://github.com/Rajiunnabi) |
+| **Mentor**      | Shahriar Rahman Shaon | [@shahriarRahmanShaon](https://github.com/shahriarRahmanShaon) |
+
 
 ## 📄 License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
