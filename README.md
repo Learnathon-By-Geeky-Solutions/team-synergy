@@ -4,6 +4,7 @@
   <h1>SOHOJOGI</h1>
   
 <!-- Badges -->
+<div align="center">
 <p>
   <a href="https://github.com/Learnathon-By-Geeky-Solutions/team-synergy/graphs/contributors">
     <img src="https://img.shields.io/github/contributors/Learnathon-By-Geeky-Solutions/team-synergy" alt="contributors" />
@@ -36,10 +37,10 @@
   <a href="https://sonarcloud.io/component_measures/domain/Vulnerability?id=Learnathon-By-Geeky-Solutions_team-synergy">
     <img src="https://sonarcloud.io/api/project_badges/measure?project=Learnathon-By-Geeky-Solutions_team-synergy&metric=vulnerabilities" alt="Vulnerabilities" />
   </a>
-  <a href="https://sonarcloud.io/component_measures/domain/Bugs?id=LLearnathon-By-Geeky-Solutions_team-synergy">
+  <a href="https://sonarcloud.io/component_measures/domain/Bugs?id=Learnathon-By-Geeky-Solutions_team-synergy">
     <img src="https://sonarcloud.io/api/project_badges/measure?project=Learnathon-By-Geeky-Solutions_team-synergy&metric=bugs" alt="Bugs" />
   </a>
-  <a href="https://sonarcloud.io/component_measures/domain/Security?id=LLearnathon-By-Geeky-Solutions_team-synergy">
+  <a href="https://sonarcloud.io/component_measures/domain/Security?id=Learnathon-By-Geeky-Solutions_team-synergy">
     <img src="https://sonarcloud.io/api/project_badges/measure?project=Learnathon-By-Geeky-Solutions_team-synergy&metric=security_rating" alt="Security" />
   </a>
   <a href="https://sonarcloud.io/component_measures/metric/reliability_rating/list?id=Learnathon-By-Geeky-Solutions_team-synergy">
@@ -49,6 +50,8 @@
     <img src="https://sonarcloud.io/api/project_badges/measure?project=Learnathon-By-Geeky-Solutions_team-synergy&metric=code_smells" alt="Code Smells" />
   </a>
 </p>
+
+</div>
 
 <h4>
   <a href="https://github.com/Learnathon-By-Geeky-Solutions/team-synergy">Documentation</a>
@@ -84,6 +87,11 @@
 ## 📋 Project Description
 "SOHOJOGIˮ is a one-stop service provider platform for daily household tasks.
 It connects users with skilled professionals like plumbers, electricians, mechanics, and appliance repair experts, making it easy to find and hire reliable help.
+
+<a href="resources/Sohojogi Background  Study.png" target="_blank">
+  <img src="resources/Sohojogi Background  Study.png" alt="Zoomable Image" width="300"/>
+</a>
+
 
 ## 🚀 Getting Started
 
