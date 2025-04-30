@@ -63,7 +63,13 @@ void main() {
           availability: [],
           reviews: [],
           portfolioItems: [],
-          qualifications: []
+          qualifications: [], ratingBreakdown: RatingBreakdown(
+        fiveStars: 5,
+        fourStars: 3,
+        threeStars: 1,
+        twoStars: 1,
+        oneStars: 0,
+      ),
       );
 
       final json = model.toJson();

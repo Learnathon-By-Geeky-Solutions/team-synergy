@@ -32,7 +32,7 @@ class WorkerProfileModel extends ServiceProviderModel {
     required this.availability,
     required this.reviews,
     required this.portfolioItems,
-    required this.qualifications,
+    required this.qualifications, required RatingBreakdown ratingBreakdown,
   });
 
   Map<String, dynamic> toJson() {
@@ -93,6 +93,13 @@ class WorkerProfileModel extends ServiceProviderModel {
       jobsCompleted: json['jobs_completed'] ?? 0,
       yearsOfExperience: json['years_of_experience'] ?? 1,
       isVerified: json['is_verified'] ?? false,
+      ratingBreakdown: RatingBreakdown(
+        fiveStars: json['rating_breakdown']?['five_stars'] ?? 0,
+        fourStars: json['rating_breakdown']?['four_stars'] ?? 0,
+        threeStars: json['rating_breakdown']?['three_stars'] ?? 0,
+        twoStars: json['rating_breakdown']?['two_stars'] ?? 0,
+        oneStars: json['rating_breakdown']?['one_stars'] ?? 0,
+      ),
     );
   }}
 
