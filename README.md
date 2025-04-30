@@ -88,9 +88,13 @@
 "SOHOJOGIˮ is a one-stop service provider platform for daily household tasks.
 It connects users with skilled professionals like plumbers, electricians, mechanics, and appliance repair experts, making it easy to find and hire reliable help.
 
-<a href="resources/Sohojogi Background  Study.png" target="_blank">
-  <img src="resources/Sohojogi Background  Study.png" alt="Zoomable Image" width="300"/>
-</a>
+The following image provides a visual overview of our solution:
+<p align="center">
+  <a href="resources/Sohojogi_Background_Study.png" target="_blank">
+    <img src="resources/Sohojogi_Background_Study.png" alt="Zoomable Image" style="max-width: 100%; height: auto;">
+  </a>
+</p>
+
 
 
 ## 🚀 Getting Started
