@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sohojogi/constants/colors.dart';
 import 'package:sohojogi/screens/order/models/order_model.dart';
-import '../../utils/date_time_utils.dart';
+import '../../../utils/date_time_utils.dart';
 
 class OrderCardWidget extends StatelessWidget {
   final OrderModel order;

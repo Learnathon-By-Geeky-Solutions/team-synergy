@@ -331,4 +331,9 @@ class OrderService {
       default: return OrderStatus.pending;
     }
   }
+
+  @visibleForTesting
+  OrderStatus parseOrderStatusForTesting(String status) {
+    return _parseOrderStatus(status);
+  }
 }

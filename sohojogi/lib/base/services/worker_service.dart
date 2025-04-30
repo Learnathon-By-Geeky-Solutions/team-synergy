@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sohojogi/screens/service_searched/models/service_provider_model.dart';
 import 'package:sohojogi/screens/worker_profile/models/worker_profile_model.dart';
+import 'package:flutter/foundation.dart';
 
 class WorkerDatabaseService {
   final _supabase = Supabase.instance.client;
@@ -15,10 +16,6 @@ class WorkerDatabaseService {
           .select()
           .eq('id', workerId)
           .single();
-
-      if (workerResponse == null) {
-        return null;
-      }
 
       // Parse gender enum
       Gender gender = Gender.other;
