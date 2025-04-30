@@ -17,10 +17,8 @@ class TestProfileViewModel extends ChangeNotifier implements ProfileViewModel {
   @override
   File? get newProfileImage => null;
 
-  @override
   get profileImage => null;
 
-  @override
   get loading => false;
 
   @override
