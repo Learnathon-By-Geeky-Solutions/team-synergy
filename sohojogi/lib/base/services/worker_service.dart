@@ -135,7 +135,13 @@ class WorkerDatabaseService {
         completionRate: workerResponse['completion_rate'].toDouble(),
         jobsCompleted: workerResponse['jobs_completed'],
         yearsOfExperience: workerResponse['years_of_experience'],
-        isVerified: workerResponse['is_verified'] ?? false,
+        isVerified: workerResponse['is_verified'] ?? false, ratingBreakdown: RatingBreakdown(
+          fiveStars: workerResponse['five_star_count'] ?? 0,
+          fourStars: workerResponse['four_star_count'] ?? 0,
+          threeStars: workerResponse['three_star_count'] ?? 0,
+          twoStars: workerResponse['two_star_count'] ?? 0,
+          oneStars: workerResponse['one_star_count'] ?? 0,
+        ),
       );    } catch (e) {
       debugPrint('Error fetching worker profile: $e');
       return null;
