@@ -16,8 +16,7 @@ class WorkerProfileScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => WorkerProfileViewModel(),
       child: Scaffold(
-        // Remove any AppBar that might be present
-        extendBodyBehindAppBar: true, // This allows content to go behind the status bar
+        extendBodyBehindAppBar: true,
         body: SafeArea(
           // Add this SafeArea wrapper
           child: WorkerProfileListView(

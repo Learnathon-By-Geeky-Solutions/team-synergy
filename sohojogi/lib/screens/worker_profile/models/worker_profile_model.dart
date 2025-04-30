@@ -35,6 +35,34 @@ class WorkerProfileModel extends ServiceProviderModel {
     required this.qualifications,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'phone_number': phoneNumber,
+      'profile_image_url': profileImage,
+      'location': location,
+      'latitude': latitude,
+      'longitude': longitude,
+      'gender': gender.index,
+      'average_rating': rating,
+      'review_count': reviewCount,
+      'service_category': serviceCategory,
+      'bio': bio,
+      'completion_rate': completionRate,
+      'jobs_completed': jobsCompleted,
+      'years_of_experience': yearsOfExperience,
+      'is_verified': isVerified,
+      'services': services.map((service) => service.toJson()).toList(),
+      'skills': skills,
+      'availability': availability.map((day) => day.toJson()).toList(),
+      'reviews': reviews.map((review) => review.toJson()).toList(),
+      'portfolio_items': portfolioItems.map((item) => item.toJson()).toList(),
+      'qualifications': qualifications.map((qual) => qual.toJson()).toList(),
+    };
+  }
+
   factory WorkerProfileModel.fromJson(Map<String, dynamic> json) {
     return WorkerProfileModel(
       id: json['id'],
@@ -85,6 +113,17 @@ class WorkerServiceModel {
     this.isPopular = false,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'price': price,
+      'unit': unit,
+      'isPopular': isPopular,
+    };
+  }
+
   factory WorkerServiceModel.fromJson(Map<String, dynamic> json) {
     return WorkerServiceModel(
       id: json['id'] as String,
@@ -107,6 +146,17 @@ class WorkerAvailabilityDay {
     required this.available,
     required this.timeSlots,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'day_of_week': day.index,
+      'is_available': available,
+      'worker_time_slots': timeSlots.map((slot) => {
+        'start_time': slot.start,
+        'end_time': slot.end,
+      }).toList(),
+    };
+  }
 
   factory WorkerAvailabilityDay.fromJson(Map<String, dynamic> json) {
     return WorkerAvailabilityDay(
@@ -159,6 +209,18 @@ class WorkerReviewModel {
     this.photos,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user_name': userName,
+      'user_image': userImage,
+      'rating': rating,
+      'comment': comment,
+      'date': date.toIso8601String(),
+      'review_photos': photos?.map((url) => {'photo_url': url}).toList(),
+    };
+  }
+
   factory WorkerReviewModel.fromJson(Map<String, dynamic> json) {
     return WorkerReviewModel(
       id: json['id'] as String,
@@ -187,6 +249,16 @@ class WorkerPortfolioItem {
     required this.date,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'image_url': imageUrl,
+      'title': title,
+      'description': description,
+      'date': date.toIso8601String(),
+    };
+  }
+
   factory WorkerPortfolioItem.fromJson(Map<String, dynamic> json) {
     return WorkerPortfolioItem(
       id: json['id'] as String,
@@ -212,6 +284,16 @@ class WorkerQualification {
     required this.issueDate,
     this.expiryDate,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'issuer': issuer,
+      'issue_date': issueDate.toIso8601String(),
+      'expiry_date': expiryDate?.toIso8601String(),
+    };
+  }
 
   factory WorkerQualification.fromJson(Map<String, dynamic> json) {
     return WorkerQualification(

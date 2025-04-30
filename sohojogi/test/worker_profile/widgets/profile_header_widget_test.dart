@@ -38,21 +38,31 @@ void main() {
 
     testWidgets('renders header elements correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: ProfileHeaderWidget(
-            worker: mockWorker,
-            isBookmarked: false,
-            onBackPressed: () {},
-            onBookmarkPressed: () {},
-            onSharePressed: () {},
+        MediaQuery(
+          data: const MediaQueryData(),
+          child: MaterialApp(
+            home: Scaffold(
+              body: ProfileHeaderWidget(
+                worker: mockWorker,
+                isBookmarked: false,
+                onBackPressed: () {},
+                onBookmarkPressed: () {},
+                onSharePressed: () {},
+              ),
+            ),
           ),
         ),
       );
+
+      await tester.pumpAndSettle();
 
       expect(find.text('Worker Profile'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsOneWidget);
       expect(find.byIcon(Icons.bookmark_border), findsOneWidget);
       expect(find.byIcon(Icons.share), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.bookmark_border));
+      await tester.pumpAndSettle();
     });
   });
 }

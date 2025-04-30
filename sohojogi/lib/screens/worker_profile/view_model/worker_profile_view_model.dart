@@ -26,11 +26,12 @@ class WorkerProfileViewModel extends ChangeNotifier {
   int _currentPage = 0;
   bool hasError = false;
   bool hirePending = false;
-  bool isBookmarked = false;
   bool isLoadingMoreReviews = false;
   bool hasMoreReviews = true;
   int currentReviewPage = 0;
   int selectedPortfolioIndex = 0;
+  bool get isBookmarked => _isBookmarked;
+
 
   // Load worker profile data
   Future<void> loadWorkerProfile(String workerId) async {
@@ -150,11 +151,9 @@ class WorkerProfileViewModel extends ChangeNotifier {
     }
   }
 
-  // Toggle bookmark status
   void toggleBookmark() {
     _isBookmarked = !_isBookmarked;
     notifyListeners();
-    // implement actual bookmark functionality with database
   }
 
   // Select portfolio item

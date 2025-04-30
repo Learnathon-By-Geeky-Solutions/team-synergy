@@ -12,10 +12,7 @@ void main() {
       ),
     );
 
-    // Check if the app bar title shows the service name
     expect(find.text(testServiceName), findsOneWidget);
-
-    // Check if the service details message is shown
     expect(find.text('$testServiceName service details'), findsOneWidget);
   });
 
