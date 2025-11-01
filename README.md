@@ -436,7 +436,6 @@ erDiagram
 |-----------------|-----------------------|----------------------------------------|
 | **Team Leader** | Md. Rakib Hasan       | [@AfnanRakib](https://github.com/AfnanRakib) |
 | **Team Member** | Md. Rubayet Islam     | [@feedofmri](https://github.com/feedofmri)   |
-| **Team Member** | Rajiun Salihan Nabi   | [@Rajiunnabi](https://github.com/Rajiunnabi) |
 | **Mentor**      | Shahriar Rahman Shaon | [@shahriarRahmanShaon](https://github.com/shahriarRahmanShaon) |
 
 
